@@ -1,0 +1,246 @@
+# DESIGN-SYSTEM — Golden Gab
+
+> Direction artistique, tokens et usages.
+> **Méthode :** tout ce qui suit provient d'une inspection pixel des assets de
+> `public/assets/images/`. Les valeurs mesurées sont données ; les choix
+> d'ingénierie (qui ne viennent pas des assets) sont signalés comme tels.
+> **Rien n'a été inventé comme "valeur de marque"** : voir la section
+> « Incertitudes » à la fin.
+
+## 1. Couleurs
+
+### Source
+
+`public/assets/images/couelur.png` (13762×5507) est la **planche de couleurs de
+la marque** : elle contient exactement 6 échantillons, dans cet ordre
+(de gauche à droite) :
+
+| # | Valeur relevée | Nom Golden Gab | Alias sémantique |
+| --- | --- | --- | --- |
+| 1 | `#FFFFFF` | White | `colors.surfaceLight` |
+| 2 | `#DBD0D0` | Rose gris | `colors.neutral` |
+| 3 | `#D45D3A` | Corail | `colors.accent` |
+| 4 | `#2D4057` | Bleu nuit | `colors.secondary` |
+| 5 | `#2B2C2C` | Charbon | `colors.ink` |
+| 6 | `#F7F4F2` | Crème | `colors.surface` |
+
+Ces 6 valeurs sont encodées dans `src/config/colors.ts` (`palette`, puis
+`colors` pour les alias). **C'est la source de vérité.**
+
+> Les noms (« Corail », « Bleu nuit »…) sont une convention interne : la planche
+> n'est pas légendée. Les alias sont là pour éviter de raisonner en teintes
+> quand on code.
+
+### Règles d'usage
+
+| Usage | Couleur |
+| --- | --- |
+| Accent, mot mis en avant, CTA | `colors.accent` (corail) |
+| Fond clair, surface par défaut | `colors.surface` (crème) |
+| Fond sombre | `colors.surfaceDark` (bleu nuit) |
+| Texte sur fond clair | `colors.ink` (charbon) |
+| Texte sur fond sombre | `colors.inkInverse` (crème) |
+| Contour de texte sur vidéo | `colors.outline` (bleu nuit) |
+| Neutre chaud (séparateurs, cartes) | `colors.neutral` (rose gris) |
+| Mise en évidence des captions | `colors.captionHighlight` (corail) |
+
+**Contrainte importante :** le logo est **bicolore** (corail + bleu nuit). Sur
+un fond bleu nuit, sa partie navy disparaît. Les écrans à logo
+(`GoldenGabIntro`, `GoldenGabOutro`, scène « Marque » du styleguide) utilisent
+donc la variante de fond **claire**. Voir « Incertitudes ».
+
+## 2. Typographies
+
+### Titres — Darker Grotesque
+
+Police des **titres**, donnée par le brief de marque. Elle n'est pas présente
+dans les assets : aucun fichier de police n'a été trouvé dans le repository
+(seul `public/theboldfont.ttf`, la police du template, existe — elle n'est pas
+utilisée par le design system Golden Gab).
+
+Implémentation :
+
+- chargée via `@remotion/google-fonts/DarkerGrotesque` dans
+  `src/config/typography.ts` (graisses 300 → 900, sous-ensembles `latin` +
+  `latin-ext`) ;
+- jamais déclarée dans un composant : utiliser `fontFamilies.title`,
+  `textRoles` ou `<BrandText />`.
+
+**Contour des captions :** Darker Grotesque a des fûts fins pour une police
+d'affichage. Un contour épais (`-webkit-text-stroke`) **recouvre le
+remplissage** du glyphe et rend le texte illisible. La valeur retenue est
+`8px` (style `default`) ; au-delà, le blanc du texte se réduit fortement.
+C'est un choix mesuré au rendu, pas une valeur de charte.
+
+### Textes complémentaires — Inter
+
+**Décision** (pas une donnée de marque) : Darker Grotesque est une police
+d'affichage très condensée ; elle est excellente en grand mais peu lisible en
+petit pour des libellés, des chiffres ou des mentions. **Inter** est utilisée
+comme police complémentaire pour ces cas (rôles `body` et `label`), chargée via
+`@remotion/google-fonts/Inter` (400/500/600/700).
+
+Si la marque fournit plus tard une police de texte, il suffit de changer
+`fontFamilies.body` dans `src/config/typography.ts`.
+
+### Hiérarchie typographique
+
+Échelle en pixels, pour une composition de **1080 px de large**
+(`typeScale` dans `src/config/typography.ts`) :
+
+| Rôle | Taille | Police | Graisse | Usage |
+| --- | --- | --- | --- | --- |
+| `display` | 180 | Darker Grotesque | 900 | accroche plein écran |
+| `h1` | 132 | Darker Grotesque | 800 | titre d'écran |
+| `h2` | 96 | Darker Grotesque | 700 | sous-titre |
+| `h3` | 72 | Darker Grotesque | 600 | titre de carte |
+| `caption` | 96 | Darker Grotesque | 900 | caption (taille max, réduite automatiquement) |
+| `body` | 48 | Inter | 400 | texte courant |
+| `label` | 34 | Inter | 600 | libellés, mentions (capitales, lettrage espacé) |
+
+Repères de lisibilité retenus : titre principal ≥ 84 px et texte secondaire
+≥ 44 px pour une largeur de 1080 px.
+
+## 3. Logo
+
+### Composition observée
+
+`public/assets/images/logo couleur1.png` (8334×8334, contenu utile
+1606,1948 → 7329,5611) :
+
+- **monogramme** : deux « G » côte à côte, le gauche en **corail**, le droit en
+  **bleu nuit** ;
+- **wordmark** en dessous : « GOLDEN » en **corail**, « GAB » en **bleu nuit**.
+
+Le logo n'utilise que ces deux couleurs. Aucune autre déclinaison (monochrome,
+fond clair/fond sombre, version texte seule) n'est fournie.
+
+### Déclinaison prête à l'emploi
+
+Le fichier source a de très larges marges transparentes (contenu utile ≈ 43 %
+de la surface du canvas). Utiliser tel quel dans une vidéo donnerait un logo
+minuscule au milieu d'un carré vide.
+
+Une déclinaison **détourée et dimensionnée** a donc été générée :
+
+```text
+public/assets/images/derived/logo.png   1600 × 1024   ratio 1.5624
+```
+
+- Le fichier source n'a **pas** été modifié (règle 20 de `RULES.md`).
+- C'est `brandAssets.logo` (donc la version utilisée par `GoldenGabLogo`).
+- Le ratio est exposé via `brand.logoAspectRatio` : `GoldenGabLogo` en déduit la
+  hauteur à partir de la largeur demandée.
+
+### Usage
+
+- Toujours passer par `<GoldenGabLogo width={…} />` : ne jamais réinsérer une
+  copie du logo dans un composant.
+- Filigrane : `<GoldenGabWatermark position="top-right" />`.
+- Sur fond sombre : le logo bicolore n'est pas lisible (voir §1). Utiliser un
+  fond clair, ou demander une déclinaison claire avant de l'utiliser sur navy.
+
+## 4. Motif
+
+`public/assets/images/motif.png` (8334×8334) : motif bleu nuit **très
+discret** (alpha mesuré entre 1 et 29 / 255) sur fond transparent.
+
+Deux constats mesurés :
+
+1. **Ce n'est pas une tuile répétable.** Les bords gauche/droit et haut/bas ne
+   se raccordent pas (écart moyen d'alpha ≈ 15/30), et la période du motif
+   (≈ 2557 px) ne divise pas la taille du canvas. Le motif est donc rendu
+   **d'un seul bloc** (`<CanvasImage fit="cover" />`), pas en répétition.
+2. L'alpha étant très faible, il faut une **opacité supplémentaire** pour qu'il
+   soit perceptible : `BrandMotif` / `BrandBackground` reçoivent une prop
+   `opacity` / `motifOpacity` (ex. `0.2` pour un fond, `0.35` en démonstration).
+
+Usage : `<BrandBackground variant="light" motif motifOpacity={0.2} />`, ou
+`<BrandMotif scale={…} opacity={…} />` directement. Le motif ne doit **jamais**
+être utilisé derrière un texte petit : il est décoratif, pas porteur
+d'information.
+
+## 5. Captions
+
+Le style de captions est un preset (`src/captions/styles.ts`) couvrant
+typographie, couleurs, gabarit et animations.
+
+| Style | Rendu | Cible |
+| --- | --- | --- |
+| `default` | Darker Grotesque 900, capitales, texte blanc, contour bleu nuit 8 px, mot actif en corail | usage courant sur vidéo |
+| `card` | bloc bleu nuit arrondi, texte crème, mot actif en corail | fonds vidéo clairs ou chargés |
+| `subtle` | Darker Grotesque 600, casse normale, texte crème sur fond charbon translucide | passages posés / narratifs |
+
+Principes :
+
+- une page = **1 à 3 mots**, très courte (≤ 26 caractères, ≤ 2,6 s par défaut) ;
+- la taille de police **s'adapte automatiquement** à la largeur disponible
+  (`fitText`, avec 4 % de marge de sécurité), plafonnée par `maxFontSize` ;
+- le mot prononcé est mis en évidence en corail (`emphasisMode: "word"`), ou
+  tous les mots marqués `emphasis` restent en corail (`"segment"`) ;
+- position par défaut : `bottom`, dans la zone captions (au-dessus de l'UI basse
+  de TikTok).
+
+## 6. Animations
+
+| Paramètre | Valeur | Emplacement |
+| --- | --- | --- |
+| Entrée standard | `Easing.bezier(0.16, 1, 0.3, 1)` | `easings.entrance` |
+| Sortie standard | `Easing.bezier(0.4, 0, 1, 1)` | `easings.exit` |
+| Durées | `0.12 / 0.25 / 0.4 / 0.8 s` | `durations` |
+| Animation par défaut | `pop` (échelle 0,82 → 1 + fondu) | `defaultAppearAnimation` |
+| Décalage distant (escalier) | 0,15–0,2 s entre deux blocs | `delaySeconds` |
+
+Principes :
+
+- animations **courtes** : une vidéo verticale doit rester lisible, pas
+  spectaculaire ;
+- entrées en `pop` ou `slide-up`, sorties en `fade` ;
+- tout est réutilisable via `AnimatedAppear` ou les helpers de
+  `src/utils/animation.ts` ; aucune transition CSS (Règle 26).
+
+## 7. Composition et marges
+
+| Constante | Valeur (base 1080×1920) | Emplacement |
+| --- | --- | --- |
+| Format | 1080 × 1920, 30 fps | `videoFormat` |
+| Zone sûre (haut / bas / côtés) | 260 / 420 / 72 px | `safeArea` |
+| Zone captions | bas 520 px, hauteur 420 px, 90 % de large | `captionZone` |
+| Espacements | 8 / 16 / 24 / 40 / 64 / 96 / 140 px | `spacing` |
+| Rayons | 12 / 24 / 40 / 64 px + `pill` | `radius` |
+| Opacités | 0,08 / 0,16 / 0,4 / 0,72 / 1 | `opacity` |
+
+Ces valeurs sont des **choix d'ingénierie** (lisibilité + UI de TikTok), pas des
+valeurs extraites des assets. Elles sont centralisées pour être ajustées à un
+seul endroit.
+
+Principes visuels :
+
+- un écran = une idée : le logo, un titre, ou une caption, pas les trois ;
+- fond clair pour tout ce qui porte le logo ; fond sombre + motif pour les
+  écrans de contenu, avec un dégradé sombre (`bottomScrim`) sous les captions ;
+- le corail est un **accent** : il ne doit pas devenir une couleur de fond.
+
+## 8. Incertitudes à trancher
+
+Ces points **ne sont pas documentés par les assets**. Ils sont centralisés dans
+le code pour être modifiés en un seul endroit, mais restent à valider avec la
+marque :
+
+1. **Noms des couleurs** — la planche `couelur.png` n'est pas légendée ; les
+   noms et les alias sémantiques sont une convention interne.
+2. **Police de texte** — Inter est un choix d'ingénierie, aucune police de texte
+   n'est fournie.
+3. **Déclinaison du logo sur fond sombre** — inexistante. Aujourd'hui les écrans
+   à logo se limitent aux fonds clairs.
+4. **Handle social** — `brand.handle` vaut `@goldengab` à titre provisoire.
+5. **Baseline** — `brand.tagline` (« Les métiers de la tech, sans filtre. ») est
+   provisoire.
+6. **Motif** — l'asset n'est pas une tuile répétable et son échelle d'affichage
+   n'est pas spécifiée ; la prop `scale` de `BrandMotif` est un réglage
+   d'ingénierie.
+7. **poids du contour des captions** — 8 px est un optimum mesuré au rendu, pas
+   une valeur de charte.
+8. **Poids des assets** — `motif.png` (8334×8334) et `couelur.png`
+   (13762×5507) sont lourds pour un rendu vidéo. Ils fonctionnent, mais une
+   version optimisée du motif accélérerait les rendus.

@@ -1,83 +1,117 @@
-# Remotion video
+# Golden Gab — production vidéo
 
-<p align="center">
-  <a href="https://github.com/remotion-dev/logo">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://github.com/remotion-dev/logo/raw/main/animated-logo-banner-dark.apng">
-      <img alt="Animated Remotion Logo" src="https://github.com/remotion-dev/logo/raw/main/animated-logo-banner-light.gif">
-    </picture>
-  </a>
-</p>
+Chaîne de production des vidéos courtes verticales (TikTok / 9:16) de la marque
+**Golden Gab**, construite sur Remotion.
 
-Welcome to your Remotion project!
+Ce repository fournit l'architecture, le design system, le système de captions
+et les composants réutilisables nécessaires pour produire rapidement plusieurs
+séries de vidéos.
 
-## Commands
+## Documentation (à lire avant de coder)
 
-**Install Dependencies**
+| Fichier | Contenu |
+| --- | --- |
+| [docs/CONTEXT.md](docs/CONTEXT.md) | le projet, sa mission, sa philosophie |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | structure, systèmes internes, où placer un fichier |
+| [docs/RULES.md](docs/RULES.md) | règles à respecter |
+| [docs/DESIGN-SYSTEM.md](docs/DESIGN-SYSTEM.md) | direction artistique, tokens, usages |
+
+## Commandes
+
+**Installer les dépendances**
 
 ```console
-npm i --loglevel=error
+npm i
 ```
 
-**Start Preview**
+**Ouvrir le Studio Remotion**
 
 ```console
 npm run dev
 ```
 
-**Render video**
+**Vérifier le code**
+
+```console
+npm run lint        # eslint src && tsc
+```
+
+**Vérifier les compositions détectées**
+
+```console
+npx remotion compositions
+```
+
+**Rendre une frame (QA visuelle rapide)**
+
+```console
+npx remotion still Styleguide out/frame.png --frame=420
+```
+
+**Rendre une vidéo**
 
 ```console
 npx remotion render
 ```
 
-**Upgrade Remotion**
+**Mettre à jour Remotion**
 
 ```console
 npx remotion upgrade
 ```
 
-## Captioning
+## Organisation en un coup d'œil
 
-Replace the `sample-video.mp4` with your video file.
-Caption all the videos in you `public` by running the following command:
+```text
+src/
+├── config/          design system (couleurs, typographies, format, assets)
+├── captions/        système de captions réutilisable
+├── components/      composants réutilisables (marque, intro, outro, communs)
+├── compositions/    assemblage des compositions Remotion
+├── series/          contenu, une série = un dossier
+└── utils/           helpers purs
+```
+
+Ajouter une vidéo = créer un fichier dans `src/series/<serie>/videos/` et
+l'enregistrer dans `src/series/<serie>/index.tsx`.
+Voir [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#organisation-des-vidéos).
+
+## Captioning (transcription Whisper)
+
+Remplacez `sample-video.mp4` par votre fichier vidéo, puis transcrivez les
+vidéos présentes dans `public/` :
 
 ```console
 node sub.mjs
 ```
 
-Only caption a specific video:
+Transcrire une seule vidéo :
 
 ```console
-node sub.mjs <path-to-video-file>
+node sub.mjs <chemin-vers-la-video>
 ```
 
-Only caption a specific folder:
+Transcrire un dossier :
 
 ```console
-node sub.mjs <path-to-folder>
+node sub.mjs <chemin-vers-le-dossier>
 ```
 
-## Configure Whisper.cpp
+Le pipeline télécharge Whisper.cpp et le modèle `medium.en`. Voir
+`whisper-config.mjs`. Pour le français, changez `WHISPER_MODEL` en un modèle
+sans suffixe `.en` et `WHISPER_LANG` en `fr`.
 
-Captioning will download Whisper.cpp and the 1.5GB big `medium.en` model. To configure which model is being used, you can configure the variables in `whisper-config.mjs`.
+Les captions produites (format `Caption[]`) se branchent sur le design system
+Golden Gab via `fromRemotionCaptions()` de `src/captions` — voir
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#système-de-captions).
 
-### Non-English languages
+## Docs Remotion
 
-To support non-English languages, you need to change the `WHISPER_MODEL` variable in `whisper-config.mjs` to a model that does not have a `.en` sufix.
-
-## Docs
-
-Get started with Remotion by reading the [fundamentals page](https://www.remotion.dev/docs/the-fundamentals).
-
-## Help
-
-We provide help on our [Discord server](https://remotion.dev/discord).
-
-## Issues
-
-Found an issue with Remotion? [File an issue here](https://github.com/remotion-dev/remotion/issues/new).
+- [Les fondamentaux](https://www.remotion.dev/docs/the-fundamentals)
+- [Discord](https://remotion.dev/discord)
+- [Issues](https://github.com/remotion-dev/remotion/issues/new)
 
 ## License
 
-Note that for some entities a company license is needed. [Read the terms here](https://github.com/remotion-dev/remotion/blob/main/LICENSE.md).
+Note that for some entities a company license is needed.
+[Read the terms here](https://github.com/remotion-dev/remotion/blob/main/LICENSE.md).
