@@ -1,0 +1,25 @@
+/**
+ * Golden Gab — styles globaux.
+ *
+ * ⚠️ Aucun token de la direction artistique ici : couleurs, typographies,
+ * espacements et animations vivent dans `src/config` (source de vérité
+ * exploitable depuis TypeScript). Ce fichier ne contient que des règles
+ * structurelles, volontairement stables.
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+img,
+canvas {
+  display: block;
+}
