@@ -14,6 +14,8 @@ séries de vidéos.
 | [docs/CONTEXT.md](docs/CONTEXT.md) | le projet, sa mission, sa philosophie |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | structure, systèmes internes, où placer un fichier |
 | [docs/RULES.md](docs/RULES.md) | règles à respecter |
+| [docs/ROADMAP.md](docs/ROADMAP.md) | priorités, état du projet et roadmap |
+| [docs/DECISION_LOG.md](docs/DECISION_LOG.md) | mémoire de décisions et changements récents des agents IA |
 | [docs/DESIGN-SYSTEM.md](docs/DESIGN-SYSTEM.md) | direction artistique, tokens, usages |
 
 ## Commandes

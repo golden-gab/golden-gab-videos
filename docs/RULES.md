@@ -164,3 +164,37 @@
 52. **Styleguide à jour** — Toute modification d'un composant Motion est
     vérifiée dans `src/compositions/Styleguide.tsx` (scènes `Motion · …`), en
     incluant au minimum un rendu long, un rendu court et une variante.
+
+## 10. Gestion mémoire projet / context budget
+
+53. **Mémoire de projet obligatoire** — Le repository garde une mémoire de
+    travail compacte dans `docs/ROADMAP.md` et `docs/DECISION_LOG.md`. Ces
+    fichiers sont la source de vérité pour le contexte de production, les
+    priorités, les changements récents et les décisions structurantes.
+54. **Lecture ciblée avant toute tâche** — Avant de commencer une tâche, un
+    agent lit d'abord `docs/ROADMAP.md` puis les entrées récentes de
+    `docs/DECISION_LOG.md`. Il ne doit pas relire l'ensemble du repository pour
+    comprendre le contexte si les fichiers de mémoire suffisent.
+55. **Sortir le contexte du code** — Les décisions, changements de direction,
+    blocages, choix de conception et dépendances d'exécution doivent être
+    consignés dans `docs/DECISION_LOG.md` au lieu d'être redistribués dans des
+    conversations ou des fichiers multiples.
+56. **Compact / précis** — Une entrée du `docs/DECISION_LOG.md` doit être courte,
+    factuelle et directement exploitable pour la suite. Une entrée ne doit pas
+    répéter la documentation technique déjà fiable ; elle doit résumer le
+    changement, son impact et le prochain point de décision.
+57. **Mise à jour de la roadmap** — Si une tâche change la priorité, valide
+    une étape de la roadmap, révèle un blocage majeur ou produit une nouvelle
+    décision structurante, l'agent met à jour `docs/ROADMAP.md` dans les 24h (ou
+    au moment de la validation de la tâche). Les tâches non impactantes ne
+    doivent pas provoquer de churn de documentation.
+58. **Prioriser le signal sur la quantité** — L'agent doit lire le minimum
+    nécessaire pour la tâche, puis aller directement sur les fichiers ciblés.
+    Le but est d'économiser les tokens et le temps sans perdre la compréhension
+    du projet.
+59. **Format d'écriture attendu** — Les entrées de `docs/DECISION_LOG.md` suivent
+    un format compact : `date`, `scope`, `files`, `decision`, `impact`,
+    `validation`, `roadmap`, `next`.
+60. **Règle d'or** — Un agent ne part jamais d'une tâche sans connaître le
+    dernier état du projet et n'achève pas une tâche sans laisser une trace
+    exploitable pour le prochain agent.
