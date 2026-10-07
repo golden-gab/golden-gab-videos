@@ -10,7 +10,9 @@ public/
 │   └── images/
 │       ├── couelur.png            planche de couleurs de la marque (source)
 │       ├── logo couleur1.png      logo source, non détouré (8334×8334)
+│       ├── mascotte.png           asset source de la mascotte (pose « point »)
 │       ├── motif.png              motif / texture bleu nuit
+│       ├── mascot/                (à venir) poses supplémentaires de la mascotte
 │       └── derived/
 │           └── logo.png           logo prêt à l'emploi (détouré, 1600×1024)
 ├── sample-video.mp4               (template d'origine, conservé)
@@ -48,6 +50,13 @@ src/
 │   ├── brand/                     logo, filigrane, fond, motif
 │   ├── common/                    AnimatedAppear, BrandText, SafeArea
 │   ├── intro/                     GoldenGabIntro
+│   ├── mascot/                    MASCOTTE — personnage récurrent
+│   │   ├── GoldenGabMascot.tsx    composant réutilisable
+│   │   ├── poses.ts               registre pose → asset (+ poses prévues)
+│   │   ├── positions.ts           positions, tailles, ancrages (zone sûre)
+│   │   ├── animations.ts          attitudes + micro-mouvements
+│   │   ├── types.ts               MascotPose, MascotAttitude, MascotFacing…
+│   │   └── index.ts               barrel
 │   └── outro/                     GoldenGabOutro
 │
 ├── compositions/                  ASSEMBLAGE DES COMPOSITIONS REMOTION
@@ -102,6 +111,7 @@ interdit** : un composant de `src/components` ne doit jamais importer depuis
 | un helper réutilisable | `src/utils/` |
 | une donnée de contenu d'une série | `src/series/<serie>/data/` |
 | un asset de marque | `public/assets/` (puis `src/config/assets.ts` si réutilisé) |
+| une pose de la mascotte | `public/assets/images/mascot/` + `src/config/assets.ts` + `src/components/mascot/poses.ts` |
 | une composition de démo / QA | `src/compositions/` |
 
 ## Compositions Remotion
@@ -161,6 +171,7 @@ Aucun autre fichier global n'a besoin d'être modifié.
 | --- | --- | --- | --- |
 | `GoldenGabIntro` | ouverture de marque | `title`, `eyebrow?`, `subtitle?`, `variant?` | écran animé |
 | `GoldenGabOutro` | conclusion de marque | `cta?`, `tagline?`, `handle?` | écran animé |
+| `GoldenGabMascot` | mascotte (personnage récurrent) | `pose`, `attitude`, `position`, `size`, `entrance` | image animée |
 | `GoldenGabLogo` | logo de marque | `width`, `style` | image |
 | `GoldenGabWatermark` | filigrane | `position`, `width`, `opacity` | image en coin |
 | `BrandBackground` | fond de marque | `variant`, `motif`, `bottomScrim` | fond plein cadre |
@@ -171,6 +182,71 @@ Aucun autre fichier global n'a besoin d'être modifié.
 
 Ces composants sont **agnostiques de la série** : tout ce qui est spécifique
 passe par des props.
+
+## Système de mascotte
+
+La mascotte est un **personnage global** (toutes séries), au même niveau
+conceptuel que l'intro, l'outro et les captions — pas un décor propre à une
+vidéo. Voir aussi `docs/DESIGN-SYSTEM.md` (section « Mascotte Golden Gab »).
+
+```text
+src/components/mascot/
+├── GoldenGabMascot.tsx   le composant : <GoldenGabMascot />
+├── poses.ts              registre pose → asset (+ poses prévues, sans asset)
+├── positions.ts          positions, tailles, ancrages (zone sûre / captions)
+├── animations.ts         attitudes + micro-mouvements (respirement)
+├── types.ts              MascotPose, MascotAttitude, MascotFacing, MascotSize…
+└── index.ts              barrel (API publique)
+```
+
+**Assets**
+
+- Source unique : `public/assets/images/mascotte.png` (pose `point`,
+  1254×1254, fond transparent) — jamais modifiée.
+- Futures poses : `public/assets/images/mascot/<pose>.png` (dossier réservé).
+- Chemins déclarés dans `mascotAssets` (`src/config/assets.ts`) ; le registre
+  `mascotPoses` (`src/components/mascot/poses.ts`) associe chaque pose à son
+  asset. Les composants ne connaissent aucun chemin en dur (règle 21).
+
+**Ajouter une pose**
+
+1. déposer l'asset dans `public/assets/images/mascot/` ;
+2. l'ajouter dans `mascotAssets` (`src/config/assets.ts`) ;
+3. l'enregistrer dans `mascotPoses` (`src/components/mascot/poses.ts`)
+   (`src`, `label`, `aspectRatio`, `description`) ;
+4. éventuellement ajouter une attitude dans `mascotAttitudes`
+   (`src/components/mascot/animations.ts`).
+
+Le type `MascotPose` est **dérivé du registre** : la nouvelle pose devient
+utilisable immédiatement, sans toucher aux vidéos existantes. Tant qu'une
+pose n'est pas dans le registre, `pose="…"` ne compile pas.
+
+**Utiliser la mascotte dans une vidéo**
+
+```tsx
+import { GoldenGabMascot } from "../../components";
+
+// Dans une <Sequence>, à côté des captions et des titres :
+<GoldenGabMascot
+  pose="point"
+  attitude="confident"
+  position="right"
+  entrance="slide-up"
+/>
+```
+
+`position` est calculé depuis `safeArea` / `captionZone` : la mascotte reste
+dans la zone sûre et hors de la zone captions. La prop `position="flow"`
+l'insère à la place dans le flux du layout parent.
+
+**Pourquoi global et non spécifique à `metiers-de-la-tech` ?**
+
+Le personnage porte l'identité **Golden Gab**, pas le thème d'une série : il
+peut introduire, expliquer ou conclure n'importe quelle vidéo de n'importe
+quelle série, comme `GoldenGabIntro` ou `Captions`. Un composant de
+`src/components` ne doit jamais importer depuis `src/series` (règle 11) :
+seuls des comportements réellement spécifiques à une série pourraient vivre
+dans `src/series/<serie>/components/`.
 
 ## Système de captions
 

@@ -35,3 +35,27 @@ export const brandAssets = {
 } as const;
 
 export type BrandAsset = keyof typeof brandAssets;
+
+/**
+ * Assets de la mascotte Golden Gab.
+ *
+ * La mascotte est un **personnage** : chaque posture possède sa propre entrée.
+ * Ajouter une pose = déposer le PNG puis ajouter une ligne ici **et** dans
+ * `src/components/mascot/poses.ts` (le type `MascotPose` est dérivé du
+ * registre de poses, il suit donc automatiquement).
+ *
+ * Aujourd'hui une seule posture existe. Les futures iront dans
+ * `public/assets/images/mascot/` : l'asset source `mascotte.png` reste intact
+ * à la racine de `public/assets/images/`.
+ */
+export const mascotAssets = {
+  /**
+   * Pose `point` — unique posture réellement disponible : le doigt levé.
+   * Source : `public/assets/images/mascotte.png` (1254×1254, fond transparent).
+   * ⚠️ Asset source de la mascotte : ne pas modifier.
+   */
+  point: staticFile("assets/images/mascotte.png"),
+} as const;
+
+/** Clés d'asset de la mascotte (une par pose réellement disponible). */
+export type MascotAssetKey = keyof typeof mascotAssets;

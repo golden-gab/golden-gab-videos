@@ -6,4 +6,5 @@
 export * from "./brand";
 export * from "./common";
 export * from "./intro";
+export * from "./mascot";
 export * from "./outro";

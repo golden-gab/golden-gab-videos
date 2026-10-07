@@ -21,7 +21,11 @@ export type AppearAnimation =
   | "fade"
   | "pop"
   | "slide-up"
-  | "slide-down";
+  | "slide-down"
+  /** Glisse horizontalement depuis la droite vers la gauche. */
+  | "slide-left"
+  /** Glisse horizontalement depuis la gauche vers la droite. */
+  | "slide-right";
 
 export type EnterProgressOptions = {
   /** Frame courante, relative au début de la séquence. */
@@ -120,6 +124,18 @@ export const getAnimationStyle = (
       return {
         opacity: value,
         translate: `0px ${interpolate(value, [0, 1], [-distance, 0])}px`,
+      };
+    case "slide-left":
+      // Comme `slide-up` : le nom décrit le sens du mouvement. La valeur de
+      // départ est donc du côté droit (x = +distance) et glisse vers la gauche.
+      return {
+        opacity: value,
+        translate: `${interpolate(value, [0, 1], [distance, 0])}px 0px`,
+      };
+    case "slide-right":
+      return {
+        opacity: value,
+        translate: `${interpolate(value, [0, 1], [-distance, 0])}px 0px`,
       };
   }
 };

@@ -221,7 +221,136 @@ Principes visuels :
   écrans de contenu, avec un dégradé sombre (`bottomScrim`) sous les captions ;
 - le corail est un **accent** : il ne doit pas devenir une couleur de fond.
 
-## 8. Incertitudes à trancher
+## 8. Mascotte Golden Gab
+
+### Rôle narratif
+
+La mascotte est le **personnage visuel récurrent** de Golden Gab : elle
+accompagne et explique les concepts, comme un narrateur visuel. Elle intervient
+quand elle sert la narration — introduction, explication à côté d'un élément,
+question / réflexion, surprise, conclusion ou CTA — et **jamais
+automatiquement** dans chaque scène.
+
+Composant : `<GoldenGabMascot />` (`src/components/mascot/`), au même niveau
+conceptuel que `GoldenGabIntro`, `GoldenGabOutro`, `Captions` et les éléments
+de marque. Il est **global** : il appartient à toutes les séries.
+
+```tsx
+<GoldenGabMascot
+  pose="point"
+  attitude="confident"
+  position="right"
+  entrance="slide-up"
+/>
+```
+
+### Apparence (relevé sur l'asset)
+
+Source : `public/assets/images/mascotte.png` (1254×1254, **fond transparent** ;
+contenu utile ≈ x 19 % → 75 %, y 2 % → 98 % : marges transparentes latérales).
+Jeune garçon noir **sans traits du visage** (aucun œil, aucune bouche) :
+
+| Élément | Valeur relevée | Observations |
+| --- | --- | --- |
+| Peau | `#985229` | brun, aplats simples |
+| Casquette | `#1D385E` / `#264267` | bleu nuit |
+| T-shirt | `#1A3457` | bleu nuit, plus foncé que `palette.navy` (`#2D4057`) |
+| Logo sur le t-shirt | blanc | monogramme « gg » + wordmark « golden gab » |
+| Short cargo | `#E4DAC5` | beige / crème |
+| Chaussettes | blanc pur | hautes, au-dessus des chaussures |
+| Chaussures | `#132642` + blanc | bleu nuit, semelles et bandes blanches |
+
+> Ces valeurs sont un **relevé pixel**, pas une charte : les bleus de la
+> mascotte ne sont **pas identiques** à `palette.navy`. Ne pas en déduire un
+> token de couleur (règle 32 de `RULES.md`).
+
+Posture de l'asset : **bras droit levé, index en l'air** — c'est la pose
+`point`. Ce n'est **pas** une posture par défaut obligatoire : la mascotte est
+un personnage censé changer de posture selon le contenu.
+
+### Poses — postures du corps
+
+Une **pose** = une posture associée à **un asset PNG réel**. Une image plate
+ne se déforme pas : changer de posture = changer d'asset.
+
+| Pose | Asset | Statut |
+| --- | --- | --- |
+| `point` | `assets/images/mascotte.png` | ✅ disponible (la seule) |
+
+Poses **prévues**, sans asset → **impossible** à passer au composant (le type
+`MascotPose` les refuse à la compilation) :
+`neutral`, `thinking`, `explaining`, `surprised`, `happy`, `confused`.
+
+Ajouter une pose :
+
+1. déposer `public/assets/images/mascot/<pose>.png` ;
+2. l'ajouter dans `mascotAssets` (`src/config/assets.ts`) ;
+3. l'enregistrer dans `mascotPoses` (`src/components/mascot/poses.ts`).
+
+Le type `MascotPose` suit automatiquement : aucune vidéo existante à modifier.
+
+### Attitudes — rôle narratif
+
+L'**attitude** décrit ce que la mascotte *joue* dans la scène ; elle ne change
+pas sa posture. Elle module l'entrée, l'échelle, l'inclinaison et le
+respirement (`mascotAttitudes`, `src/components/mascot/animations.ts`) :
+
+| Attitude | Entrée | Échelle | Inclinaison | Respirement |
+| --- | --- | --- | --- | --- |
+| `neutral` | `pop` | 1 | 0° | 6 px / 3 s |
+| `confident` | `slide-up` | 1,02 | −2° | 5 px / 3,2 s |
+| `curious` | `fade` | 1 | +3° | 7 px / 2,6 s |
+| `surprised` | `pop` | 1,05 | 0° | 10 px / 1,4 s |
+| `excited` | `slide-up` | 1,03 | −3° | 12 px / 1,2 s |
+| `serious` | `fade` | 0,98 | 0° | 2 px / 4 s |
+| `confused` | `pop` | 1 | +4° | 6 px / 1,8 s |
+| `friendly` | `slide-up` | 1,01 | +2° | 8 px / 2,4 s |
+
+Aucune de ces valeurs ne modifie le dessin : elles sont volontairement
+faibles — la mascotte *vit*, elle ne « cartoonise » pas.
+
+### Placement
+
+- Positions : `top-left`, `left`, `bottom-left`, `center`, `top-right`,
+  `right`, `bottom-right` (ancrages dans la bande sûre) + `flow`
+  (dans le flux du layout parent, ex. colonne `SafeArea`).
+- Tout est calculé depuis `safeArea` et `captionZone`
+  (`src/config/video.ts`) : la bande utile **s'arrête au-dessus de la zone
+  captions**, la mascotte ne masque donc jamais les sous-titres.
+- Tailles : `small` 280 px, `medium` 440 px, `large` 640 px de haut
+  (choix d'ingénierie, base 1080 ; `large` ≈ la moitié de la bande utile).
+- Décalages fins : `offset={{ x, y }}`, en pixels depuis l'ancrage.
+
+Principes :
+
+- ne jamais la placer devant un titre ou une donnée clé ;
+- ne pas la mettre systématiquement au même endroit ni à la même taille ;
+- choisir la position selon la composition de la scène (texte, schéma,
+  captions) ; ancrage par défaut : `right`.
+
+### Animation
+
+- Entrée / sortie : `<AnimatedAppear />`, mêmes courbes que les captions et
+  l'intro/outro (`easings.entrance` / `easings.exit`).
+- `AppearAnimation` (projet) a été étendu avec `slide-left` et `slide-right`,
+  glissements horizontaux utiles pour entrer depuis un côté (disponibles
+  partout, pas seulement pour la mascotte).
+- Micro-mouvement continu (« respirement ») : sinus piloté par
+  `useCurrentFrame()` — jamais de CSS.
+- Courts, fluides, lisibles, légèrement expressifs : pas de rebond
+  cartoonesque ni d'effet générique.
+
+### Règles pour les futurs assets
+
+- L'asset source `mascotte.png` ne se modifie pas (règle 20 de `RULES.md`).
+- Toute pose nouvelle vit dans `public/assets/images/mascot/` ; une
+  déclinaison technique (recadrage, optimisation) dans `derived/`.
+- Ne jamais déclarer une pose sans asset réel (règle 39).
+- Ne pas générer une pose par IA « pour faire joli » : la posture doit être
+  dessinée dans la DA de la marque (mêmes couleurs, même style, même logo).
+- Le styleguide ne rend que les poses réelles : aucun faux aperçu.
+
+## 9. Incertitudes à trancher
 
 Ces points **ne sont pas documentés par les assets**. Ils sont centralisés dans
 le code pour être modifiés en un seul endroit, mais restent à valider avec la

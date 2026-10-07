@@ -31,8 +31,31 @@ pour que chaque nouvelle vidéo soit un assemblage de composants déjà validés
 | --- | --- |
 | Vidéos verticales TikTok | format cible |
 | Captions / sous-titres animés | fonctionnalité centrale (réutilisée partout) |
+| Mascotte (personnage visuel récurrent) | système global `<GoldenGabMascot />` (`src/components/mascot/`) |
 | Voix off / transcription | pipeline Whisper.cpp fourni par le template |
 | Contenu parlé, article, chiffres clés | à décliner par série |
+
+## Mascotte Golden Gab
+
+Golden Gab possède une **mascotte officielle** : un jeune garçon noir sans
+traits du visage, casquette et t-shirt bleu nuit au logo Golden Gab, short
+cargo beige, chaussettes blanches et chaussures bleu nuit. Elle est utilisée
+comme **personnage visuel récurrent** dans les vidéos.
+
+> La mascotte Golden Gab est le personnage visuel qui accompagne et explique
+> les concepts dans les vidéos. Elle peut changer de pose, de position et
+> d'attitude selon la narration, **mais uniquement lorsqu'un asset
+> correspondant existe**.
+
+- Composant global : `<GoldenGabMascot />` (`src/components/mascot/`), au même
+  niveau conceptuel que l'intro, l'outro et les captions.
+- Une seule pose existe aujourd'hui (`point`, l'asset source
+  `public/assets/images/mascotte.png`) ; d'autres sont prévues mais sans asset
+  et restent inutilisables tant qu'elles ne sont pas dans le registre.
+- Elle sert la narration : à n'utiliser que lorsqu'elle apporte quelque chose
+  (introduction, explication, question, surprise, conclusion).
+- Détails : `docs/DESIGN-SYSTEM.md` (section « Mascotte Golden Gab ») et
+  `docs/ARCHITECTURE.md` (section « Système de mascotte »).
 
 ## Organisation par séries
 

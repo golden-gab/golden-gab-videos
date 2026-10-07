@@ -98,3 +98,32 @@
 35. Le rendu du `Styleguide` (`npx remotion still Styleguide out/frame.png
    --frame=<n>`) doit rester correct après un changement de design system.
 36. Ne pas casser la composition `CaptionedVideo` du template.
+
+## 8. Mascotte Golden Gab
+
+37. **Réutilisation** — Toujours passer par `<GoldenGabMascot />`
+    (`src/components/mascot/`) plutôt que d'importer `mascotte.png`
+    directement dans une vidéo. Le composant gère zone sûre, placement et
+    animations.
+38. **Assets** — Ne jamais modifier l'asset source
+    `public/assets/images/mascotte.png` sans raison. Une variante se crée
+    dans `public/assets/images/derived/` ou `public/assets/images/mascot/`.
+39. **Poses** — Ne jamais utiliser une pose qui ne possède pas d'asset réel.
+    Une pose n'existe que si elle est dans le registre `mascotPoses`
+    (`src/components/mascot/poses.ts`) : `pose="…"` ne compile pas sinon.
+    Ne pas générer de pose par IA pour simuler une posture.
+40. **Narration** — La mascotte doit servir la narration et non simplement
+    remplir l'espace : elle n'est pas présente « par défaut » dans chaque
+    scène, seulement quand elle accompagne l'explication.
+41. **Composition** — La mascotte ne doit pas masquer les informations
+    importantes (titres, chiffres, captions) : choisir la position et la
+    taille selon la scène, jamais systématiquement le même ancrage ni la
+    même échelle.
+42. **Cohérence** — Les animations de la mascotte doivent rester cohérentes
+    avec la direction artistique Golden Gab : courtes, fluides, sans effet
+    cartoonesque (entrées via `AnimatedAppear`, micro-mouvements via
+    `src/components/mascot/animations.ts`).
+43. **Séries** — La mascotte appartient au système global Golden Gab
+    (`src/components/mascot/`) : ne pas la placer dans
+    `src/series/metiers-de-la-tech/`, sauf pour des comportements ou
+    composants strictement spécifiques à cette série.

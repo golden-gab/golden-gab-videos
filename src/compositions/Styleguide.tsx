@@ -2,7 +2,8 @@
  * Composition `GoldenGab / Styleguide`.
  *
  * Outil de QA **et documentation vivante** de la direction artistique :
- * palette, typographies, logo, motif, styles de captions, intro et outro.
+ * palette, typographies, logo, motif, mascotte, styles de captions,
+ * intro et outro.
  *
  * Ce n'est pas un contenu de marque : elle n'est jamais montée dans une
  * série. Elle sert à vérifier que le socle visuel fonctionne après chaque
@@ -19,16 +20,37 @@ import { GoldenGabLogo } from "../components/brand/GoldenGabLogo";
 import { GoldenGabWatermark } from "../components/brand/GoldenGabWatermark";
 import { BrandText } from "../components/common/BrandText";
 import { SafeArea } from "../components/common/SafeArea";
+import { mascotAttitudes } from "../components/mascot/animations";
+import { GoldenGabMascot } from "../components/mascot/GoldenGabMascot";
+import { mascotSizes, type MascotPosition } from "../components/mascot/positions";
+import {
+  type MascotAttitude,
+  type MascotFacing,
+  type MascotSize,
+} from "../components/mascot/types";
 import { GoldenGabIntro } from "../components/intro/GoldenGabIntro";
 import { GoldenGabOutro } from "../components/outro/GoldenGabOutro";
-import { colors, palette, radius, spacing, videoFormat } from "../config";
+import {
+  captionZone,
+  colors,
+  palette,
+  radius,
+  safeArea,
+  spacing,
+  videoFormat,
+} from "../config";
 import { type PaletteColor } from "../config/colors";
 import { textRoles, type TextRole } from "../config/typography";
+import { type AppearAnimation } from "../utils/animation";
+import { withAlpha } from "../utils/color";
 import { secondsToFrames } from "../utils/time";
 
 const PALETTE_SECONDS = 6;
 const TYPOGRAPHY_SECONDS = 6;
 const BRAND_SECONDS = 5;
+const MASCOT_SECONDS = 6;
+const MASCOT_POSITIONS_SECONDS = 7;
+const MASCOT_SCENE_SECONDS = 8;
 const CAPTIONS_SECONDS = 12;
 const INTRO_SECONDS = 6;
 const OUTRO_SECONDS = 6;
@@ -38,6 +60,9 @@ export const STYLEGUIDE_DURATION_IN_SECONDS =
   PALETTE_SECONDS +
   TYPOGRAPHY_SECONDS +
   BRAND_SECONDS +
+  MASCOT_SECONDS +
+  MASCOT_POSITIONS_SECONDS +
+  MASCOT_SCENE_SECONDS +
   CAPTIONS_SECONDS +
   INTRO_SECONDS +
   OUTRO_SECONDS;
@@ -67,6 +92,55 @@ const captionDemos: readonly {
   { style: "default", position: "bottom" },
   { style: "card", position: "bottom" },
   { style: "subtle", position: "center" },
+];
+
+/** Tailles préréglées de la mascotte + miroir, vérifiées une par une. */
+const mascotSizeDemos: readonly {
+  readonly size: MascotSize;
+  readonly facing: MascotFacing;
+  readonly label: string;
+}[] = [
+  { size: "small", facing: "left", label: `small · ${mascotSizes.small} px` },
+  { size: "medium", facing: "left", label: `medium · ${mascotSizes.medium} px` },
+  { size: "large", facing: "left", label: `large · ${mascotSizes.large} px` },
+  { size: "medium", facing: "right", label: "miroir · facing right" },
+];
+
+/** Une position par ancrage, chacune avec l'entrée qui lui est la plus naturelle. */
+const mascotPositionDemos: readonly {
+  readonly position: MascotPosition;
+  readonly entrance: AppearAnimation;
+}[] = [
+  { position: "top-left", entrance: "slide-right" },
+  { position: "left", entrance: "fade" },
+  { position: "bottom-left", entrance: "slide-up" },
+  { position: "center", entrance: "none" },
+  { position: "bottom-right", entrance: "slide-down" },
+  { position: "right", entrance: "slide-left" },
+  { position: "top-right", entrance: "pop" },
+];
+
+/** Toutes les attitudes disponibles, dans l'ordre du registre. */
+const mascotAttitudeDemos: readonly MascotAttitude[] = [
+  "neutral",
+  "confident",
+  "curious",
+  "surprised",
+  "excited",
+  "serious",
+  "confused",
+  "friendly",
+];
+
+/** Captions de la scène « narration » : la mascotte ne doit pas les masquer. */
+const mascotSceneSegments: readonly CaptionSegment[] = [
+  { text: "La mascotte", startMs: 150, endMs: 1150 },
+  { text: "explique", startMs: 1250, endMs: 2350, emphasis: ["explique"] },
+  { text: "le concept", startMs: 2450, endMs: 3550 },
+  { text: "à côté des captions", startMs: 3650, endMs: 4750 },
+  { text: "sans les masquer", startMs: 4850, endMs: 5950 },
+  { text: "et selon l'attitude", startMs: 6050, endMs: 7150 },
+  { text: "du moment", startMs: 7250, endMs: 7900 },
 ];
 
 const PaletteScene: React.FC = () => {
@@ -194,6 +268,168 @@ const BrandScene: React.FC = () => {
   );
 };
 
+/**
+ * Scène « Mascotte » : tailles préréglées, miroir, interaction avec le logo.
+ * Une démo par sous-séquence (montage → l'entrée se rejoue à chaque fois).
+ * Seules les poses disposant d'un asset réel sont rendues.
+ */
+const MascotScene: React.FC = () => {
+  const { fps } = useVideoConfig();
+  const secondsPerDemo = MASCOT_SECONDS / mascotSizeDemos.length;
+
+  return (
+    <AbsoluteFill>
+      {/* Fond clair : la tenue bleu nuit de la mascotte se détache sur la crème. */}
+      <BrandBackground variant="light" motif motifOpacity={0.35} />
+      <Series>
+        {mascotSizeDemos.map((demo) => (
+          <Series.Sequence
+            key={demo.label}
+            name={`Mascotte · ${demo.label}`}
+            durationInFrames={secondsToFrames(secondsPerDemo, fps)}
+            premountFor={fps}
+          >
+            <SafeArea>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: spacing.md,
+                  width: "100%",
+                }}
+              >
+                <GoldenGabLogo name="Mascotte logo" width={300} />
+                <GoldenGabMascot
+                  position="flow"
+                  size={demo.size}
+                  facing={demo.facing}
+                  attitude="confident"
+                />
+                <BrandText role="label" align="center" color={colors.ink}>
+                  Mascotte · {demo.label}
+                </BrandText>
+                <BrandText role="label" align="center" color={colors.accent}>
+                  Poses prévues (sans asset) : neutral · thinking · explaining ·
+                  surprised · happy · confused
+                </BrandText>
+              </div>
+            </SafeArea>
+          </Series.Sequence>
+        ))}
+      </Series>
+    </AbsoluteFill>
+  );
+};
+
+/**
+ * Scène « Mascotte · positions » : un ancrage par position, chaque entrée
+ * associée à la direction la plus naturelle. Les repères en pointillés
+ * permettent de vérifier que la zone sûre est respectée et que la
+ * mascotte reste hors de la zone captions.
+ */
+const MascotPositionsScene: React.FC = () => {
+  const { fps, width } = useVideoConfig();
+  const secondsPerDemo = MASCOT_POSITIONS_SECONDS / mascotPositionDemos.length;
+  const captionZoneWidth = width * captionZone.maxWidthRatio;
+
+  return (
+    <AbsoluteFill>
+      <BrandBackground variant="dark" motif motifOpacity={0.3} />
+      {/* Repères QA (pas du contenu) : zone sûre en blanc, zone captions en corail. */}
+      <div
+        style={{
+          position: "absolute",
+          top: safeArea.top,
+          right: safeArea.right,
+          bottom: safeArea.bottom,
+          left: safeArea.left,
+          border: `2px dashed ${withAlpha(colors.captionText, 0.25)}`,
+          borderRadius: radius.md,
+          pointerEvents: "none",
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          left: (width - captionZoneWidth) / 2,
+          width: captionZoneWidth,
+          bottom: captionZone.bottom,
+          height: captionZone.height,
+          border: `2px dashed ${withAlpha(colors.captionHighlight, 0.5)}`,
+          borderRadius: radius.md,
+          pointerEvents: "none",
+        }}
+      />
+      <SafeArea inset={{ top: spacing.xxl }} justify="flex-start">
+        <BrandText role="label" align="center" color={colors.captionText}>
+          Positions — zone sûre (blanc) · zone captions (corail)
+        </BrandText>
+      </SafeArea>
+      <Series>
+        {mascotPositionDemos.map((demo) => (
+          <Series.Sequence
+            key={demo.position}
+            name={`Mascotte · ${demo.position}`}
+            durationInFrames={secondsToFrames(secondsPerDemo, fps)}
+            premountFor={fps}
+          >
+            <GoldenGabMascot
+              position={demo.position}
+              entrance={demo.entrance}
+              size="medium"
+              attitude="neutral"
+            />
+            <SafeArea justify="flex-end">
+              <BrandText role="label" align="center" color={colors.captionText}>
+                {demo.position} · entrée « {demo.entrance} »
+              </BrandText>
+            </SafeArea>
+          </Series.Sequence>
+        ))}
+      </Series>
+    </AbsoluteFill>
+  );
+};
+
+/**
+ * Scène « Mascotte · narration » : la mascotte joue les attitudes, à côté
+ * de captions réelles — elle ne doit ni les masquer ni passer devant.
+ */
+const MascotNarrationScene: React.FC = () => {
+  const { fps } = useVideoConfig();
+  const secondsPerAttitude = MASCOT_SCENE_SECONDS / mascotAttitudeDemos.length;
+
+  return (
+    <AbsoluteFill>
+      <BrandBackground variant="dark" bottomScrim />
+      <Series>
+        {mascotAttitudeDemos.map((attitude) => (
+          <Series.Sequence
+            key={attitude}
+            name={`Mascotte · ${attitude}`}
+            durationInFrames={secondsToFrames(secondsPerAttitude, fps)}
+            premountFor={fps}
+          >
+            <GoldenGabMascot
+              attitude={attitude}
+              position="right"
+              size="medium"
+            />
+            <SafeArea inset={{ top: spacing.xxl }} justify="flex-start">
+              <BrandText role="label" align="center" color={colors.captionText}>
+                attitude « {attitude} » · entrée «{" "}
+                {mascotAttitudes[attitude].entrance} »
+              </BrandText>
+            </SafeArea>
+          </Series.Sequence>
+        ))}
+      </Series>
+      <Captions segments={mascotSceneSegments} style="default" />
+    </AbsoluteFill>
+  );
+};
+
 const CaptionsScene: React.FC = () => {
   const { fps } = useVideoConfig();
   const secondsPerStyle = CAPTIONS_SECONDS / captionDemos.length;
@@ -252,6 +488,27 @@ export const Styleguide: React.FC = () => {
           premountFor={fps}
         >
           <BrandScene />
+        </Series.Sequence>
+        <Series.Sequence
+          name="Mascotte"
+          durationInFrames={secondsToFrames(MASCOT_SECONDS, fps)}
+          premountFor={fps}
+        >
+          <MascotScene />
+        </Series.Sequence>
+        <Series.Sequence
+          name="Mascotte · positions"
+          durationInFrames={secondsToFrames(MASCOT_POSITIONS_SECONDS, fps)}
+          premountFor={fps}
+        >
+          <MascotPositionsScene />
+        </Series.Sequence>
+        <Series.Sequence
+          name="Mascotte · narration"
+          durationInFrames={secondsToFrames(MASCOT_SCENE_SECONDS, fps)}
+          premountFor={fps}
+        >
+          <MascotNarrationScene />
         </Series.Sequence>
         <Series.Sequence
           name="Captions"
