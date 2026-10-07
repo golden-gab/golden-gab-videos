@@ -78,10 +78,20 @@ C'est un choix mesuré au rendu, pas une valeur de charte.
 d'affichage très condensée ; elle est excellente en grand mais peu lisible en
 petit pour des libellés, des chiffres ou des mentions. **Inter** est utilisée
 comme police complémentaire pour ces cas (rôles `body` et `label`), chargée via
-`@remotion/google-fonts/Inter` (400/500/600/700).
+`@remotion/google-fonts/Inter` (400/500/600/700).Si la marque fournit plus tard une police de texte, il suffit de changer `fontFamilies.body` dans `src/config/typography.ts`.
 
-Si la marque fournit plus tard une police de texte, il suffit de changer
-`fontFamilies.body` dans `src/config/typography.ts`.
+### Code affiché — JetBrains Mono
+
+**Décision** (pas une donnée de marque) : les extraits de code
+(`CodeShowcase`, `Comparison.diff`, `BeforeAfter`) nécessitent une police à
+chasse fixe, sinon les lignes ondulent et l'alignement disparaît. **JetBrains
+Mono** est chargée via `@remotion/google-fonts/JetBrainsMono` (400/500/700) et
+exposée par `fontFamilies.mono` ; c'est la seule police utilisée par le rôle
+`code` (rôle `textRoles.code`, taille `typeScale.code` = 40 px).
+
+Elle n'est jamais déclarée dans un composant : tout passe par `textRoles.code`
+ou `getTextStyle("code")`. Changer de police de code = changer
+`fontFamilies.mono` dans `src/config/typography.ts`.
 
 ### Hiérarchie typographique
 
@@ -96,6 +106,7 @@ Si la marque fournit plus tard une police de texte, il suffit de changer
 | `h3` | 72 | Darker Grotesque | 600 | titre de carte |
 | `caption` | 96 | Darker Grotesque | 900 | caption (taille max, réduite automatiquement) |
 | `body` | 48 | Inter | 400 | texte courant |
+| `code` | 40 | JetBrains Mono | 400 | code affiché (`CodeShowcase`, diffs) |
 | `label` | 34 | Inter | 600 | libellés, mentions (capitales, lettrage espacé) |
 
 Repères de lisibilité retenus : titre principal ≥ 84 px et texte secondaire
@@ -190,6 +201,7 @@ Principes :
 | Durées | `0.12 / 0.25 / 0.4 / 0.8 s` | `durations` |
 | Animation par défaut | `pop` (échelle 0,82 → 1 + fondu) | `defaultAppearAnimation` |
 | Décalage distant (escalier) | 0,15–0,2 s entre deux blocs | `delaySeconds` |
+| Stagger par défaut de la bibliothèque Motion | `0,15 s` | `defaultStagger` |
 
 Principes :
 
@@ -350,7 +362,90 @@ Principes :
   dessinée dans la DA de la marque (mêmes couleurs, même style, même logo).
 - Le styleguide ne rend que les poses réelles : aucun faux aperçu.
 
-## 9. Incertitudes à trancher
+## 9. Bibliothèque Motion — composants réutilisables
+
+Les 13 composants de `src/components/motion` (titre, flux, étapes, code,
+comparaison, callout, carte, liste, chiffre, avant/après, schéma, mascotte)
+reprend les tokens ci-dessus **sans en créer aucun**. Trois notions suffisent à
+faire cohabiter toutes les scènes.
+
+### 9.1 Tons et accents
+
+| Concept | Valeurs autorisées | Correspondance |
+| --- | --- | --- |
+| `MotionTone` | `light` · `dark` | surface par défaut : crème/blanc, ou bleu nuit |
+| `MotionAccent` | `accent` · `secondary` · `neutral` · `ink` | corail, bleu nuit, rose gris, charbon |
+
+- **Rien d'autre n'est autorisé.** Les composants ne peuvent pas recevoir de
+  couleur arbitraire : la palette reste celle de `src/config/colors.ts` (§1).
+- `tone` règle **tout à la fois** : fond, contour, texte et texte secondaire
+  (`getMotionSurface()`). Un composant sur `tone="dark"` s'auto-contraste — il
+  reste lisible posé sur n'importe quelle scène.
+- `accent` ne sert qu'aux éléments de mise en avant : pastille, puce, barre,
+  trait.
+
+### 9.2 Surfaces et motifs communs
+
+| Motif | Réalisation | Utilisé par |
+| --- | --- | --- |
+| Carte encadrée | `getMotionCardStyle()` : fond du ton, contour 2 px, `radius.lg` (40), padding `spacing.lg` | `InfoCard`, `Callout`, `Comparison`, `BeforeAfter`, `FlowDiagram`, `NodeGraph` |
+| Barre / liseré d'accent | couleur `accent`, `strokeWidths.medium` (8 px) | `InfoCard`, `NodeGraph`, `SectionTitle` |
+| Pastille (badge, numéro) | `radius.pill` ou `radius.md`, fond `withAlpha(accent, 0.16)` | `InfoCard`, `FlowDiagram`, `ProcessSteps`, `AnimatedList` |
+| Trait animé | `<Connector />`, `easings.entrance`, flèche en triangle (option `head: false` pour une simple liaison) | `FlowDiagram`, `ProcessSteps`, `BeforeAfter` |
+| Panneau de code | fond `colors.surfaceDark` + contour crème 20 % + entête `withAlpha(cream, 8 %)` | `CodeShowcase`, `Comparison.diff`, `BeforeAfter` |
+
+Le panneau de code est **toujours sombre**, quelle que soit la scène : c'est un
+choix de lisibilité, la coloration (`codeTokenColors`) étant calibrée sur ce
+fond. Elle n'utilise que des teintes de la palette : corail (mots-clés,
+nombres), rose gris (chaînes, types), crème (texte, ponctuation), crème à
+50 % (commentaires).
+
+### 9.3 Rythme — la signature Motion
+
+- **Escalier** : tout élément d'une série (node, étape, ligne de code, item)
+  apparaît avec `getStaggerDelay(index)`, calé sur `defaultStagger` = **0,15 s**
+  (`src/config/animation.ts`). Les connexions suivent à mi-parcours
+  (`getConnectorDelay()`).
+- **Entrées** : uniquement via `<AnimatedAppear />` — `pop` par défaut,
+  `slide-up` pour les blocs de contenu, `fade` pour les traits. Mêmes courbes
+  que les captions et l'intro/outro.
+- **Durées** : `0,12 / 0,25 / 0,4 / 0,8 s` (§6). Rien ne dépasse : une vidéo
+  verticale doit rester lisible, pas spectaculaire.
+- **Tout est piloté par le temps** (`useCurrentFrame()`), jamais par du CSS
+  (règle 26).
+
+### 9.4 Variantes retenues
+
+Une variante = un besoin visuel réel, jamais un numéro de version :
+
+```text
+HeroTitle      default · centered · compact
+SectionTitle   default · accent · numbered
+FlowDiagram    horizontal · vertical
+ProcessSteps   vertical · horizontal
+CodeShowcase   default · highlight · diff     (révélation : block · line · typewriter)
+Comparison     columns · stack
+Callout        info · success · warning · important
+AnimatedList   check · number · bullet · icon
+Stat           compact · default · hero
+```
+
+`InfoCard`, `BeforeAfter`, `NodeGraph` et `MascotScene` n'ont **aucune**
+variante : leurs props suffisent.
+
+### 9.5 Principes de composition
+
+- Les composants s'insèrent dans une `<SafeArea>` : ils ne créent **pas** leur
+  propre plein-cadre (sauf `MascotScene`, qui est une scène).
+- Aucun composant ne définit sa position à l'écran : c'est le layout de la
+  scène qui décide (colonne centrée, demi-largeur à côté de la mascotte…).
+- Aucun composant ne s'auto-place au-dessus des captions ; `MascotScene` réserve
+  la zone captions par défaut (`avoidCaptions`).
+- Longueurs : les textes doivent pouvoir se casser sans déborder (les blocs
+  passent par `width: 100%` + `minWidth: 0`), et `CodeShowcase` expose
+  `maxLines` pour les extraits longs.
+
+## 10. Incertitudes à trancher
 
 Ces points **ne sont pas documentés par les assets**. Ils sont centralisés dans
 le code pour être modifiés en un seul endroit, mais restent à valider avec la

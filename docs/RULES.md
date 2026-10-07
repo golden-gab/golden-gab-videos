@@ -127,3 +127,40 @@
     (`src/components/mascot/`) : ne pas la placer dans
     `src/series/metiers-de-la-tech/`, sauf pour des comportements ou
     composants strictement spécifiques à cette série.
+
+## 9. Bibliothèque Motion (`src/components/motion`)
+
+44. **Réutiliser avant de créer** — Avant d'écrire un composant, chercher dans
+    la bibliothèque Motion (`src/components/motion`), `src/components/common`
+    et `src/captions`. Si un composant existant peut être paramétré pour le
+    besoin, **améliorer l'existant** plutôt que d'en créer un nouveau (une prop
+    ou un preset plutôt qu'un composant).
+45. **Ne pas dupliquer les animations** — Les entrées passent par
+    `<AnimatedAppear />`, `src/utils/animation.ts` et `getStaggerDelay()`
+    (`shared/stagger.ts`) ; les traits animés par `Connector` ; les courbes et
+    durées viennent de `src/config/animation.ts`. Réécrire `interpolate()`
+    avec les mêmes courbes dans un composant = signature motion à deux vitesses.
+46. **Pas de composant pour une seule vidéo** — Un composant Motion doit servir
+    au moins plusieurs scènes / plusieurs séries. Si une structure ne sert
+    qu'une fois, elle vit dans la vidéo elle-même (règle 12).
+47. **Ne jamais créer de palette par composant** — Les composants Motion ne
+    choisissent que parmi `MotionTone` (`light`/`dark`) et `MotionAccent`
+    (`accent`/`secondary`/`neutral`/`ink`), via `shared/tokens.ts`. Aucune
+    autre hexadécimale n'est autorisée (règle 1 renforcée).
+48. **2 à 4 variantes maximum** — Une variante doit répondre à un besoin visuel
+    réel et différent. Ni `variant1…variant17`, ni une variante « au cas où ».
+    Un composant sans variante est tout à fait acceptable.
+49. **API orientée données** — Préférer `<FlowDiagram nodes={…} />` à un API
+    par `children` JSX, pour qu'un agent IA puisse générer une scène depuis un
+    script. Le JSX libre n'est réservé qu'à `content` de `MascotScene` et aux
+    composants réellement composites.
+50. **Toujours dans `src/components/motion/`** — Un composant Motion ne va
+    jamais dans `src/series/<serie>/components/` (règle 11). L'inverse est
+    autorisé : une série peut importer la bibliothèque Motion.
+51. **Attention aux valeurs sans unité** — React interprète `lineHeight: 48`
+    comme un **ratio** (48 × la taille de police) et non comme 48 px. Toute
+    valeur de ce type doit être un ratio (`1.4`) ou une chaîne (`"48px"`), ou
+    venir de `getTextStyle()`.
+52. **Styleguide à jour** — Toute modification d'un composant Motion est
+    vérifiée dans `src/compositions/Styleguide.tsx` (scènes `Motion · …`), en
+    incluant au minimum un rendu long, un rendu court et une variante.

@@ -57,6 +57,22 @@ src/
 │   │   ├── animations.ts          attitudes + micro-mouvements
 │   │   ├── types.ts               MascotPose, MascotAttitude, MascotFacing…
 │   │   └── index.ts               barrel
+│   ├── motion/                    BIBLIOTHÈQUE MOTION (structures visuelles)
+│   │   ├── index.ts               barrel public — importer depuis ici
+│   │   ├── HeroTitle.tsx          titre principal / accroche
+│   │   ├── SectionTitle.tsx       titre secondaire de section
+│   │   ├── FlowDiagram.tsx        circulation A → B → C
+│   │   ├── ProcessSteps.tsx       séquence d'actions numérotées
+│   │   ├── CodeShowcase.tsx       extrait de code animé
+│   │   ├── Comparison.tsx         deux approches côte à côte
+│   │   ├── Callout.tsx            message fort (info/success/warning/important)
+│   │   ├── InfoCard.tsx           carte d'information
+│   │   ├── AnimatedList.tsx       liste à apparition séquentielle
+│   │   ├── Stat.tsx               chiffre clé (option compteur)
+│   │   ├── BeforeAfter.tsx        transformation avant → après
+│   │   ├── NodeGraph.tsx          petit schéma de blocs connectés
+│   │   ├── MascotScene.tsx        contenu + mascotte
+│   │   └── shared/                primitives internes (tokens, stagger, …)
 │   └── outro/                     GoldenGabOutro
 │
 ├── compositions/                  ASSEMBLAGE DES COMPOSITIONS REMOTION
@@ -105,6 +121,7 @@ interdit** : un composant de `src/components` ne doit jamais importer depuis
 | une police ou une taille de texte | `src/config/typography.ts` |
 | un preset de captions | `src/captions/styles.ts` |
 | un composant utilisé par plusieurs vidéos | `src/components/<famille>/` |
+| une structure visuelle réutilisable (titres, flux, code…) | `src/components/motion/` |
 | un composant propre à une série | `src/series/<serie>/components/` |
 | une nouvelle vidéo | `src/series/<serie>/videos/` + enregistrement dans `src/series/<serie>/index.tsx` |
 | une nouvelle série | `src/series/<serie>/` + une ligne dans `src/series/index.ts` |
@@ -182,6 +199,103 @@ Aucun autre fichier global n'a besoin d'être modifié.
 
 Ces composants sont **agnostiques de la série** : tout ce qui est spécifique
 passe par des props.
+
+## Bibliothèque Motion — `src/components/motion`
+
+Un socle de **structures visuelles récurrentes** des vidéos éducatives /
+techniques. Un composant Motion représente une *structure* (`FlowDiagram`),
+jamais une scène d'une vidéo donnée (`DataEngineerExplanation`).
+
+### Deux niveaux : primitives et composants
+
+| Niveau | Emplacement | Rôle | Exemple |
+| --- | --- | --- | --- |
+| **Primitives partagées** | `src/components/motion/shared/` | tokens, rythme, rendu (pas de contenu) | `Connector`, `CodeBlock`, `getStaggerDelay()` |
+| **Composants Motion** | `src/components/motion/*.tsx` | une structure visuelle complète, animée | `FlowDiagram`, `CodeShowcase` |
+| **Systèmes transverses** | `src/captions/`, `src/components/mascot/`, `intro/`, `outro/`, `brand/` | déjà existants | `<Captions>`, `<GoldenGabMascot>` |
+
+Les primitives **ne s'affichent jamais seules** : elles ne donnent ni fond ni
+contenu. Les composants Motion s'appuient dessus (sinon, un doublon reviendrait
+à dupliquer une animation — règle 45).
+
+### Contenu de `shared/`
+
+| Fichier | Rôle |
+| --- | --- |
+| `tokens.ts` | `MotionTone` (light/dark), `MotionAccent` (alias de la palette uniquement), `getMotionSurface()`, `getMotionCardStyle()` — la seule source de couleurs de la bibliothèque |
+| `stagger.ts` | `getStaggerDelay()` / `getStaggerDelays()` / `getConnectorDelay()` : le rythme d'escalier, calé sur `defaultStagger` |
+| `highlight.ts` | tokeniseur de code minimal (TS/JS/JSON/bash/python) + `codeTokenColors` (palette seule) |
+| `CodeBlock.tsx` | rendu d'un extrait : coloration, numéros, lignes mises en évidence, diff, révélation ligne par ligne ou machine à écrire |
+| `Connector.tsx` | trait animé avec flèche (option `head`), utilisé par `FlowDiagram`, `ProcessSteps`, `BeforeAfter` |
+| `index.ts` | barrel : `import { … } from "../shared"` |
+
+### Responsabilité de chaque composant
+
+| Composant | Répond à | Entrées principales | Variantes |
+| --- | --- | --- | --- |
+| `HeroTitle` | « quel est le sujet ? » | `title`, `eyebrow?`, `emphasis?`, `subtitle?` | `default` · `centered` · `compact` |
+| `SectionTitle` | « on change de partie » | `title`, `number?`, `eyebrow?` | `default` · `accent` · `numbered` |
+| `FlowDiagram` | « par où ça passe ? » | `nodes[]`, `direction` | `horizontal` · `vertical` |
+| `ProcessSteps` | « dans quel ordre ? » | `steps[]`, `activeStep?`, `orientation` | `vertical` · `horizontal` |
+| `CodeShowcase` | « montre le code » | `code`, `language?`, `highlightLines?` | `default` · `highlight` · `diff` |
+| `Comparison` | « quelles sont les deux options ? » | `left{}`, `right{}` | `columns` · `stack` |
+| `Callout` | « retiens ça » | `text`, `title?`, `icon?` | `info` · `success` · `warning` · `important` |
+| `InfoCard` | « c'est quoi, en une carte ? » | `title`, `description?`, `icon?`, `badge?` | — |
+| `AnimatedList` | « liste à faire apparaître » | `items[]`, `marker?`, `title?` | `check` · `number` · `bullet` · `icon` |
+| `Stat` | « un chiffre qui compte » | `value`, `suffix?`, `label?`, `count?` | `compact` · `default` · `hero` |
+| `BeforeAfter` | « qu'est-ce qui a changé ? » | `before{}`, `after{}` | — |
+| `NodeGraph` | « comment le système est-il branché ? » | `nodes[]`, `edges[]` | — |
+| `MascotScene` | « explique à côté » | `content?`, `mascot{}` | — |
+
+**`FlowDiagram` ≠ `ProcessSteps`** : le premier montre une *relation*
+(circulation, fan-out), le second une *séquence d'actions* (étapes numérotées,
+étape active). **`Comparison` ≠ `BeforeAfter`** : options parallèles vs états
+successifs reliés par une flèche.
+
+### Règles d'import
+
+```ts
+// ✅ depuis le barrel de la famille
+import { HeroTitle, FlowDiagram, CodeShowcase } from "../../components/motion";
+
+// ✅ une extension précise, quand on a besoin d'un type
+import type { FlowNode } from "../../components/motion";
+
+// ⚠️ jamais depuis une série
+import { FlowDiagram } from "../series/metiers-de-la-tech/…"; // INTERDIT
+```
+
+- `src/components/motion` est **global** : il ne doit jamais importer depuis
+  `src/series` (règle 11) ni connaître un contenu de série.
+- Les primitives `shared/` sont internes : les importer via le barrel de la
+  famille, pas chemin par chemin depuis un composant d'une autre famille.
+
+### Styleguide = galerie
+
+`src/compositions/Styleguide.tsx` contient une scène par composant Motion
+(`Motion · HeroTitle`, `Motion · FlowDiagram`…). Chaque scène montre le rendu
+principal, au moins une variante et du contenu réaliste générique. C'est la
+**galerie visuelle** à consulter avant de modifier un composant.
+
+### Ajouter un composant Motion
+
+1. **Vérifier qu'il n'existe pas déjà** (`src/components/motion`,
+   `src/components/common`, `src/captions`) — si un doublon paraît possible,
+   améliorer l'existant plutôt que d'ajouter (règle 44).
+2. Créer `src/components/motion/MonComposant.tsx` : un fichier = un composant,
+   en `React.FC<Props>` avec un type `Props` en propriétés `readonly`.
+3. Seules des **données** entrent : pas de JSX d'usage en `children` quand une
+   structure (`nodes[]`, `steps[]`, `items[]`) suffit.
+4. S'appuyer sur `shared/` : `MotionTone`/`MotionAccent` pour les couleurs,
+   `getMotionCardStyle()` pour la surface, `getStaggerDelay()` +
+   `<AnimatedAppear />` pour l'entrée, `Connector` pour les traits.
+5. **2 à 4 variantes maximum**, et seulement si le besoin est réel.
+6. Exporter depuis `src/components/motion/index.ts` (+ types).
+7. Ajouter une scène dans `src/compositions/Styleguide.tsx` et ajouter sa
+   durée à `STYLEGUIDE_DURATION_IN_SECONDS`.
+8. Documenter : `docs/ARCHITECTURE.md` (ce fichier), `docs/RULES.md` et
+   `docs/DESIGN-SYSTEM.md` (API + principes visuels/motion).
+9. `npm run lint` puis `npx remotion compositions` et un rendu du styleguide.
 
 ## Système de mascotte
 
