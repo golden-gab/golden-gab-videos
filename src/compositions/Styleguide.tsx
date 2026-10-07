@@ -41,6 +41,21 @@ import {
 } from "../config";
 import { type PaletteColor } from "../config/colors";
 import { textRoles, type TextRole } from "../config/typography";
+import {
+  AnimatedList,
+  BeforeAfter,
+  Callout,
+  CodeShowcase,
+  Comparison,
+  FlowDiagram,
+  HeroTitle,
+  InfoCard,
+  MascotScene as MascotSceneComponent,
+  NodeGraph,
+  ProcessSteps,
+  SectionTitle,
+  Stat,
+} from "../components/motion";
 import { type AppearAnimation } from "../utils/animation";
 import { withAlpha } from "../utils/color";
 import { secondsToFrames } from "../utils/time";
@@ -55,6 +70,21 @@ const CAPTIONS_SECONDS = 12;
 const INTRO_SECONDS = 6;
 const OUTRO_SECONDS = 6;
 
+/* Durées de la galerie Motion (voir `src/components/motion`). */
+const HERO_TITLE_SECONDS = 12;
+const SECTION_TITLE_SECONDS = 9;
+const FLOW_SECONDS = 9;
+const STEPS_SECONDS = 9;
+const CODE_SECONDS = 12;
+const COMPARISON_SECONDS = 8;
+const CALLOUT_SECONDS = 8;
+const INFO_CARD_SECONDS = 8;
+const LIST_SECONDS = 8;
+const STAT_SECONDS = 8;
+const BEFORE_AFTER_SECONDS = 8;
+const NODE_GRAPH_SECONDS = 8;
+const MASCOT_MOTION_SECONDS = 8;
+
 /** Durée totale, en secondes. Maintenue en cohérence avec les sections. */
 export const STYLEGUIDE_DURATION_IN_SECONDS =
   PALETTE_SECONDS +
@@ -64,6 +94,19 @@ export const STYLEGUIDE_DURATION_IN_SECONDS =
   MASCOT_POSITIONS_SECONDS +
   MASCOT_SCENE_SECONDS +
   CAPTIONS_SECONDS +
+  HERO_TITLE_SECONDS +
+  SECTION_TITLE_SECONDS +
+  FLOW_SECONDS +
+  STEPS_SECONDS +
+  CODE_SECONDS +
+  COMPARISON_SECONDS +
+  CALLOUT_SECONDS +
+  INFO_CARD_SECONDS +
+  LIST_SECONDS +
+  STAT_SECONDS +
+  BEFORE_AFTER_SECONDS +
+  NODE_GRAPH_SECONDS +
+  MASCOT_MOTION_SECONDS +
   INTRO_SECONDS +
   OUTRO_SECONDS;
 
@@ -76,6 +119,7 @@ const typographySamples: Record<TextRole, string> = {
   h3: "Salaire & missions",
   caption: "Caption par défaut",
   body: "Texte courant, pour les explications un peu plus longues.",
+  code: "const user = await getUser();",
   label: "Darker Grotesque + Inter",
 };
 
@@ -462,6 +506,681 @@ const CaptionsScene: React.FC = () => {
   );
 };
 
+/* ------------------------------------------------------------------ */
+/* Bibliothèque Motion — galerie                                        */
+/* ------------------------------------------------------------------ */
+
+/** Étiquette + démo, pour identifier chaque exemple de la galerie Motion. */
+const MotionDemo: React.FC<{
+  readonly label: string;
+  readonly children: React.ReactNode;
+}> = ({ label, children }) => (
+  <div
+    style={{
+      display: "flex",
+      flexDirection: "column",
+      gap: spacing.sm,
+      width: "100%",
+    }}
+  >
+    <BrandText role="label" color={colors.accent}>
+      {label}
+    </BrandText>
+    {children}
+  </div>
+);
+
+const TYPESCRIPT_SAMPLE = `const user = await getUser(id);
+
+return {
+  id: user.id,
+  name: user.name,
+};`;
+
+const HIGHLIGHT_SAMPLE = `async function fetchUser() {
+  const res = await fetch(url);
+  const data = await res.json();
+  return data;
+}`;
+
+const DIFF_SAMPLE = `- const data = await getUser();
+- console.log(data);
++ const { user } = await getUser();
++ return user;`;
+
+const COMPARE_LOOP = `let total = 0;
+for (const item of items) {
+  total += item;
+}`;
+
+const COMPARE_REDUCE = `return items
+  .reduce(sum);`;
+
+const MotionHeroTitleScene: React.FC = () => {
+  const { fps } = useVideoConfig();
+  const per = HERO_TITLE_SECONDS / 3;
+
+  return (
+    <AbsoluteFill>
+      <BrandBackground variant="light" motif motifOpacity={0.25} />
+      <Series>
+        <Series.Sequence
+          name="Motion · HeroTitle · default"
+          durationInFrames={secondsToFrames(per, fps)}
+          premountFor={fps}
+        >
+          <SafeArea>
+            <HeroTitle
+              eyebrow="Métiers de la tech"
+              title="C'est quoi un AI Engineer ?"
+              emphasis="AI Engineer"
+              subtitle="Sans filtre, en 45 secondes."
+            />
+          </SafeArea>
+        </Series.Sequence>
+        <Series.Sequence
+          name="Motion · HeroTitle · centered"
+          durationInFrames={secondsToFrames(per, fps)}
+          premountFor={fps}
+        >
+          <SafeArea>
+            <HeroTitle
+              variant="centered"
+              title="C'est quoi une API ?"
+              emphasis="API"
+              subtitle="La porte d'entrée d'un système."
+            />
+          </SafeArea>
+        </Series.Sequence>
+        <Series.Sequence
+          name="Motion · HeroTitle · compact"
+          durationInFrames={secondsToFrames(per, fps)}
+          premountFor={fps}
+        >
+          <SafeArea>
+            <HeroTitle
+              variant="compact"
+              align="left"
+              eyebrow="Prérequis"
+              title="SQL, Python, Cloud"
+              emphasis="Cloud"
+            />
+          </SafeArea>
+        </Series.Sequence>
+      </Series>
+    </AbsoluteFill>
+  );
+};
+
+const MotionSectionTitleScene: React.FC = () => {
+  const { fps } = useVideoConfig();
+  const per = SECTION_TITLE_SECONDS / 3;
+
+  return (
+    <AbsoluteFill>
+      <BrandBackground variant="light" motif motifOpacity={0.25} />
+      <Series>
+        <Series.Sequence
+          name="Motion · SectionTitle · default"
+          durationInFrames={secondsToFrames(per, fps)}
+          premountFor={fps}
+        >
+          <SafeArea>
+            <MotionDemo label="default">
+              <SectionTitle title="Mais concrètement, il fait quoi ?" />
+            </MotionDemo>
+          </SafeArea>
+        </Series.Sequence>
+        <Series.Sequence
+          name="Motion · SectionTitle · accent"
+          durationInFrames={secondsToFrames(per, fps)}
+          premountFor={fps}
+        >
+          <SafeArea>
+            <MotionDemo label="accent">
+              <SectionTitle variant="accent" title="Les missions au quotidien" />
+            </MotionDemo>
+          </SafeArea>
+        </Series.Sequence>
+        <Series.Sequence
+          name="Motion · SectionTitle · numbered"
+          durationInFrames={secondsToFrames(per, fps)}
+          premountFor={fps}
+        >
+          <SafeArea>
+            <MotionDemo label="numbered">
+              <SectionTitle
+                variant="numbered"
+                number="02"
+                title="Les compétences clés"
+              />
+            </MotionDemo>
+          </SafeArea>
+        </Series.Sequence>
+      </Series>
+    </AbsoluteFill>
+  );
+};
+
+const MotionFlowScene: React.FC = () => {
+  const { fps } = useVideoConfig();
+  const per = FLOW_SECONDS / 2;
+
+  return (
+    <AbsoluteFill>
+      <BrandBackground variant="light" motif motifOpacity={0.25} />
+      <Series>
+        <Series.Sequence
+          name="Motion · FlowDiagram · vertical"
+          durationInFrames={secondsToFrames(per, fps)}
+          premountFor={fps}
+        >
+          <SafeArea>
+            <MotionDemo label="vertical · 4 nodes">
+              <FlowDiagram
+                direction="vertical"
+                showNumbers
+                nodes={[
+                  {
+                    title: "Utilisateur",
+                    description: "Envoie une requête",
+                    accent: "accent",
+                  },
+                  {
+                    title: "API",
+                    description: "Vérifie et route",
+                    accent: "secondary",
+                  },
+                  {
+                    title: "Serveur",
+                    description: "Exécute la logique",
+                    accent: "secondary",
+                  },
+                  {
+                    title: "Base de données",
+                    description: "Lit et écrit",
+                    accent: "accent",
+                  },
+                ]}
+              />
+            </MotionDemo>
+          </SafeArea>
+        </Series.Sequence>
+        <Series.Sequence
+          name="Motion · FlowDiagram · horizontal"
+          durationInFrames={secondsToFrames(per, fps)}
+          premountFor={fps}
+        >
+          <SafeArea>
+            <MotionDemo label="horizontal · 3 nodes">
+              <FlowDiagram
+                direction="horizontal"
+                nodes={[
+                  { title: "Client" },
+                  { title: "API" },
+                  { title: "Données" },
+                ]}
+              />
+            </MotionDemo>
+          </SafeArea>
+        </Series.Sequence>
+      </Series>
+    </AbsoluteFill>
+  );
+};
+
+const MOTION_STEPS = [
+  { title: "Collecter", description: "Récupérer les données brutes." },
+  { title: "Transformer", description: "Nettoyer et normaliser." },
+  { title: "Stocker", description: "Écrire dans l'entrepôt." },
+  { title: "Analyser", description: "En tirer des décisions." },
+];
+
+const MotionProcessStepsScene: React.FC = () => {
+  const { fps } = useVideoConfig();
+  const per = STEPS_SECONDS / 2;
+
+  return (
+    <AbsoluteFill>
+      <BrandBackground variant="light" motif motifOpacity={0.25} />
+      <Series>
+        <Series.Sequence
+          name="Motion · ProcessSteps · vertical"
+          durationInFrames={secondsToFrames(per, fps)}
+          premountFor={fps}
+        >
+          <SafeArea>
+            <MotionDemo label="vertical · étape active">
+              <ProcessSteps steps={MOTION_STEPS} activeStep={1} />
+            </MotionDemo>
+          </SafeArea>
+        </Series.Sequence>
+        <Series.Sequence
+          name="Motion · ProcessSteps · horizontal"
+          durationInFrames={secondsToFrames(per, fps)}
+          premountFor={fps}
+        >
+          <SafeArea>
+            <MotionDemo label="horizontal · 3 étapes">
+              <ProcessSteps
+                orientation="horizontal"
+                steps={MOTION_STEPS.slice(0, 3)}
+                activeStep={0}
+              />
+            </MotionDemo>
+          </SafeArea>
+        </Series.Sequence>
+      </Series>
+    </AbsoluteFill>
+  );
+};
+
+const MotionCodeScene: React.FC = () => {
+  const { fps } = useVideoConfig();
+  const per = CODE_SECONDS / 4;
+
+  return (
+    <AbsoluteFill>
+      <BrandBackground variant="light" motif motifOpacity={0.25} />
+      <Series>
+        <Series.Sequence
+          name="Motion · CodeShowcase · line"
+          durationInFrames={secondsToFrames(per, fps)}
+          premountFor={fps}
+        >
+          <SafeArea>
+            <CodeShowcase
+              title="user.ts"
+              language="typescript"
+              showLineNumbers
+              code={TYPESCRIPT_SAMPLE}
+            />
+          </SafeArea>
+        </Series.Sequence>
+        <Series.Sequence
+          name="Motion · CodeShowcase · highlight"
+          durationInFrames={secondsToFrames(per, fps)}
+          premountFor={fps}
+        >
+          <SafeArea>
+            <CodeShowcase
+              title="fetch.ts"
+              language="typescript"
+              variant="highlight"
+              highlightLines={[3]}
+              code={HIGHLIGHT_SAMPLE}
+            />
+          </SafeArea>
+        </Series.Sequence>
+        <Series.Sequence
+          name="Motion · CodeShowcase · diff"
+          durationInFrames={secondsToFrames(per, fps)}
+          premountFor={fps}
+        >
+          <SafeArea>
+            <CodeShowcase
+              title="refactor.ts"
+              language="typescript"
+              variant="diff"
+              code={DIFF_SAMPLE}
+            />
+          </SafeArea>
+        </Series.Sequence>
+        <Series.Sequence
+          name="Motion · CodeShowcase · typewriter"
+          durationInFrames={secondsToFrames(per, fps)}
+          premountFor={fps}
+        >
+          <SafeArea>
+            <CodeShowcase
+              title="terminal"
+              language="bash"
+              reveal="typewriter"
+              code="npm run dev"
+            />
+          </SafeArea>
+        </Series.Sequence>
+      </Series>
+    </AbsoluteFill>
+  );
+};const MotionComparisonScene: React.FC = () => {
+  const { fps } = useVideoConfig();
+  const per = COMPARISON_SECONDS / 2;
+
+  return (
+    <AbsoluteFill>
+      <BrandBackground variant="light" motif motifOpacity={0.25} />
+      <Series>
+        <Series.Sequence
+          name="Motion · Comparison · columns"
+          durationInFrames={secondsToFrames(per, fps)}
+          premountFor={fps}
+        >
+          <SafeArea>
+            <MotionDemo label="columns · deux pratiques">
+              <Comparison
+                leftBadge="✕"
+                rightBadge="✓"
+                left={{
+                  title: "À éviter",
+                  items: ["Tout dans un fichier", "Peu testable"],
+                  accent: "secondary",
+                }}
+                right={{
+                  title: "À privilégier",
+                  items: ["Séparer les rôles", "Facile à tester"],
+                  accent: "accent",
+                }}
+              />
+            </MotionDemo>
+          </SafeArea>
+        </Series.Sequence>
+        <Series.Sequence
+          name="Motion · Comparison · stack"
+          durationInFrames={secondsToFrames(per, fps)}
+          premountFor={fps}
+        >
+          <SafeArea>
+            <MotionDemo label="stack · avant / après">
+              <Comparison
+                orientation="stack"
+                staggerSeconds={0.4}
+                left={{
+                  title: "Avant",
+                  code: COMPARE_LOOP,
+                  codeLanguage: "typescript",
+                  accent: "secondary",
+                }}
+                right={{
+                  title: "Après",
+                  code: COMPARE_REDUCE,
+                  codeLanguage: "typescript",
+                  accent: "accent",
+                }}
+              />
+            </MotionDemo>
+          </SafeArea>
+        </Series.Sequence>
+      </Series>
+    </AbsoluteFill>
+  );
+};
+
+const MotionCalloutScene: React.FC = () => (
+  <AbsoluteFill>
+    <BrandBackground variant="light" motif motifOpacity={0.25} />
+    <SafeArea>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: spacing.md,
+          width: "100%",
+        }}
+      >
+        <MotionDemo label="info">
+          <Callout
+            variant="info"
+            title="Définition"
+            text="Une API expose des fonctions à d'autres programmes."
+          />
+        </MotionDemo>
+        <MotionDemo label="success">
+          <Callout variant="success" text="Un endpoint = une ressource." />
+        </MotionDemo>
+        <MotionDemo label="warning">
+          <Callout
+            variant="warning"
+            text="Toujours valider une entrée utilisateur."
+          />
+        </MotionDemo>
+        <MotionDemo label="important">
+          <Callout
+            variant="important"
+            text="Une API n'est pas seulement une URL."
+          />
+        </MotionDemo>
+      </div>
+    </SafeArea>
+  </AbsoluteFill>
+);
+
+const MotionInfoCardScene: React.FC = () => (
+  <AbsoluteFill>
+    <BrandBackground variant="light" motif motifOpacity={0.25} />
+    <SafeArea>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: spacing.lg,
+          width: "100%",
+        }}
+      >
+        <MotionDemo label="InfoCard · icône + badge">
+          <InfoCard
+            icon="🛡"
+            title="Cybersecurity"
+            description="Protège les systèmes contre les attaques."
+            badge="Métier"
+          />
+        </MotionDemo>
+        <MotionDemo label="InfoCard · tone dark">
+          <InfoCard
+            tone="dark"
+            accent="secondary"
+            title="API REST"
+            description="Un style d'architecture pour exposer des ressources."
+            badge="Concept"
+          />
+        </MotionDemo>
+      </div>
+    </SafeArea>
+  </AbsoluteFill>
+);
+
+const MotionListScene: React.FC = () => (
+  <AbsoluteFill>
+    <BrandBackground variant="light" motif motifOpacity={0.25} />
+    <SafeArea>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: spacing.xl,
+          width: "100%",
+        }}
+      >
+        <MotionDemo label="check · titre">
+          <AnimatedList
+            title="Un Data Engineer doit connaître"
+            marker="check"
+            items={[
+              { text: "SQL" },
+              { text: "Python" },
+              { text: "Data pipelines" },
+              { text: "Cloud" },
+            ]}
+          />
+        </MotionDemo>
+        <MotionDemo label="number · accents">
+          <AnimatedList
+            marker="number"
+            items={[
+              { text: "Collecter", accent: "accent" },
+              { text: "Transformer", accent: "secondary" },
+              { text: "Stocker", accent: "accent" },
+            ]}
+          />
+        </MotionDemo>
+      </div>
+    </SafeArea>
+  </AbsoluteFill>
+);
+
+const MotionStatScene: React.FC = () => {
+  const { fps } = useVideoConfig();
+  const per = STAT_SECONDS / 2;
+
+  return (
+    <AbsoluteFill>
+      <BrandBackground variant="dark" motif motifOpacity={0.3} />
+      <Series>
+        <Series.Sequence
+          name="Motion · Stat · compteur"
+          durationInFrames={secondsToFrames(per, fps)}
+          premountFor={fps}
+        >
+          <SafeArea>
+            <Stat
+              tone="dark"
+              count
+              size="hero"
+              value={1.3}
+              decimals={1}
+              suffix="M"
+              label="nouveaux emplois liés à l'IA"
+            />
+          </SafeArea>
+        </Series.Sequence>
+        <Series.Sequence
+          name="Motion · Stat · fixe"
+          durationInFrames={secondsToFrames(per, fps)}
+          premountFor={fps}
+        >
+          <SafeArea>
+            <Stat
+              tone="dark"
+              value={99.9}
+              decimals={1}
+              suffix="%"
+              label="de disponibilité"
+            />
+          </SafeArea>
+        </Series.Sequence>
+      </Series>
+    </AbsoluteFill>
+  );
+};
+
+const MotionBeforeAfterScene: React.FC = () => {
+  const { fps } = useVideoConfig();
+  const per = BEFORE_AFTER_SECONDS / 2;
+
+  return (
+    <AbsoluteFill>
+      <BrandBackground variant="light" motif motifOpacity={0.25} />
+      <Series>
+        <Series.Sequence
+          name="Motion · BeforeAfter · valeurs"
+          durationInFrames={secondsToFrames(per, fps)}
+          premountFor={fps}
+        >
+          <SafeArea>
+            <BeforeAfter
+              before={{ label: "Avant", value: "100 lignes de code" }}
+              after={{ label: "Après", value: "20 lignes de code" }}
+            />
+          </SafeArea>
+        </Series.Sequence>
+        <Series.Sequence
+          name="Motion · BeforeAfter · code"
+          durationInFrames={secondsToFrames(per, fps)}
+          premountFor={fps}
+        >
+          <SafeArea>
+            <BeforeAfter
+              before={{
+                label: "Boucle manuelle",
+                code: COMPARE_LOOP,
+                codeLanguage: "typescript",
+              }}
+              after={{
+                label: "Fonction dédiée",
+                code: COMPARE_REDUCE,
+                codeLanguage: "typescript",
+              }}
+            />
+          </SafeArea>
+        </Series.Sequence>
+      </Series>
+    </AbsoluteFill>
+  );
+};
+
+const MotionNodeGraphScene: React.FC = () => (
+  <AbsoluteFill>
+    <BrandBackground variant="light" motif motifOpacity={0.25} />
+    <SafeArea>
+      <MotionDemo label="NodeGraph · client → api → données">
+        <NodeGraph
+          nodes={[
+            { id: "client", title: "Client" },
+            { id: "api", title: "API" },
+            { id: "db", title: "Base de données", accent: "secondary" },
+            { id: "cache", title: "Cache", accent: "secondary" },
+          ]}
+          edges={[
+            { from: "client", to: "api" },
+            { from: "api", to: "db", label: "SQL" },
+            { from: "api", to: "cache", label: "get" },
+          ]}
+        />
+      </MotionDemo>
+    </SafeArea>
+  </AbsoluteFill>
+);
+
+const MotionMascotSceneScene: React.FC = () => {
+  const { fps } = useVideoConfig();
+  const per = MASCOT_MOTION_SECONDS / 2;
+
+  return (
+    <AbsoluteFill>
+      <BrandBackground variant="light" motif motifOpacity={0.25} />
+      <Series>
+        <Series.Sequence
+          name="Motion · MascotScene · droite"
+          durationInFrames={secondsToFrames(per, fps)}
+          premountFor={fps}
+        >
+          <MascotSceneComponent
+            mascot={{
+              pose: "point",
+              attitude: "confident",
+              position: "right",
+              size: "small",
+            }}
+            content={
+              <Callout
+                variant="info"
+                title="Une API, c'est quoi ?"
+                text="Une porte d'entrée vers un système."
+              />
+            }
+          />
+        </Series.Sequence>
+        <Series.Sequence
+          name="Motion · MascotScene · gauche"
+          durationInFrames={secondsToFrames(per, fps)}
+          premountFor={fps}
+        >
+          <MascotSceneComponent
+            side="left"
+            mascot={{ pose: "point", attitude: "friendly", size: "small" }}
+            content={
+              <AnimatedList
+                marker="check"
+                items={[{ text: "Lire" }, { text: "Créer" }, { text: "Supprimer" }]}
+              />
+            }
+          />
+        </Series.Sequence>
+      </Series>
+    </AbsoluteFill>
+  );
+};
+
 export const Styleguide: React.FC = () => {
   const { fps } = useVideoConfig();
 
@@ -516,6 +1235,97 @@ export const Styleguide: React.FC = () => {
           premountFor={fps}
         >
           <CaptionsScene />
+        </Series.Sequence>
+        <Series.Sequence
+          name="Motion · HeroTitle"
+          durationInFrames={secondsToFrames(HERO_TITLE_SECONDS, fps)}
+          premountFor={fps}
+        >
+          <MotionHeroTitleScene />
+        </Series.Sequence>
+        <Series.Sequence
+          name="Motion · SectionTitle"
+          durationInFrames={secondsToFrames(SECTION_TITLE_SECONDS, fps)}
+          premountFor={fps}
+        >
+          <MotionSectionTitleScene />
+        </Series.Sequence>
+        <Series.Sequence
+          name="Motion · FlowDiagram"
+          durationInFrames={secondsToFrames(FLOW_SECONDS, fps)}
+          premountFor={fps}
+        >
+          <MotionFlowScene />
+        </Series.Sequence>
+        <Series.Sequence
+          name="Motion · ProcessSteps"
+          durationInFrames={secondsToFrames(STEPS_SECONDS, fps)}
+          premountFor={fps}
+        >
+          <MotionProcessStepsScene />
+        </Series.Sequence>
+        <Series.Sequence
+          name="Motion · CodeShowcase"
+          durationInFrames={secondsToFrames(CODE_SECONDS, fps)}
+          premountFor={fps}
+        >
+          <MotionCodeScene />
+        </Series.Sequence>
+        <Series.Sequence
+          name="Motion · Comparison"
+          durationInFrames={secondsToFrames(COMPARISON_SECONDS, fps)}
+          premountFor={fps}
+        >
+          <MotionComparisonScene />
+        </Series.Sequence>
+        <Series.Sequence
+          name="Motion · Callout"
+          durationInFrames={secondsToFrames(CALLOUT_SECONDS, fps)}
+          premountFor={fps}
+        >
+          <MotionCalloutScene />
+        </Series.Sequence>
+        <Series.Sequence
+          name="Motion · InfoCard"
+          durationInFrames={secondsToFrames(INFO_CARD_SECONDS, fps)}
+          premountFor={fps}
+        >
+          <MotionInfoCardScene />
+        </Series.Sequence>
+        <Series.Sequence
+          name="Motion · AnimatedList"
+          durationInFrames={secondsToFrames(LIST_SECONDS, fps)}
+          premountFor={fps}
+        >
+          <MotionListScene />
+        </Series.Sequence>
+        <Series.Sequence
+          name="Motion · Stat"
+          durationInFrames={secondsToFrames(STAT_SECONDS, fps)}
+          premountFor={fps}
+        >
+          <MotionStatScene />
+        </Series.Sequence>
+        <Series.Sequence
+          name="Motion · BeforeAfter"
+          durationInFrames={secondsToFrames(BEFORE_AFTER_SECONDS, fps)}
+          premountFor={fps}
+        >
+          <MotionBeforeAfterScene />
+        </Series.Sequence>
+        <Series.Sequence
+          name="Motion · NodeGraph"
+          durationInFrames={secondsToFrames(NODE_GRAPH_SECONDS, fps)}
+          premountFor={fps}
+        >
+          <MotionNodeGraphScene />
+        </Series.Sequence>
+        <Series.Sequence
+          name="Motion · MascotScene"
+          durationInFrames={secondsToFrames(MASCOT_MOTION_SECONDS, fps)}
+          premountFor={fps}
+        >
+          <MotionMascotSceneScene />
         </Series.Sequence>
         <Series.Sequence
           name="Intro"

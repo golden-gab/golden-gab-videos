@@ -43,3 +43,11 @@ export const defaultSlideDistance = 64;
 
 /** Élasticité du pop (échelle de départ, 1 = taille finale). */
 export const defaultPopScale = 0.82;
+
+/**
+ * Décalage par défaut entre deux éléments d'une même séquence (effet
+ * d'escalier / stagger), en secondes. Utilisé par les composants de
+ * `src/components/motion` : une seule valeur règle le rythme de la
+ * bibliothèque.
+ */
+export const defaultStagger = 0.15;

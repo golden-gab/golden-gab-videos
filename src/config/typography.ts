@@ -12,6 +12,7 @@
 
 import { loadFont as loadDarkerGrotesque } from "@remotion/google-fonts/DarkerGrotesque";
 import { loadFont as loadInter } from "@remotion/google-fonts/Inter";
+import { loadFont as loadJetBrainsMono } from "@remotion/google-fonts/JetBrainsMono";
 import type React from "react";
 
 /**
@@ -30,6 +31,18 @@ export const inter = loadInter("normal", {
 });
 
 /**
+ * Police monospace utilisée uniquement pour l'affichage de code
+ * (`CodeShowcase`). Décision d'ingénierie : aucune police monospace n'existe
+ * dans les assets de la marque, et Inter (proportionnelle) rend un extrait de
+ * code peu lisible. Comme `fontFamilies.body`, changer de police de code =
+ * changer `fontFamilies.mono`.
+ */
+export const jetBrainsMono = loadJetBrainsMono("normal", {
+  weights: ["400", "500", "700"],
+  subsets: ["latin", "latin-ext"],
+});
+
+/**
  * Noms de familles CSS nus (sans fallback) : `fontFamily` est aussi utilisé
  * par `fitText()` de `@remotion/layout-utils`, qui doit mesurer la police
  * exacte. Ajouter un fallback casserait la mesure du texte.
@@ -39,6 +52,8 @@ export const fontFamilies = {
   title: darkerGrotesque.fontFamily,
   /** Textes longs, labels, données. */
   body: inter.fontFamily,
+  /** Code affiché dans une vidéo (blocs `CodeShowcase`, diffs…). */
+  mono: jetBrainsMono.fontFamily,
 } as const;
 
 /** Charges supplémentaires, conservées pour usages futurs explicites. */
@@ -70,6 +85,8 @@ export const typeScale = {
   caption: 96,
   /** Corps de texte. */
   body: 48,
+  /** Code affiché (monospace). */
+  code: 40,
   /** Labels, annotations, mentions. */
   label: 34,
 } as const;
@@ -82,6 +99,7 @@ export type TextRole =
   | "h3"
   | "caption"
   | "body"
+  | "code"
   | "label";
 
 /**
@@ -130,6 +148,13 @@ export const textRoles = {
     fontWeight: fontWeights.regular,
     fontSize: typeScale.body,
     lineHeight: 1.4,
+    letterSpacing: "0em",
+  },
+  code: {
+    fontFamily: fontFamilies.mono,
+    fontWeight: fontWeights.regular,
+    fontSize: typeScale.code,
+    lineHeight: 1.5,
     letterSpacing: "0em",
   },
   label: {
