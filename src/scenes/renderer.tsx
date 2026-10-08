@@ -21,11 +21,16 @@ import {
   type SceneRendererProps,
 } from "./registry";
 
-export const SceneRenderer: React.FC<SceneRendererProps> = ({
+type SceneRendererComponentProps = SceneRendererProps & {
+  readonly renderScene?: (scene: Scene) => React.ReactNode;
+};
+
+export const SceneRenderer: React.FC<SceneRendererComponentProps> = ({
   scene,
   tone,
   style,
   className,
+  renderScene,
 }) => {
   const { fps } = useVideoConfig();
   validateSceneTiming(scene, scene.id);
@@ -35,7 +40,7 @@ export const SceneRenderer: React.FC<SceneRendererProps> = ({
     throw new Error(`Scene "${scene.id}" is shorter than one frame at ${fps} fps.`);
   }
 
-  const SceneComponent = resolveSceneComponent(scene);
+  const SceneComponent = renderScene ? undefined : resolveSceneComponent(scene);
 
   return (
     <Sequence
@@ -44,16 +49,20 @@ export const SceneRenderer: React.FC<SceneRendererProps> = ({
       premountFor={fps}
       name={scene.id}
     >
-      {/* Les composants Motion ne dessinent ni fond ni plein-cadre : la scène
-          les centre dans la zone sûre (le fond vient de la composition). */}
-      <SafeArea>
-        <SceneComponent
-          scene={scene}
-          tone={tone}
-          style={style}
-          className={className}
-        />
-      </SafeArea>
+      {renderScene ? (
+        renderScene(scene)
+      ) : (
+        <SafeArea>
+          {SceneComponent ? (
+            <SceneComponent
+              scene={scene}
+              tone={tone}
+              style={style}
+              className={className}
+            />
+          ) : null}
+        </SafeArea>
+      )}
     </Sequence>
   );
 };
@@ -67,6 +76,8 @@ export type EpisodeCaptionsOptions = {
 
 export type EpisodeRendererProps = {
   readonly episode: Episode;
+  /** Optional per-video scene renderer; custom renderers own their safe-area layout. */
+  readonly renderScene?: (scene: Scene) => React.ReactNode;
   readonly tone?: MotionTone;
   readonly style?: React.CSSProperties;
   /**
@@ -84,6 +95,7 @@ export type EpisodeRendererProps = {
  */
 export const EpisodeRenderer: React.FC<EpisodeRendererProps> = ({
   episode,
+  renderScene,
   tone,
   style,
   captions,
@@ -94,9 +106,11 @@ export const EpisodeRenderer: React.FC<EpisodeRendererProps> = ({
     : staticFile(episode.audio.src);
   validateEpisode(episode, fps);
   // Le registry visuel dépend de React : sa vérification reste au niveau rendu.
-  episode.scenes.forEach((scene: Scene) => {
-    resolveSceneComponent(scene);
-  });
+  if (!renderScene) {
+    episode.scenes.forEach((scene: Scene) => {
+      resolveSceneComponent(scene);
+    });
+  }
 
   const captionsEnabled =
     captions === true || (typeof captions === "object" && captions !== null);
@@ -111,7 +125,12 @@ export const EpisodeRenderer: React.FC<EpisodeRendererProps> = ({
         premountFor={fps}
       />
       {episode.scenes.map((scene) => (
-        <SceneRenderer key={scene.id} scene={scene} tone={tone} />
+        <SceneRenderer
+          key={scene.id}
+          scene={scene}
+          tone={tone}
+          renderScene={renderScene}
+        />
       ))}
       {captionsEnabled ? (
         <Captions

@@ -10,6 +10,40 @@ La voix raconte ; l'image démontre. Le timing réel de la voix et de sa
 transcription pilote les captions, les scènes et les animations. Une scène ne
 se résume pas à un titre qui reste affiché pendant toute une phrase.
 
+## Liberté narrative — aucun flow imposé
+
+Chaque vidéo doit trouver sa propre forme à partir de son audio, de son sujet
+et de l'émotion recherchée. Il n'existe pas de succession obligatoire de type
+« hook → question → explication → exemple → insight → conclusion », ni de
+nombre de scènes ou de composants à reproduire d'un épisode à l'autre.
+
+- Les structures et storyboards montrés dans la roadmap, le styleguide ou les
+  épisodes existants sont des exemples et des références, jamais des templates
+  éditoriaux obligatoires.
+- Choisir librement l'ordre, le rythme et la durée des scènes : commencer par
+  une image intrigante, une action, un résultat, une question ou toute autre
+  entrée adaptée à la narration. Fusionner ou omettre des étapes si elles
+  n'apportent rien ; ajouter une scène ou une métaphore si elle clarifie le
+  propos.
+- Ne pas attribuer mécaniquement un composant différent à chaque phrase et ne
+  pas reconduire le même flow simplement parce qu'il a servi dans une vidéo
+  précédente. Réutiliser les composants pour leur pertinence, pas pour remplir
+  une grille.
+- Considérer les champs du storyboard comme des outils de conception : préciser
+  les objectifs, durées, visuels, captions, transitions, interventions de la
+  mascotte ou assets supplémentaires quand ils aident à réaliser la vidéo,
+  sans transformer leur liste en recette de narration.
+- Prendre des initiatives visuelles cohérentes avec la DA Golden Gab :
+  illustrations originales, formes, objets, métaphores, emoji et assets
+  complémentaires pertinents sont possibles. Pour les assets externes, vérifier
+  leur adéquation à la DA, leur qualité et leurs droits d'utilisation.
+
+Cette liberté porte sur la mise en scène, pas sur l'exactitude : préserver le
+sens de la voix, ne pas inventer de faits ou de chiffres, respecter la direction
+artistique et garder le contenu lisible. La mascotte est disponible lorsque sa
+présence sert ce récit singulier ; elle n'est ni obligatoire dans chaque vidéo
+ni à assigner à une étape fixe.
+
 Pour chaque phrase ou idée importante, se demander :
 
 1. Que doit comprendre le spectateur ?
@@ -75,11 +109,9 @@ Pour chaque phrase ou idée importante, se demander :
   les titres, les données, les visuels et les captions.
 - Les attitudes actuelles (`curious`, `surprised`, `confident`, etc.) modulent
   le mouvement, mais ne changent pas l'expression du PNG.
-- Seules les poses présentes dans `mascotPoses` sont disponibles au rendu. Les
-  fichiers émotionnels présents dans
-  `public/assets/images/mascot/` (thinking, surprised, happy, explaining)
-  doivent d'abord être ajoutés au registre des assets et des poses avant usage.
-  Ne pas simuler une expression par une attitude.
+- Seules les poses présentes dans `mascotPoses` sont disponibles au rendu :
+  `thinking`, `surprised`, `happy`, `explaining` et `point`. Les poses encore
+  absentes du registre ne doivent pas être simulées par une attitude.
 
 ## Revue avant rendu
 

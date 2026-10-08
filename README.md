@@ -17,6 +17,7 @@ séries de vidéos.
 | [docs/ROADMAP.md](docs/ROADMAP.md) | priorités, état du projet et roadmap |
 | [docs/DECISION_LOG.md](docs/DECISION_LOG.md) | mémoire de décisions et changements récents des agents IA |
 | [docs/DESIGN-SYSTEM.md](docs/DESIGN-SYSTEM.md) | direction artistique, tokens, usages |
+| [docs/VIDEO-DIRECTION.md](docs/VIDEO-DIRECTION.md) | principes éditoriaux, liberté de storyboard et direction visuelle |
 
 ## Commandes
 

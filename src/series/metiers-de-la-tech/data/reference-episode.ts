@@ -97,10 +97,7 @@ export const referenceEpisodeTranscript: Transcript = {
   ],
 };
 
-/**
- * Storyboard complet : une scène par étape narrative, calée sur un segment de
- * transcript. Les scènes illustrent l'exemple des ventes décrit dans la voix.
- */
+/** Storyboard illustré, calé sur les temps réels de la narration. */
 export const referenceEpisode: Episode = {
   id: "mdt-data-analyst",
   title: "C'est quoi un Data Analyst ?",
@@ -113,21 +110,29 @@ export const referenceEpisode: Episode = {
     subject: "Data Analyst",
     angle: "Expliquer le rôle du Data Analyst à travers l'analyse des ventes.",
     tags: ["data", "ventes", "analyse"],
+    script:
+      "Une entreprise vend beaucoup de produits ; le Data Analyst révèle ce que les données racontent pour éclairer ses décisions.",
   },
+  // These presets are consumed by the frame-based scene wrapper, not CSS transitions.
+  /* eslint-disable @remotion/non-pure-animation */
   scenes: [
     {
       id: "hook",
       type: "hero",
       start: 0,
       end: 5.44,
+      transcript:
+        "Imaginez une entreprise qui vend des milliers de produits chaque mois, mais lesquels se vendent vraiment.",
       visual: {
-        component: "HeroTitle",
-        props: {
-          eyebrow: "Métiers de la tech",
-          title: "Qu'est-ce qui se vend vraiment ?",
-          emphasis: "se vend vraiment",
-          variant: "centered",
-        },
+        component: "ReferenceEpisodeScene",
+        props: { questionRevealWord: "lesquels" },
+      },
+      transition: { enter: "fade", exit: "fade" },
+      captions: { enabled: true },
+      mascot: { enabled: false },
+      metadata: {
+        objective: "Installer l'abondance de commandes et faire naître la question du tri.",
+        additionalAsset: "Aucun : illustration de produits et reçus en motion design.",
       },
     },
     {
@@ -135,14 +140,22 @@ export const referenceEpisode: Episode = {
       type: "explanation",
       start: 5.44,
       end: 7.88,
+      transcript: "C'est là qu'intervient le data analyst.",
       visual: {
-        component: "InfoCard",
-        props: {
-          icon: "📊",
-          title: "Data Analyst",
-          description: "Il révèle ce que les données racontent sur les ventes.",
-          badge: "Son rôle",
-        },
+        component: "ReferenceEpisodeScene",
+      },
+      transition: { enter: "slide-up", exit: "fade" },
+      captions: { enabled: true },
+      mascot: {
+        enabled: true,
+        pose: "explaining",
+        attitude: "curious",
+        position: "right",
+        size: 280,
+      },
+      metadata: {
+        objective: "Présenter le métier comme le guide qui va répondre à la question.",
+        additionalAsset: "Mascotte Golden Gab, pose explaining.",
       },
     },
     {
@@ -150,13 +163,21 @@ export const referenceEpisode: Episode = {
       type: "callout",
       start: 7.88,
       end: 12.48,
+      transcript:
+        "Son rôle est de transformer des données brutes en informations utiles.",
       visual: {
-        component: "Callout",
+        component: "ReferenceEpisodeScene",
         props: {
-          variant: "info",
-          title: "Des données aux informations",
-          text: "Transformer les données brutes en informations utiles.",
+          transformRevealWord: "transformer",
+          informationRevealWord: "informations",
         },
+      },
+      transition: { enter: "fade", exit: "fade" },
+      captions: { enabled: true },
+      mascot: { enabled: false },
+      metadata: {
+        objective: "Montrer une transformation visuelle des traces brutes en information lisible.",
+        additionalAsset: "Aucun : illustration abstraite de données et tableau de bord.",
       },
     },
     {
@@ -164,18 +185,22 @@ export const referenceEpisode: Episode = {
       type: "diagram",
       start: 12.48,
       end: 19.28,
+      transcript:
+        "Identifier les tendances, comprendre les comportements et aider l'entreprise à prendre de meilleures décisions.",
       visual: {
-        component: "FlowDiagram",
-        revealOffsets: [0, 1.88, 3.75],
+        component: "ReferenceEpisodeScene",
         props: {
-          direction: "vertical",
-          showNumbers: true,
-          nodes: [
-            { title: "Identifier les tendances" },
-            { title: "Comprendre les comportements" },
-            { title: "Aider à mieux décider" },
-          ],
+          trendRevealWord: "identifier",
+          behaviorRevealWord: "comprendre",
+          decisionRevealWord: "aider",
         },
+      },
+      transition: { enter: "slide-up", exit: "fade" },
+      captions: { enabled: true },
+      mascot: { enabled: false },
+      metadata: {
+        objective: "Faire progresser trois gestes d'analyse au moment où ils sont prononcés.",
+        additionalAsset: "Aucun : mini-graphique, comportements et décision en motion design.",
       },
     },
     {
@@ -183,13 +208,22 @@ export const referenceEpisode: Episode = {
       type: "callout",
       start: 19.28,
       end: 22.68,
+      transcript: "En clair, il ne se contente pas de regarder des chiffres.",
       visual: {
-        component: "Callout",
-        props: {
-          variant: "info",
-          title: "Au-delà des chiffres",
-          text: "Il ne se contente pas de regarder des chiffres.",
-        },
+        component: "ReferenceEpisodeScene",
+      },
+      transition: { enter: "fade", exit: "fade" },
+      captions: { enabled: true },
+      mascot: {
+        enabled: true,
+        pose: "thinking",
+        attitude: "curious",
+        position: "right",
+        size: 280,
+      },
+      metadata: {
+        objective: "Opposer la lecture passive d'un tableau à la recherche d'une explication.",
+        additionalAsset: "Mascotte Golden Gab, pose thinking.",
       },
     },
     {
@@ -197,14 +231,25 @@ export const referenceEpisode: Episode = {
       type: "conclusion",
       start: 22.68,
       end: referenceEpisodeAudio.duration,
+      transcript: "Il cherche ce que racontent les chiffres.",
       visual: {
-        component: "Callout",
-        props: {
-          variant: "important",
-          title: "Les chiffres racontent une histoire",
-          text: "Il cherche ce qu'ils racontent.",
-        },
+        component: "ReferenceEpisodeScene",
+      },
+      transition: { enter: "slide-up", exit: "fade" },
+      captions: { enabled: true },
+      mascot: {
+        enabled: true,
+        pose: "point",
+        attitude: "confident",
+        facing: "right",
+        position: "left",
+        size: 320,
+      },
+      metadata: {
+        objective: "Terminer sur la promesse du métier : révéler le sens, pas réciter les nombres.",
+        additionalAsset: "Mascotte Golden Gab et logo officiel.",
       },
     },
   ],
+  /* eslint-enable @remotion/non-pure-animation */
 };

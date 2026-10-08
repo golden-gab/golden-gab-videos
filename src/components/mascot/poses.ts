@@ -35,6 +35,30 @@ export type MascotPoseDefinition = {
  * Pose par défaut du système : `point` (voir `defaultMascotPose`).
  */
 export const mascotPoses = {
+  thinking: {
+    src: mascotAssets.thinking,
+    label: "Réflexion",
+    aspectRatio: 1254 / 1254,
+    description: "Une main au menton — posture de réflexion ou de questionnement.",
+  },
+  surprised: {
+    src: mascotAssets.surprised,
+    label: "Surprise",
+    aspectRatio: 1254 / 1254,
+    description: "Les mains sur les joues — posture de surprise.",
+  },
+  happy: {
+    src: mascotAssets.happy,
+    label: "Joie",
+    aspectRatio: 1254 / 1254,
+    description: "Bras levés et poings serrés — posture de joie et de célébration.",
+  },
+  explaining: {
+    src: mascotAssets.explaining,
+    label: "Explication",
+    aspectRatio: 1254 / 1254,
+    description: "Mains ouvertes — posture d'explication ou de présentation.",
+  },
   point: {
     src: mascotAssets.point,
     label: "Doigt levé",
@@ -51,9 +75,5 @@ export const mascotPoses = {
  */
 export const mascotPlannedPoses = [
   "neutral",
-  "thinking",
-  "explaining",
-  "surprised",
-  "happy",
   "confused",
 ] as const;

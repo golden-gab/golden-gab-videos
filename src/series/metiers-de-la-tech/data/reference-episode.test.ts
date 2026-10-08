@@ -36,6 +36,22 @@ test("épisode de référence : chaque scène reste dans l'audio et est ordonné
   });
 });
 
+test("storyboard : chaque beat précise son objectif, ses captions et sa transition", () => {
+  referenceEpisode.scenes.forEach((scene) => {
+    assert.equal(typeof scene.metadata?.objective, "string", scene.id);
+    assert.ok(scene.transition?.enter, `transition d'entrée manquante : ${scene.id}`);
+    assert.ok(scene.transition?.exit, `transition de sortie manquante : ${scene.id}`);
+    assert.equal(scene.captions?.enabled, true, `captions désactivées : ${scene.id}`);
+  });
+
+  assert.deepEqual(
+    referenceEpisode.scenes
+      .filter((scene) => scene.mascot?.enabled)
+      .map((scene) => scene.id),
+    ["role", "insight", "conclusion"],
+  );
+});
+
 test("épisode de référence : les captions viennent du transcript", () => {
   const captions = getEpisodeCaptions(referenceEpisode);
   assert.equal(captions.length, referenceEpisode.transcript.segments.length);
@@ -44,23 +60,52 @@ test("épisode de référence : les captions viennent du transcript", () => {
   assert.equal(captions[captions.length - 1].endMs, 24680);
 });
 
+test("storyboard : les révélations de la transformation correspondent au transcript", () => {
+  const transformationScene = referenceEpisode.scenes.find(
+    (scene) => scene.id === "transformation",
+  );
+  assert.ok(transformationScene);
+
+  const beats = transformationScene.visual.props;
+  assert.ok(beats);
+  ["transformRevealWord", "informationRevealWord"].forEach((beatKey) => {
+    const word = beats[beatKey];
+    assert.equal(typeof word, "string");
+    const segment = referenceEpisode.transcript.segments.find(
+      (candidate) => candidate.text === word,
+    );
+    assert.ok(segment, `mot d'animation absent du transcript : ${String(word)}`);
+    assert.ok(
+      segment.start >= transformationScene.start &&
+        segment.start < transformationScene.end,
+      `mot d'animation hors de la scène : ${String(word)}`,
+    );
+  });
+});
+
 test("épisode de référence : les révélations du diagramme suivent les verbes narrés", () => {
   const analysisScene = referenceEpisode.scenes.find(
     (scene) => scene.id === "analyse",
   );
   assert.ok(analysisScene);
-  assert.deepEqual(analysisScene.visual.revealOffsets, [0, 1.88, 3.75]);
 
+  const beatKeys = [
+    "trendRevealWord",
+    "behaviorRevealWord",
+    "decisionRevealWord",
+  ];
   const narratedActions = ["identifier", "comprendre", "aider"];
-  analysisScene.visual.revealOffsets?.forEach((offset, index) => {
-    const revealTime = analysisScene.start + offset;
+  const expectedRevealOffsets = [0, 1.88, 3.75];
+  beatKeys.forEach((beatKey, index) => {
+    const word = analysisScene.visual.props?.[beatKey];
+    assert.equal(word, narratedActions[index]);
     const transcriptSegment = referenceEpisode.transcript.segments.find(
-      (segment) => Math.abs(segment.start - revealTime) < 0.001,
+      (segment) => segment.text.toLowerCase() === String(word),
     );
-
-    assert.match(
-      transcriptSegment?.text.toLowerCase() ?? "",
-      new RegExp(narratedActions[index]),
+    assert.ok(transcriptSegment);
+    assert.equal(
+      transcriptSegment.start,
+      analysisScene.start + expectedRevealOffsets[index],
     );
   });
 });

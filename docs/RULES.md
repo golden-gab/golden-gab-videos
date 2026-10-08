@@ -238,18 +238,24 @@
 68. **Source de vérité créative** — Avant de créer ou modifier une vidéo,
     consulter `docs/VIDEO-DIRECTION.md` ; ses principes s'appliquent à toutes
     les séries sans que l'utilisateur ait à les répéter.
-69. **Traduire la narration en image** — Chaque idée importante doit avoir un
+69. **Pas de flow éditorial imposé** — Chaque vidéo choisit son ordre, son
+    rythme, son nombre de scènes et ses visuels en fonction de son audio et de
+    son intention. Les étapes de script, exemples de storyboard et épisodes
+    existants sont des références, pas des templates à recopier. La liberté
+    créative reste encadrée par la fidélité au contenu, la DA Golden Gab, la
+    lisibilité et l'exactitude des faits.
+70. **Traduire la narration en image** — Chaque idée importante doit avoir un
     visuel qui l'explique ou la matérialise (données, objets, schémas,
     métaphores visuelles), pas seulement un titre ou une carte statique.
-70. **Mouvement pendant la phrase** — Le changement de scène ne suffit pas :
+71. **Mouvement pendant la phrase** — Le changement de scène ne suffit pas :
     les éléments d'une scène doivent apparaître, évoluer ou se transformer
     progressivement, synchronisés avec les mots et phrases de la narration.
     Utiliser les composants Motion existants avant d'en créer.
-71. **Captions mot courant** — Pour une vidéo audio-driven, utiliser le preset
+72. **Captions mot courant** — Pour une vidéo audio-driven, utiliser le preset
     `highlight` sauf indication éditoriale contraire : mot courant blanc sur
     cartouche bleu nuit, autres mots blancs détourés, selon la palette et la
     capture de référence documentée.
-72. **Mascotte intentionnelle** — Faire intervenir la mascotte aux moments où
+73. **Mascotte intentionnelle** — Faire intervenir la mascotte aux moments où
     elle sert le récit, avec une expression/pose disposant d'un asset réellement
     enregistré. Ne pas inventer ni simuler une pose manquante ; voir
     `docs/VIDEO-DIRECTION.md` pour le statut des assets.

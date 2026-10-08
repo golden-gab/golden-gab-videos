@@ -49,9 +49,9 @@ comme **personnage visuel récurrent** dans les vidéos.
 
 - Composant global : `<GoldenGabMascot />` (`src/components/mascot/`), au même
   niveau conceptuel que l'intro, l'outro et les captions.
-- Une seule pose existe aujourd'hui (`point`, l'asset source
-  `public/assets/images/mascotte.png`) ; d'autres sont prévues mais sans asset
-  et restent inutilisables tant qu'elles ne sont pas dans le registre.
+- Les poses `thinking`, `surprised`, `happy`, `explaining` et `point` sont
+  disponibles dans `public/assets/images/mascot/`. Les poses `neutral` et
+  `confused` restent prévues mais sans asset.
 - Elle sert la narration : à n'utiliser que lorsqu'elle apporte quelque chose
   (introduction, explication, question, surprise, conclusion).
 - Détails : `docs/DESIGN-SYSTEM.md` (section « Mascotte Golden Gab ») et

@@ -13,6 +13,14 @@
  */
 
 import type { AudioTrack, Transcript } from "../audio/types";
+import type { MascotPosition } from "../components/mascot/positions";
+import type {
+  MascotAttitude,
+  MascotFacing,
+  MascotPose,
+  MascotSize,
+} from "../components/mascot/types";
+import type { AppearAnimation } from "../utils/animation";
 import { secondsToFrames } from "../utils/time.ts";
 
 /**
@@ -33,15 +41,17 @@ export const sceneTypes = [
 export type SceneType = (typeof sceneTypes)[number];
 
 export type SceneTransition = {
-  readonly enter?: string;
-  readonly exit?: string;
+  readonly enter?: AppearAnimation;
+  readonly exit?: AppearAnimation;
 };
 
 export type SceneMascot = {
   readonly enabled: boolean;
-  readonly pose?: string;
-  readonly attitude?: string;
-  readonly position?: string;
+  readonly pose?: MascotPose;
+  readonly attitude?: MascotAttitude;
+  readonly facing?: MascotFacing;
+  readonly position?: MascotPosition;
+  readonly size?: MascotSize | number;
 };
 
 export type SceneCaptionConfig = {

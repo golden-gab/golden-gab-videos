@@ -13,4 +13,7 @@ L'épisode de référence `mdt-data-analyst` est défini dans
 `./reference-episode.tsx`. Sa narration audio-driven est attendue dans
 `public/audio/mdt-data-analyst-voice.mp3`. La transcription française et ses
 timestamps ont été produits localement avec Whisper.cpp puis reliés aux scènes.
-Le rendu final et la revue qualité restent à effectuer.
+Les illustrations synchronisées avec les idées de la narration sont dans
+`./reference-episode-scene.tsx` ; le modèle du storyboard, les captions et les
+interventions de la mascotte restent décrits dans `../data/reference-episode.ts`.
+Le rendu MP4 final reste à effectuer.

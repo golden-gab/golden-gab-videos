@@ -291,11 +291,15 @@ ne se déforme pas : changer de posture = changer d'asset.
 
 | Pose | Asset | Statut |
 | --- | --- | --- |
-| `point` | `assets/images/mascotte.png` | ✅ disponible (la seule) |
+| `thinking` | `assets/images/mascot/mascot-thinking.png` | ✅ disponible |
+| `surprised` | `assets/images/mascot/mascot-surprised.png` | ✅ disponible |
+| `happy` | `assets/images/mascot/mascot-happy.png` | ✅ disponible |
+| `explaining` | `assets/images/mascot/mascot-explaining.png` | ✅ disponible |
+| `point` | `assets/images/mascot/mascot-point.png` | ✅ disponible |
 
 Poses **prévues**, sans asset → **impossible** à passer au composant (le type
 `MascotPose` les refuse à la compilation) :
-`neutral`, `thinking`, `explaining`, `surprised`, `happy`, `confused`.
+`neutral`, `confused`.
 
 Ajouter une pose :
 

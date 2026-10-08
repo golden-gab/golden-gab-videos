@@ -12,7 +12,7 @@ public/
 │       ├── logo couleur1.png      logo source, non détouré (8334×8334)
 │       ├── mascotte.png           asset source de la mascotte (pose « point »)
 │       ├── motif.png              motif / texture bleu nuit
-│       ├── mascot/                (à venir) poses supplémentaires de la mascotte
+│       ├── mascot/                poses de la mascotte (thinking, surprised…)
 │       └── derived/
 │           └── logo.png           logo prêt à l'emploi (détouré, 1600×1024)
 ├── sample-video.mp4               (template d'origine, conservé)
@@ -60,7 +60,7 @@ src/
 │   ├── intro/                     GoldenGabIntro
 │   ├── mascot/                    MASCOTTE — personnage récurrent
 │   │   ├── GoldenGabMascot.tsx    composant réutilisable
-│   │   ├── poses.ts               registre pose → asset (+ poses prévues)
+│   │   ├── poses.ts               registre des poses disponibles
 │   │   ├── positions.ts           positions, tailles, ancrages (zone sûre)
 │   │   ├── animations.ts          attitudes + micro-mouvements
 │   │   ├── types.ts               MascotPose, MascotAttitude, MascotFacing…
@@ -332,9 +332,9 @@ src/components/mascot/
 
 **Assets**
 
-- Source unique : `public/assets/images/mascotte.png` (pose `point`,
-  1254×1254, fond transparent) — jamais modifiée.
-- Futures poses : `public/assets/images/mascot/<pose>.png` (dossier réservé).
+- Poses disponibles : `thinking`, `surprised`, `happy`, `explaining` et `point`
+  dans `public/assets/images/mascot/` (1254×1254).
+- L'asset source `public/assets/images/mascotte.png` est conservé intact.
 - Chemins déclarés dans `mascotAssets` (`src/config/assets.ts`) ; le registre
   `mascotPoses` (`src/components/mascot/poses.ts`) associe chaque pose à son
   asset. Les composants ne connaissent aucun chemin en dur (règle 21).
@@ -479,6 +479,7 @@ types.ts     Episode / Scene + helpers de timing (start/end en secondes)
 episode.ts   logique pure : validation, durée audio, captions, transcript par scène
 registry.tsx type narratif et visuel → composant Motion (React)
 renderer.tsx rendu Remotion : piste audio + placement sur la timeline + captions
+             + callback optionnel pour les illustrations propres à une vidéo
 ```
 
 `episode.ts` est **pur** (sans React/Remotion) et testable ; `renderer.tsx` ne
@@ -518,7 +519,16 @@ depuis le début de la scène pour synchroniser l'apparition séquentielle des
 éléments de `FlowDiagram` et `AnimatedList` au transcript. L'épisode rejette
 une liste vide, de taille différente du nombre d'éléments, non finie, non
 croissante ou qui sort de la durée de scène ; sans offset, le stagger du
-composant reste appliqué. Les transitions automatiques restent hors périmètre.
+composant reste appliqué.
+
+`EpisodeRenderer` accepte aussi un `renderScene` optionnel pour une composition
+qui a besoin d'illustrations propres à sa vidéo. Le callback reçoit chaque
+`Scene` dans sa séquence audio ; le rendu personnalisé garde ainsi le timing et
+les captions partagés, tout en prenant en charge son propre layout de zone sûre.
+Les compositions qui ne le fournissent pas continuent d'utiliser le registry
+Motion. `scene.transition` décrit les animations d'entrée et de sortie ; le
+rendu personnalisé les applique explicitement (par exemple avec
+`AnimatedAppear`), aucun chevauchement automatique de scènes n'est effectué.
 
 **Note imports (tests)** : les imports de *valeurs* entre modules chargés par le
 runner natif de Node (`src/scenes/types.ts`, `src/scenes/episode.ts`) portent

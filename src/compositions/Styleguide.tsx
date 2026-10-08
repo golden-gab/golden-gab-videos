@@ -22,10 +22,12 @@ import { BrandText } from "../components/common/BrandText";
 import { SafeArea } from "../components/common/SafeArea";
 import { mascotAttitudes } from "../components/mascot/animations";
 import { GoldenGabMascot } from "../components/mascot/GoldenGabMascot";
+import { mascotPoses } from "../components/mascot/poses";
 import { mascotSizes, type MascotPosition } from "../components/mascot/positions";
 import {
   type MascotAttitude,
   type MascotFacing,
+  type MascotPose,
   type MascotSize,
 } from "../components/mascot/types";
 import { GoldenGabIntro } from "../components/intro/GoldenGabIntro";
@@ -64,6 +66,7 @@ const PALETTE_SECONDS = 6;
 const TYPOGRAPHY_SECONDS = 6;
 const BRAND_SECONDS = 5;
 const MASCOT_SECONDS = 6;
+const MASCOT_POSES_SECONDS = 6;
 const MASCOT_POSITIONS_SECONDS = 7;
 const MASCOT_SCENE_SECONDS = 8;
 const CAPTIONS_SECONDS = 12;
@@ -91,6 +94,7 @@ export const STYLEGUIDE_DURATION_IN_SECONDS =
   TYPOGRAPHY_SECONDS +
   BRAND_SECONDS +
   MASCOT_SECONDS +
+  MASCOT_POSES_SECONDS +
   MASCOT_POSITIONS_SECONDS +
   MASCOT_SCENE_SECONDS +
   CAPTIONS_SECONDS +
@@ -150,6 +154,8 @@ const mascotSizeDemos: readonly {
   { size: "large", facing: "left", label: `large · ${mascotSizes.large} px` },
   { size: "medium", facing: "right", label: "miroir · facing right" },
 ];
+
+const mascotPoseDemos = Object.keys(mascotPoses) as MascotPose[];
 
 /** Une position par ancrage, chacune avec l'entrée qui lui est la plus naturelle. */
 const mascotPositionDemos: readonly {
@@ -354,9 +360,49 @@ const MascotScene: React.FC = () => {
                 <BrandText role="label" align="center" color={colors.ink}>
                   Mascotte · {demo.label}
                 </BrandText>
-                <BrandText role="label" align="center" color={colors.accent}>
-                  Poses prévues (sans asset) : neutral · thinking · explaining ·
-                  surprised · happy · confused
+              </div>
+            </SafeArea>
+          </Series.Sequence>
+        ))}
+      </Series>
+    </AbsoluteFill>
+  );
+};
+
+const MascotPosesScene: React.FC = () => {
+  const { fps } = useVideoConfig();
+  const secondsPerPose = MASCOT_POSES_SECONDS / mascotPoseDemos.length;
+
+  return (
+    <AbsoluteFill>
+      <BrandBackground variant="light" motif motifOpacity={0.35} />
+      <Series>
+        {mascotPoseDemos.map((pose) => (
+          <Series.Sequence
+            key={pose}
+            name={`Mascotte · pose ${mascotPoses[pose].label}`}
+            durationInFrames={secondsToFrames(secondsPerPose, fps)}
+            premountFor={fps}
+          >
+            <SafeArea>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: spacing.md,
+                  width: "100%",
+                }}
+              >
+                <GoldenGabLogo name="Mascotte logo" width={300} />
+                <GoldenGabMascot
+                  pose={pose}
+                  position="flow"
+                  size="large"
+                  attitude="friendly"
+                />
+                <BrandText role="label" align="center" color={colors.ink}>
+                  Pose · {mascotPoses[pose].label}
                 </BrandText>
               </div>
             </SafeArea>
@@ -1216,6 +1262,13 @@ export const Styleguide: React.FC = () => {
           premountFor={fps}
         >
           <MascotScene />
+        </Series.Sequence>
+        <Series.Sequence
+          name="Mascotte · poses"
+          durationInFrames={secondsToFrames(MASCOT_POSES_SECONDS, fps)}
+          premountFor={fps}
+        >
+          <MascotPosesScene />
         </Series.Sequence>
         <Series.Sequence
           name="Mascotte · positions"

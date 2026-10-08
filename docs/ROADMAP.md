@@ -139,7 +139,8 @@ Sortie : un angle clair en une phrase.
 
 ## Phase C — Script
 
-Structure recommandée :
+Pistes possibles, à adapter au sujet et à la narration — ce n'est ni une
+structure requise ni une séquence à recopier :
 
 1. Hook — capter l'attention immédiatement
 2. Promesse / contexte — annoncer ce que le spectateur va comprendre
@@ -173,20 +174,20 @@ Principe : on construit le visuel autour du timing réel de la voix, plutôt que
 
 ## Phase E — Storyboard
 
-Transformer la narration et l'audio en scènes.
+Transformer la narration et l'audio en une proposition visuelle propre à cette
+vidéo. Le storyboard ne suit pas de flow prédéfini : son ordre, son nombre de
+scènes, son rythme et ses types de visuels découlent du contenu et de l'intention
+éditoriale. Les exemples ci-dessous sont des pistes, pas un modèle à reproduire.
 
-Pour chaque scène définir :
+Pour chaque scène, documenter selon les besoins de conception :
 
-- objectif narratif ;
-- texte / narration ;
-- durée estimée ;
-- composant visuel ;
-- présence ou non de la mascotte ;
-- caption ;
-- transition ;
-- éventuel asset supplémentaire.
+- l'idée ou l'effet recherché et le lien avec la narration ;
+- le timing, déterminé à partir de l'audio et des timestamps ;
+- le visuel, l'action ou la métaphore qui rend le propos compréhensible ;
+- si utile, la présence de la mascotte, les captions et la transition ;
+- les assets complémentaires nécessaires.
 
-Exemple :
+Exemple possible — à ne pas considérer comme le flow par défaut :
 
 Scène | Rôle | Visuel
 --- | --- | ---
@@ -196,6 +197,10 @@ Scène | Rôle | Visuel
 04 | Exemple | CodeShowcase
 05 | Insight | Callout
 06 | Conclusion | MascotScene + Outro
+
+Une autre vidéo peut commencer par sa conclusion, rester longtemps sur une
+métaphore animée, alterner des scènes très courtes, ne pas utiliser de
+diagramme, ou choisir toute autre structure si elle sert mieux l'audio.
 
 ↓
 

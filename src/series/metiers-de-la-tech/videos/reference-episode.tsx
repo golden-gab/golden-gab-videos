@@ -16,6 +16,7 @@ import { AbsoluteFill } from "remotion";
 import { BrandBackground } from "../../../components/brand/BrandBackground";
 import { EpisodeRenderer } from "../../../scenes";
 import { referenceEpisode } from "../data/reference-episode";
+import { ReferenceEpisodeScene } from "./reference-episode-scene";
 
 export const ReferenceEpisodeVideo: React.FC = () => {
   return (
@@ -24,6 +25,7 @@ export const ReferenceEpisodeVideo: React.FC = () => {
       <EpisodeRenderer
         episode={referenceEpisode}
         captions={{ style: "highlight" }}
+        renderScene={(scene) => <ReferenceEpisodeScene scene={scene} />}
       />
     </AbsoluteFill>
   );
