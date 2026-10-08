@@ -306,17 +306,86 @@ transcript. Le rendu complet d'un épisode de référence reste M05.
 ## M05 — Produce a reference episode
 
 - [ ] 1 épisode de référence complet ;
-- [ ] storyboard audio-driven ;
+- [x] storyboard audio-driven ;
 - [ ] rendu final ;
 - [ ] revue qualité.
 
-## M06 — Production scale
+**État : en cours.** L'épisode Data Analyst et sa composition Remotion sont
+enregistrés ; la voix réelle (`public/audio/mdt-data-analyst-voice.mp3`, 25,08 s)
+est intégrée et transcrite localement en français avec Whisper.cpp. Transcript
+et scènes sont réalignés sur la narration. Le rendu final et la revue qualité
+restent à faire avant de terminer M05. La revue a aussi mis en évidence le
+besoin d'illustrations concrètes et d'animations synchronisées à l'intérieur
+des scènes ; le rendu final de référence attend les fondations visuelles M06 à
+M09.
+
+## M06 — Direction visuelle et captions
+
+- [x] consignes créatives permanentes dans `docs/VIDEO-DIRECTION.md` ;
+- [x] imposer leur lecture dans `docs/RULES.md` pour chaque nouvelle vidéo ;
+- [x] preset de caption mot courant (`highlight`) conforme à la palette ;
+- [x] appliquer le preset à l'épisode Data Analyst et l'ajouter au Styleguide ;
+- [ ] valider lisibilité, contour et cartouche dans Studio sur plusieurs fonds.
+
+**État : fondations implémentées.** Le preset reprend la capture fournie avec
+les couleurs approuvées Golden Gab (blanc détouré, mot actif sur fond bleu nuit).
+La validation visuelle dans Studio reste à faire.
+
+## M07 — Révélations synchronisées à la narration
+
+- [x] définir une granularité de beats visuels à l'intérieur des scènes via
+  `visual.revealOffsets` (secondes relatives au début de scène) ;
+- [x] relier les étapes d'un visuel aux timestamps du transcript ;
+- [x] faire apparaître progressivement les éléments de `FlowDiagram` et
+  `AnimatedList` selon leurs offsets ;
+- [x] valider les offsets (valeurs finies, ordre strict, bornes de scène) et
+  ajouter des tests au contrat de données/timing ;
+- [x] appliquer ce séquençage aux trois actions d'analyse de l'épisode Data
+  Analyst.
+
+**Objectif :** éviter les scènes figées où tout le contenu apparaît au début ;
+chaque composant doit évoluer pendant que la narration développe son idée.
+**État : M07 terminé pour les listes et diagrammes séquentiels.** Les valeurs
+absentes conservent le stagger standard. Le compteur, les illustrations et
+métaphores visuelles plus concrètes restent planifiés en M08.
+
+## M08 — Illustrations concrètes et métaphores réutilisables
+
+- [ ] composer pour M05 l'exemple entreprise/produits/ventes qui s'accumulent ;
+- [ ] matérialiser la croissance avec un indicateur progressif calé sur la voix,
+  sans inventer de données chiffrées ;
+- [ ] mettre visuellement en avant le rôle « Data Analyst » et ses actions ;
+- [ ] extraire/tester les motifs réutilisables utiles (compteur, liste, graphique,
+  entreprise) sans créer une bibliothèque générique prématurément.
+
+## M09 — Poses et émotions de la mascotte
+
+- [ ] vérifier les fichiers d'émotions présents dans
+  `public/assets/images/mascot/` ;
+- [ ] enregistrer les assets validés dans `src/config/assets.ts` et
+  `src/components/mascot/poses.ts` ;
+- [ ] faire intervenir la mascotte ponctuellement selon le sens de la narration ;
+- [ ] valider que pose, attitude et timing sont cohérents et ne masquent pas le
+  contenu.
+
+## M10 — Terminer et valider l'épisode de référence
+
+- [ ] intégrer les fondations M07 à M09 au storyboard Data Analyst ;
+- [ ] vérifier l'ensemble de la vidéo dans Studio ;
+- [ ] rendre le MP4 final ;
+- [ ] revue qualité (synchronisation, rythme, captions, lisibilité mobile,
+  exactitude et erreurs visuelles).
+
+## M11 — Production scale
 
 - [ ] pipeline répétable ;
 - [ ] assistant IA stable ;
 - [ ] logs et review loop ;
 - [ ] documentation de la production.
 
+**Dépendances :** construire un workflow répétable seulement après validation
+de la direction, du rythme visuel, des motifs réutilisables, de la mascotte et
+de l'épisode de référence.
 ---
 
 # 3. Règles de priorité
@@ -331,4 +400,8 @@ transcript. Le rendu complet d'un épisode de référence reste M05.
 
 # 4. Décision de direction
 
-La prochaine étape claire du projet est de finaliser le modèle de scène audio-aware et le contrat des données d'épisode, afin que les scènes et les composants visuels puissent être séparés proprement sans perdre la synchronisation avec la narration.
+Les prochains épisodes doivent suivre `docs/VIDEO-DIRECTION.md`. M06 fixe la
+direction et le style des captions ; M07 à M09 implémentent les mouvements,
+illustrations et interventions de mascotte par étapes. M05 ne sera déclaré
+terminé qu'après intégration des améliorations retenues, export et revue
+qualité.

@@ -136,6 +136,62 @@ test("episode : les captions viennent du transcript (secondes -> ms)", () => {
   ]);
 });
 
+test("episode : les revealOffsets sont ordonnés et relatifs à la durée de scène", () => {
+  const episode: Episode = {
+    ...validEpisode,
+    scenes: [
+      {
+        ...validEpisode.scenes[0],
+        type: "diagram",
+        visual: {
+          component: "FlowDiagram",
+          props: {
+            nodes: [{ title: "A" }, { title: "B" }, { title: "C" }],
+          },
+          revealOffsets: [0, 2.5, 8.69],
+        },
+      },
+    ],
+  };
+
+  assert.doesNotThrow(() => validateEpisode(episode, 30));
+});
+
+test("episode : les revealOffsets hors bornes ou non ordonnés sont rejetés", () => {
+  for (const revealOffsets of [
+    [],
+    [-0.1, 1, 2],
+    [8.7, 8.71, 8.72],
+    [2, 1, 3],
+    [1, 1, 2],
+    [Number.NaN, 1, 2],
+    [0, 2],
+  ]) {
+    const episode: Episode = {
+      ...validEpisode,
+      scenes: [
+        {
+          ...validEpisode.scenes[0],
+          type: "diagram",
+          visual: {
+            component: "FlowDiagram",
+            props: {
+              nodes: [{ title: "A" }, { title: "B" }, { title: "C" }],
+            },
+            revealOffsets,
+          },
+        },
+      ],
+    };
+
+    assert.throws(
+      () => validateEpisode(episode, 30),
+      /revealOffsets/,
+      `Expected ${JSON.stringify(revealOffsets)} to be rejected`,
+    );
+  }
+});
+
 test("episode : le texte d'une scène est reconstruit depuis le transcript", () => {
   assert.equal(
     getSceneTranscriptText(validEpisode, { start: 0, end: 8.7 }),

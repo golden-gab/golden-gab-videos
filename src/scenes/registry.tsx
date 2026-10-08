@@ -4,9 +4,11 @@ import {
   Callout,
   CodeShowcase,
   Comparison,
+  AnimatedList,
   FlowDiagram,
   HeroTitle,
   InfoCard,
+  type AnimatedListProps,
   type CalloutProps,
   type CodeShowcaseProps,
   type ComparisonProps,
@@ -28,6 +30,30 @@ export type SceneComponent = React.FC<SceneRendererProps>;
 
 const getVisualProps = <T extends Record<string, unknown>>(scene: Scene): T =>
   (scene.visual.props ?? {}) as T;
+
+const renderAnimatedList: SceneComponent = ({
+  scene,
+  tone,
+  style,
+  className,
+}) => {
+  const visualProps = getVisualProps<Partial<AnimatedListProps>>(scene);
+  const props: AnimatedListProps = {
+    items: visualProps.items ?? [],
+    title: visualProps.title,
+    marker: visualProps.marker,
+    startNumber: visualProps.startNumber,
+    tone: tone ?? visualProps.tone ?? "light",
+    animation: visualProps.animation ?? "slide-up",
+    delaySeconds: visualProps.delaySeconds ?? 0,
+    staggerSeconds: visualProps.staggerSeconds,
+    itemRevealOffsets: scene.visual.revealOffsets,
+    style,
+    className,
+  };
+
+  return <AnimatedList {...props} />;
+};
 
 export const sceneRegistry: Record<SceneType, SceneComponent> = {
   hero: ({ scene, tone, style, className }) => {
@@ -79,6 +105,7 @@ export const sceneRegistry: Record<SceneType, SceneComponent> = {
       animation: visualProps.animation ?? "slide-up",
       delaySeconds: visualProps.delaySeconds ?? 0,
       staggerSeconds: visualProps.staggerSeconds,
+      itemRevealOffsets: scene.visual.revealOffsets,
       showNumbers: visualProps.showNumbers ?? false,
       nodeVariant: visualProps.nodeVariant ?? "card",
       style,
@@ -166,6 +193,7 @@ export const visualComponentRegistry: Record<string, SceneComponent> = {
   HeroTitle: sceneRegistry.hero,
   InfoCard: sceneRegistry.explanation,
   FlowDiagram: sceneRegistry.diagram,
+  AnimatedList: renderAnimatedList,
   CodeShowcase: sceneRegistry.code,
   Comparison: sceneRegistry.comparison,
   Callout: ({ scene, ...props }) => {

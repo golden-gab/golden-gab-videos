@@ -94,3 +94,33 @@ Les entrées doivent rester compactes, factuelles et exploitables sans relire to
 - validation: `npm test` (37 tests) passed; `npm run lint` (eslint + tsc) passed; `src/scenes` bundled with esbuild; `npx remotion compositions` still lists Styleguide + CaptionedVideo
 - roadmap: updated (M04 done)
 - next: build one reference episode end to end and render it (M05)
+
+### 2026-10-08 — M05 reference episode in progress
+- status: in_progress
+- scope: registered the Data Analyst reference episode, connected episode audio playback to `EpisodeRenderer`, and later integrated its MP3 narration
+- files: `src/series/metiers-de-la-tech/*`, `src/scenes/renderer.tsx`, `docs/ARCHITECTURE.md`, `docs/ROADMAP.md`, `package.json`
+- decision: use the real recorded voice; transcribe French locally with Whisper.cpp (`base`), never provisional TTS or an external transcription service
+- impact: actual audio duration (25.0776 s), transcript and scene timing now match `public/audio/mdt-data-analyst-voice.mp3`; final render and QA remain pending
+- validation: local Whisper transcription completed; `npm test` (41 tests), `npm run lint`, `npx remotion compositions`, and Studio MP3 preview passed
+- roadmap: updated (M05 in progress)
+- next: verify transcript/scenes, render the episode, and complete quality review
+
+### 2026-10-08 — Video direction and active-word captions
+- status: in_progress
+- scope: documented durable creative guidance, added the `highlight` caption preset, applied it to the reference episode, and split the remaining visual work into milestones
+- files: `docs/VIDEO-DIRECTION.md`, `docs/{RULES,DESIGN-SYSTEM,ROADMAP,DECISION_LOG}.md`, `src/captions/{styles,CaptionPage}.tsx`, `src/compositions/Styleguide.tsx`, `src/series/metiers-de-la-tech/videos/reference-episode.tsx`
+- decision: use a white outlined current word on a navy Golden Gab chip; every episode should translate key narration into progressive visuals, with mascot appearances used intentionally
+- impact: visual direction is a permanent production constraint; progressive scene beats, concrete sales illustrations, mascot pose registration, and final M05 QA are sequenced in M07–M10
+- validation: `npm test` (41 passed), `npm run lint` passed; Studio lists `mdt-data-analyst` and preview shows the active word on the navy chip at 4.08 s; no MP4 render launched
+- roadmap: updated (M06 foundations implemented; M07–M10 planned; production scale moved to M11)
+- next: validate the new caption treatment in Studio, then implement narrative-timed visual beats
+
+### 2026-10-08 — M07 transcript-synchronized visual reveals
+- status: done
+- scope: added validated scene-relative reveal offsets to sequential diagram/list items and used them for the three analysis actions in the reference episode
+- files: `src/scenes/{types,episode,registry}.tsx`, `src/scenes/episode.test.ts`, `src/components/motion/{FlowDiagram,AnimatedList}.tsx`, `src/components/motion/shared/*`, `src/compositions/Styleguide.tsx`, `src/series/metiers-de-la-tech/data/reference-episode{,.test}.ts`, `docs/{ARCHITECTURE,RULES,VIDEO-DIRECTION,ROADMAP,DECISION_LOG}.md`
+- decision: reveal offsets are seconds after scene start, strictly increasing and bounded by scene duration; omitted offsets preserve the component stagger
+- impact: FlowDiagram and AnimatedList can reveal narrative beats against transcript timings without changing scene boundaries or audio-derived captions
+- validation: `npm test` (44 passed), `npm run lint` and TypeScript passed; Studio preview at the second analysis beat shows two items while the third remains hidden; no MP4 render
+- roadmap: updated (M07 complete for sequential lists/diagrams)
+- next: M08, concretely illustrating products and sales without inventing data

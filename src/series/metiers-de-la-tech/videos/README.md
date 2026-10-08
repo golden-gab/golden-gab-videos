@@ -9,4 +9,8 @@ Une vidéo assemble des composants existants (`GoldenGabIntro`,
 `GoldenGabOutro`, `Captions`, éléments de marque, `SafeArea`…) et ne doit
 créer un composant local que si celui-ci est réellement spécifique à la série.
 
-Aucune vidéo n'est encore définie : cette tâche construit uniquement le socle.
+L'épisode de référence `mdt-data-analyst` est défini dans
+`./reference-episode.tsx`. Sa narration audio-driven est attendue dans
+`public/audio/mdt-data-analyst-voice.mp3`. La transcription française et ses
+timestamps ont été produits localement avec Whisper.cpp puis reliés aux scènes.
+Le rendu final et la revue qualité restent à effectuer.

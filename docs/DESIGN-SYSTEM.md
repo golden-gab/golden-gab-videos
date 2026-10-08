@@ -181,6 +181,7 @@ typographie, couleurs, gabarit et animations.
 | `default` | Darker Grotesque 900, capitales, texte blanc, contour bleu nuit 8 px, mot actif en corail | usage courant sur vidéo |
 | `card` | bloc bleu nuit arrondi, texte crème, mot actif en corail | fonds vidéo clairs ou chargés |
 | `subtle` | Darker Grotesque 600, casse normale, texte crème sur fond charbon translucide | passages posés / narratifs |
+| `highlight` | Darker Grotesque 900, casse normale, texte blanc détouré, mot actif sur cartouche bleu nuit | narration creator, lecture mot à mot |
 
 Principes :
 
@@ -189,6 +190,9 @@ Principes :
   (`fitText`, avec 4 % de marge de sécurité), plafonnée par `maxFontSize` ;
 - le mot prononcé est mis en évidence en corail (`emphasisMode: "word"`), ou
   tous les mots marqués `emphasis` restent en corail (`"segment"`) ;
+- le preset `highlight` place le mot courant sur un cartouche `colors.secondary`
+  et garde les autres mots en blanc détouré ; ce choix reprend la composition
+  de la référence fournie tout en restant dans la palette de marque ;
 - position par défaut : `bottom`, dans la zone captions (au-dessus de l'UI basse
   de TikTok).
 

@@ -91,7 +91,7 @@ src/
 │   ├── types.ts                   Episode / Scene + helpers de timing
 │   ├── episode.ts                 logique pure d'épisode (validation, durée, captions)
 │   ├── registry.tsx               type narratif et visuel → composant Motion
-│   ├── renderer.tsx               rendu : placement timeline + captions
+│   ├── renderer.tsx               rendu : voix, placement timeline + captions
 │   └── index.ts                   API publique
 │
 ├── series/                        CONTENU, PAR SÉRIE
@@ -478,7 +478,7 @@ Un épisode est **audio-driven** : il porte son `AudioTrack` et son `Transcript`
 types.ts     Episode / Scene + helpers de timing (start/end en secondes)
 episode.ts   logique pure : validation, durée audio, captions, transcript par scène
 registry.tsx type narratif et visuel → composant Motion (React)
-renderer.tsx rendu Remotion : placement sur la timeline + captions
+renderer.tsx rendu Remotion : piste audio + placement sur la timeline + captions
 ```
 
 `episode.ts` est **pur** (sans React/Remotion) et testable ; `renderer.tsx` ne
@@ -499,6 +499,10 @@ scène a un `type` narratif connu (`sceneTypes`), un composant visuel non vide e
 l'audio. La durée de l'épisode est celle de l'audio, jamais un maximum de durées
 de template. `validateEpisode()` rejette un épisode incohérent avant rendu.
 
+**Audio** : `EpisodeRenderer` joue `episode.audio.src` au début de la composition
+(`public/` via `staticFile()`, ou URL distante). La durée de composition reste
+celle déclarée par la piste.
+
 **Captions** : `EpisodeRenderer` dérive les captions du transcript
 (`getEpisodeCaptions` → `transcriptToCaptions`) et les superpose aux scènes via
 `<Captions />` — il suffit de passer `captions` (booléen ou réglages).
@@ -509,7 +513,12 @@ temporelle de `src/audio`.
 Le `type` décrit le rôle narratif (`hero`, `diagram`, `conclusion`, etc.) ;
 `visual.component` sélectionne le composant visuel dans le registry (ex.
 `FlowDiagram`). Les props visuelles sont des données pour ce composant. Les
-transitions automatiques restent hors périmètre.
+scènes peuvent fournir `visual.revealOffsets`, une liste d'offsets en secondes
+depuis le début de la scène pour synchroniser l'apparition séquentielle des
+éléments de `FlowDiagram` et `AnimatedList` au transcript. L'épisode rejette
+une liste vide, de taille différente du nombre d'éléments, non finie, non
+croissante ou qui sort de la durée de scène ; sans offset, le stagger du
+composant reste appliqué. Les transitions automatiques restent hors périmètre.
 
 **Note imports (tests)** : les imports de *valeurs* entre modules chargés par le
 runner natif de Node (`src/scenes/types.ts`, `src/scenes/episode.ts`) portent

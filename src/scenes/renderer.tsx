@@ -1,7 +1,9 @@
 import React from "react";
-import { AbsoluteFill, Sequence, useVideoConfig } from "remotion";
+import { Audio } from "@remotion/media";
+import { AbsoluteFill, Sequence, staticFile, useVideoConfig } from "remotion";
 
 import { Captions, type CaptionPosition, type CaptionStyleName } from "../captions";
+import { SafeArea } from "../components/common/SafeArea";
 import type { MotionTone } from "../components/motion/shared";
 import {
   getEpisodeCaptions,
@@ -42,12 +44,16 @@ export const SceneRenderer: React.FC<SceneRendererProps> = ({
       premountFor={fps}
       name={scene.id}
     >
-      <SceneComponent
-        scene={scene}
-        tone={tone}
-        style={style}
-        className={className}
-      />
+      {/* Les composants Motion ne dessinent ni fond ni plein-cadre : la scène
+          les centre dans la zone sûre (le fond vient de la composition). */}
+      <SafeArea>
+        <SceneComponent
+          scene={scene}
+          tone={tone}
+          style={style}
+          className={className}
+        />
+      </SafeArea>
     </Sequence>
   );
 };
@@ -83,6 +89,9 @@ export const EpisodeRenderer: React.FC<EpisodeRendererProps> = ({
   captions,
 }) => {
   const { fps } = useVideoConfig();
+  const audioSrc = /^https?:\/\//i.test(episode.audio.src)
+    ? episode.audio.src
+    : staticFile(episode.audio.src);
   validateEpisode(episode, fps);
   // Le registry visuel dépend de React : sa vérification reste au niveau rendu.
   episode.scenes.forEach((scene: Scene) => {
@@ -96,6 +105,11 @@ export const EpisodeRenderer: React.FC<EpisodeRendererProps> = ({
 
   return (
     <AbsoluteFill style={style}>
+      <Audio
+        name={episode.audio.id ?? "Episode narration"}
+        src={audioSrc}
+        premountFor={fps}
+      />
       {episode.scenes.map((scene) => (
         <SceneRenderer key={scene.id} scene={scene} tone={tone} />
       ))}

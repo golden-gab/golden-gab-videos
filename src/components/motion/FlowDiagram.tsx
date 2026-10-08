@@ -29,7 +29,7 @@ import { withAlpha } from "../../utils/color";
 import { AnimatedAppear } from "../common/AnimatedAppear";
 import { BrandText } from "../common/BrandText";
 import { Connector } from "./shared/Connector";
-import { getConnectorDelay, getStaggerDelay } from "./shared/stagger";
+import { getConnectorDelay, getItemRevealDelay } from "./shared/stagger";
 import {
   getMotionCardStyle,
   getMotionSurface,
@@ -62,6 +62,8 @@ export type FlowDiagramProps = {
   readonly animation?: AppearAnimation;
   readonly delaySeconds?: number;
   readonly staggerSeconds?: number;
+  /** Offset de révélation relatif à la scène pour chaque nœud, en secondes. */
+  readonly itemRevealOffsets?: readonly number[];
   /** Affiche un numéro par node (dans une pastille). */
   readonly showNumbers?: boolean;
   /** `card` = surface encadrée ; `plain` = texte seul. */
@@ -77,6 +79,7 @@ export const FlowDiagram: React.FC<FlowDiagramProps> = ({
   animation = "slide-up",
   delaySeconds = 0,
   staggerSeconds = defaultStagger,
+  itemRevealOffsets,
   showNumbers = false,
   nodeVariant = "card",
   style,
@@ -84,6 +87,8 @@ export const FlowDiagram: React.FC<FlowDiagramProps> = ({
 }) => {
   const surface = getMotionSurface(tone);
   const horizontal = direction === "horizontal";
+  const sequenceBaseDelay =
+    itemRevealOffsets === undefined ? delaySeconds : 0;
 
   const renderNode = (node: FlowNode, index: number) => {
     const accent = resolveMotionAccent(node.accent);
@@ -131,7 +136,10 @@ export const FlowDiagram: React.FC<FlowDiagramProps> = ({
       <AnimatedAppear
         key={index}
         animation={animation}
-        delaySeconds={getStaggerDelay(index, staggerSeconds) + delaySeconds}
+        delaySeconds={
+          getItemRevealDelay(index, staggerSeconds, itemRevealOffsets) +
+          sequenceBaseDelay
+        }
         style={{
           flex: horizontal ? 1 : undefined,
           minWidth: 0,
@@ -206,7 +214,16 @@ export const FlowDiagram: React.FC<FlowDiagramProps> = ({
           accent={node.accent ?? "accent"}
           length={horizontal ? spacing.lg : spacing.md}
           delaySeconds={
-            getConnectorDelay(index, staggerSeconds) + delaySeconds
+            (itemRevealOffsets
+              ? (getItemRevealDelay(index, staggerSeconds, itemRevealOffsets) +
+                  getItemRevealDelay(
+                    index + 1,
+                    staggerSeconds,
+                    itemRevealOffsets,
+                  )) /
+                2
+              : getConnectorDelay(index, staggerSeconds)) +
+            sequenceBaseDelay
           }
         />,
       );

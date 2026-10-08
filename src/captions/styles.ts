@@ -16,7 +16,7 @@ import { captionZone } from "../config/video";
 import type { AppearAnimation } from "../utils/animation";
 import { withAlpha } from "../utils/color";
 
-export type CaptionStyleName = "default" | "card" | "subtle";
+export type CaptionStyleName = "default" | "card" | "subtle" | "highlight";
 
 /** Comment le mot actif est mis en évidence. */
 export type CaptionEmphasisMode =
@@ -38,6 +38,8 @@ export type CaptionStylePreset = {
   readonly lineHeight: number;
   readonly color: string;
   readonly emphasisColor: string;
+  /** Fond du mot actif (null = seule sa couleur change). */
+  readonly wordHighlightBackground: string | null;
   readonly emphasisMode: CaptionEmphasisMode;
   /** Contour du texte (0 = aucun). */
   readonly strokeWidth: number;
@@ -74,6 +76,7 @@ const defaultStyle: CaptionStylePreset = {
   lineHeight: 1,
   color: colors.captionText,
   emphasisColor: colors.captionHighlight,
+  wordHighlightBackground: null,
   emphasisMode: "word",
   // Contour fin : Darker Grotesque a des fûts plus fins que la police du
   // template. Un contour trop épais recouvre le remplissage du glyphe.
@@ -106,6 +109,7 @@ const cardStyle: CaptionStylePreset = {
   lineHeight: 1.05,
   color: colors.inkInverse,
   emphasisColor: palette.coral,
+  wordHighlightBackground: null,
   emphasisMode: "word",
   strokeWidth: 0,
   strokeColor: "transparent",
@@ -136,6 +140,7 @@ const subtleStyle: CaptionStylePreset = {
   lineHeight: 1.15,
   color: colors.inkInverse,
   emphasisColor: palette.coral,
+  wordHighlightBackground: null,
   emphasisMode: "segment",
   strokeWidth: 0,
   strokeColor: "transparent",
@@ -152,10 +157,42 @@ const subtleStyle: CaptionStylePreset = {
   exitDuration: durations.base,
 };
 
+/**
+ * Style mot courant inspiré des captions creator : texte blanc détouré et
+ * mot prononcé sur un cartouche bleu nuit de la palette Golden Gab.
+ */
+const highlightStyle: CaptionStylePreset = {
+  name: "highlight",
+  fontFamily: fontFamilies.title,
+  fontWeight: fontWeights.black,
+  letterSpacing: "0em",
+  uppercase: false,
+  maxFontSize: typeScale.caption * 0.8,
+  lineHeight: 1.1,
+  color: colors.surfaceLight,
+  emphasisColor: colors.surfaceLight,
+  wordHighlightBackground: colors.secondary,
+  emphasisMode: "word",
+  strokeWidth: 5,
+  strokeColor: colors.ink,
+  backgroundColor: null,
+  paddingX: 0,
+  paddingY: 0,
+  borderRadius: radius.sm,
+  textAlign: "center",
+  maxWidthRatio: captionZone.maxWidthRatio,
+  bottom: captionZone.bottom,
+  appearAnimation: "pop",
+  exitAnimation: "fade",
+  appearDuration: durations.fast,
+  exitDuration: durations.instant,
+};
+
 export const captionStyles: Record<CaptionStyleName, CaptionStylePreset> = {
   default: defaultStyle,
   card: cardStyle,
   subtle: subtleStyle,
+  highlight: highlightStyle,
 };
 
 export type CaptionStyleOverrides = Partial<

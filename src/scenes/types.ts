@@ -51,6 +51,8 @@ export type SceneCaptionConfig = {
 export type SceneVisual = {
   readonly component: string;
   readonly props?: Record<string, unknown>;
+  /** Seconds after the scene starts when each sequential visual item appears. */
+  readonly revealOffsets?: readonly number[];
 };
 
 export type Scene = {

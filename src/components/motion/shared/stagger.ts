@@ -21,6 +21,13 @@ export const getStaggerDelay = (
   step: number = defaultStagger,
 ): number => Math.max(0, index) * step;
 
+/** Résout l'offset explicite d'un élément ou son stagger par défaut. */
+export const getItemRevealDelay = (
+  index: number,
+  step: number,
+  revealOffsets?: readonly number[],
+): number => revealOffsets?.[index] ?? getStaggerDelay(index, step);
+
 /** Retards (secondes) des `count` premiers éléments d'une séquence. */
 export const getStaggerDelays = (
   count: number,

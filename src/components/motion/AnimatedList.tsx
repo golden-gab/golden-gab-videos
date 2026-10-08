@@ -21,7 +21,7 @@ import type { AppearAnimation } from "../../utils/animation";
 import { withAlpha } from "../../utils/color";
 import { AnimatedAppear } from "../common/AnimatedAppear";
 import { BrandText } from "../common/BrandText";
-import { getStaggerDelay } from "./shared/stagger";
+import { getItemRevealDelay } from "./shared/stagger";
 import {
   getMotionSurface,
   resolveMotionAccent,
@@ -50,6 +50,8 @@ export type AnimatedListProps = {
   readonly animation?: AppearAnimation;
   readonly delaySeconds?: number;
   readonly staggerSeconds?: number;
+  /** Offset de révélation relatif à la scène pour chaque élément, en secondes. */
+  readonly itemRevealOffsets?: readonly number[];
   readonly style?: React.CSSProperties;
   readonly className?: string;
 };
@@ -63,12 +65,16 @@ export const AnimatedList: React.FC<AnimatedListProps> = ({
   animation = "slide-up",
   delaySeconds = 0,
   staggerSeconds = defaultStagger,
+  itemRevealOffsets,
   style,
   className,
 }) => {
   const surface = getMotionSurface(tone);
   const titleDelay = delaySeconds;
-  const itemsDelay = delaySeconds + (title ? staggerSeconds : 0);
+  const itemsDelay =
+    itemRevealOffsets === undefined
+      ? delaySeconds + (title ? staggerSeconds : 0)
+      : 0;
 
   const renderMarker = (item: AnimatedListItem, index: number) => {
     const color = resolveMotionAccent(item.accent ?? "accent");
@@ -154,7 +160,10 @@ export const AnimatedList: React.FC<AnimatedListProps> = ({
           <AnimatedAppear
             key={index}
             animation={animation}
-            delaySeconds={getStaggerDelay(index, staggerSeconds) + itemsDelay}
+            delaySeconds={
+              getItemRevealDelay(index, staggerSeconds, itemRevealOffsets) +
+              itemsDelay
+            }
           >
             <div
               style={{

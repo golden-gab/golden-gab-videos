@@ -160,6 +160,17 @@ export const CaptionPage: React.FC<CaptionPageProps> = ({
               key={`${token.startMs}-${index}`}
               style={{
                 color: emphasized ? preset.emphasisColor : undefined,
+                backgroundColor: emphasized
+                  ? (preset.wordHighlightBackground ?? undefined)
+                  : undefined,
+                padding:
+                  preset.wordHighlightBackground === null
+                    ? undefined
+                    : "0 0.1em",
+                borderRadius:
+                  preset.wordHighlightBackground === null
+                    ? undefined
+                    : preset.borderRadius,
               }}
             >
               {token.leadingSpace ? " " : ""}

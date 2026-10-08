@@ -227,3 +227,29 @@
     `src/scenes/episode.ts` (sans React/Remotion) ; `renderer.tsx` ne fait que
     le rendu. Les captions d'un épisode se dérivent du transcript
     (`getEpisodeCaptions`), elles ne sont pas ressaisies à la main.
+67. **Révélations internes audio-aware** — Pour séquencer les éléments d'un
+    `FlowDiagram` ou d'une `AnimatedList`, renseigner `visual.revealOffsets`
+    en secondes depuis le début de la scène, une valeur croissante par élément
+    (une valeur par élément) ; `validateEpisode()` en vérifie les bornes. Sans
+    timing éditorial explicite, conserver le stagger par défaut du composant.
+
+## 13. Direction vidéo et intention éditoriale
+
+68. **Source de vérité créative** — Avant de créer ou modifier une vidéo,
+    consulter `docs/VIDEO-DIRECTION.md` ; ses principes s'appliquent à toutes
+    les séries sans que l'utilisateur ait à les répéter.
+69. **Traduire la narration en image** — Chaque idée importante doit avoir un
+    visuel qui l'explique ou la matérialise (données, objets, schémas,
+    métaphores visuelles), pas seulement un titre ou une carte statique.
+70. **Mouvement pendant la phrase** — Le changement de scène ne suffit pas :
+    les éléments d'une scène doivent apparaître, évoluer ou se transformer
+    progressivement, synchronisés avec les mots et phrases de la narration.
+    Utiliser les composants Motion existants avant d'en créer.
+71. **Captions mot courant** — Pour une vidéo audio-driven, utiliser le preset
+    `highlight` sauf indication éditoriale contraire : mot courant blanc sur
+    cartouche bleu nuit, autres mots blancs détourés, selon la palette et la
+    capture de référence documentée.
+72. **Mascotte intentionnelle** — Faire intervenir la mascotte aux moments où
+    elle sert le récit, avec une expression/pose disposant d'un asset réellement
+    enregistré. Ne pas inventer ni simuler une pose manquante ; voir
+    `docs/VIDEO-DIRECTION.md` pour le statut des assets.

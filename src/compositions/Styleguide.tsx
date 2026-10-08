@@ -130,12 +130,13 @@ const captionDemoSegments: readonly CaptionSegment[] = [
 ];
 
 const captionDemos: readonly {
-  readonly style: "default" | "card" | "subtle";
+  readonly style: "default" | "card" | "subtle" | "highlight";
   readonly position: CaptionPosition;
 }[] = [
   { style: "default", position: "bottom" },
   { style: "card", position: "bottom" },
   { style: "subtle", position: "center" },
+  { style: "highlight", position: "bottom" },
 ];
 
 /** Tailles préréglées de la mascotte + miroir, vérifiées une par une. */
@@ -676,10 +677,11 @@ const MotionFlowScene: React.FC = () => {
           premountFor={fps}
         >
           <SafeArea>
-            <MotionDemo label="vertical · 4 nodes">
+            <MotionDemo label="vertical · 4 nodes · timed reveals">
               <FlowDiagram
                 direction="vertical"
                 showNumbers
+                itemRevealOffsets={[0, 1.2, 2.4, 3.6]}
                 nodes={[
                   {
                     title: "Utilisateur",

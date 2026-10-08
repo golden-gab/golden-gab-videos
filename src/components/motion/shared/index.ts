@@ -19,6 +19,7 @@ export {
   type MotionTone,
 } from "./tokens";
 export {
+  getItemRevealDelay,
   getConnectorDelay,
   getStaggerDelay,
   getStaggerDelays,

@@ -96,6 +96,55 @@ const validateSceneProps = (scene: Scene): void => {
       `Scene "${scene.id}" visual props must be an object when provided.`,
     );
   }
+
+  const revealOffsets = scene.visual.revealOffsets;
+  if (revealOffsets === undefined) {
+    return;
+  }
+  if (!Array.isArray(revealOffsets) || revealOffsets.length === 0) {
+    throw new Error(
+      `Scene "${scene.id}" visual revealOffsets must be a non-empty array when provided.`,
+    );
+  }
+
+  const visualProps = props ?? {};
+  let revealableItemCount: number;
+  if (
+    scene.visual.component === "FlowDiagram" ||
+    scene.visual.component === "diagram"
+  ) {
+    const nodes = visualProps.nodes;
+    revealableItemCount =
+      Array.isArray(nodes) && nodes.length > 0 ? nodes.length : 1;
+  } else if (scene.visual.component === "AnimatedList") {
+    const items = visualProps.items;
+    revealableItemCount = Array.isArray(items) ? items.length : 0;
+  } else {
+    throw new Error(
+      `Scene "${scene.id}" visual component "${scene.visual.component}" does not support revealOffsets.`,
+    );
+  }
+  if (revealOffsets.length !== revealableItemCount) {
+    throw new Error(
+      `Scene "${scene.id}" visual revealOffsets must contain one entry per visual item (${revealableItemCount}).`,
+    );
+  }
+
+  let previousOffset = -1;
+  const sceneDuration = scene.end - scene.start;
+  revealOffsets.forEach((offset, index) => {
+    if (
+      !Number.isFinite(offset) ||
+      offset < 0 ||
+      offset >= sceneDuration ||
+      offset <= previousOffset
+    ) {
+      throw new Error(
+        `Scene "${scene.id}" visual revealOffsets[${index}] must be finite, strictly increasing, and within [0, ${sceneDuration}).`,
+      );
+    }
+    previousOffset = offset;
+  });
 };
 
 /**
