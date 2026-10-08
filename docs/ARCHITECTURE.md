@@ -89,8 +89,9 @@ src/
 │
 ├── scenes/                        SYSTÈME DE SCÈNES NARRATIVES AUDIO-AWARE
 │   ├── types.ts                   Episode / Scene + helpers de timing
+│   ├── episode.ts                 logique pure d'épisode (validation, durée, captions)
 │   ├── registry.tsx               type narratif et visuel → composant Motion
-│   ├── renderer.tsx               validation + placement sur la timeline
+│   ├── renderer.tsx               rendu : placement timeline + captions
 │   └── index.ts                   API publique
 │
 ├── series/                        CONTENU, PAR SÉRIE
@@ -467,32 +468,52 @@ Un provider réel (Whisper, API) ne s'ajoute qu'en implémentant
 `TranscriptionProvider` : la forme des données (`Transcript`) et les composants
 visuels ne changent pas.
 
-## Système de scènes audio-aware
+## Système de scènes audio-driven
 
 `src/scenes` sépare le timing et le rôle narratif des composants visuels Motion.
-Les scènes stockent `start` / `end` en secondes ; `SceneRenderer` convertit ces
-bornes avec le `fps` Remotion courant et les place dans une `<Sequence>`.
-`EpisodeRenderer` valide l'épisode avant de rendre ses scènes.
+Un épisode est **audio-driven** : il porte son `AudioTrack` et son `Transcript`
+(couche `src/audio`), qui sont sa source de vérité temporelle.
+
+```text
+types.ts     Episode / Scene + helpers de timing (start/end en secondes)
+episode.ts   logique pure : validation, durée audio, captions, transcript par scène
+registry.tsx type narratif et visuel → composant Motion (React)
+renderer.tsx rendu Remotion : placement sur la timeline + captions
+```
+
+`episode.ts` est **pur** (sans React/Remotion) et testable ; `renderer.tsx` ne
+fait que le rendu. `SceneRenderer` convertit `start` / `end` (secondes) avec le
+`fps` Remotion courant et place la scène dans une `<Sequence>`.
 
 ```tsx
 import { EpisodeRenderer, getEpisodeDurationFrames } from "../scenes";
 
-const durationInFrames = getEpisodeDurationFrames(episode, fps);
-<EpisodeRenderer episode={episode} />;
+const durationInFrames = getEpisodeDurationFrames(episode, fps); // = durée de l'audio
+<EpisodeRenderer episode={episode} captions />;
 ```
 
-Une scène doit avoir un identifiant unique dans l'épisode, un début non négatif,
-une fin strictement supérieure au début et un composant visuel connu. Les scènes
-doivent être listées chronologiquement ; les trous sont permis, les chevauchements
-ne le sont pas tant que les transitions ne sont pas implémentées. Les conversions
-secondes → frames passent par `src/utils/time.ts`.
+**Invariants d'un épisode** : `audio` et `transcript` valides ; au moins une
+scène, identifiants uniques, ordre chronologique sans chevauchement ; chaque
+scène a un `type` narratif connu (`sceneTypes`), un composant visuel non vide et
+**tient dans la durée de l'audio**. Le transcript est lui aussi borné par
+l'audio. La durée de l'épisode est celle de l'audio, jamais un maximum de durées
+de template. `validateEpisode()` rejette un épisode incohérent avant rendu.
+
+**Captions** : `EpisodeRenderer` dérive les captions du transcript
+(`getEpisodeCaptions` → `transcriptToCaptions`) et les superpose aux scènes via
+`<Captions />` — il suffit de passer `captions` (booléen ou réglages).
+`getSceneTranscriptText()` / `getSceneTranscriptSegments()` donnent, pour une
+scène, la narration couverte par son intervalle, sans dupliquer la logique
+temporelle de `src/audio`.
 
 Le `type` décrit le rôle narratif (`hero`, `diagram`, `conclusion`, etc.) ;
-`visual.component` sélectionne le composant visuel dans le registry (ex. `FlowDiagram`).
-Les props visuelles sont des données pour ce composant. Les champs de transition,
-caption et mascotte font partie du modèle, mais leur orchestration automatique
-n'est pas fournie par M02 : les transitions et le branchement complet audio/captions
-restent des étapes ultérieures de la roadmap.
+`visual.component` sélectionne le composant visuel dans le registry (ex.
+`FlowDiagram`). Les props visuelles sont des données pour ce composant. Les
+transitions automatiques restent hors périmètre.
+
+**Note imports (tests)** : les imports de *valeurs* entre modules chargés par le
+runner natif de Node (`src/scenes/types.ts`, `src/scenes/episode.ts`) portent
+l'extension `.ts` explicite ; ailleurs, les imports restent sans extension.
 
 ## Gestion des assets
 

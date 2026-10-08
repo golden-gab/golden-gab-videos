@@ -25,7 +25,7 @@ Le projet doit privilégier :
 - [x] Bibliothèque initiale de composants Motion finalisée
 - [x] Système de scènes audio-aware (modèle, registry, validation et timeline ; voir M02)
 - [x] Couche Audio → Transcript → Timestamps (données M03 ; provider réel à venir)
-- [ ] Schéma de données d'un épisode
+- [x] Schéma de données d'un épisode (M04)
 - [ ] Template éditorial d'un épisode
 - [ ] Premier épisode de référence
 - [ ] Validation du workflow complet
@@ -292,10 +292,16 @@ transcription. Aucun composant visuel n'a été modifié. Un provider réel
 
 ## M04 — Episode schema (audio-driven)
 
-- [ ] schéma complet de `Episode` et `Scene` (metadata éditoriale, mapping visuel) ;
-- [ ] liaison `Episode` ↔ `AudioTrack` / `Transcript` ;
-- [ ] validation de cohérence avant rendu (bornes alignées sur l'audio) ;
-- [ ] branchement des captions depuis le transcript au niveau épisode.
+- [x] schéma `Episode` / `Scene` (metadata éditoriale, `sceneTypes`) ;
+- [x] liaison `Episode` ↔ `AudioTrack` / `Transcript` ;
+- [x] validation de cohérence avant rendu (bornes alignées sur l'audio) ;
+- [x] branchement des captions depuis le transcript au niveau épisode ;
+- [x] logique d'épisode pure (`src/scenes/episode.ts`) + tests.
+
+**État : terminé.** `Episode` porte désormais son audio et son transcript ;
+`getEpisodeDurationFrames` renvoie la durée de l'audio, `validateEpisode`
+rejette les scènes hors bornes, et `EpisodeRenderer` superpose les captions du
+transcript. Le rendu complet d'un épisode de référence reste M05.
 
 ## M05 — Produce a reference episode
 

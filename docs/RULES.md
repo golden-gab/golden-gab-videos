@@ -212,3 +212,18 @@
 63. **Pas de composant pour les timestamps** — La logique temporelle de
     `src/audio` reste pure, sans React ni Remotion ; le lien avec les captions
     passe par `transcriptToCaptions`, jamais par un composant dédié.
+
+## 12. Épisode audio-driven (`src/scenes`)
+
+64. **Audio comme source de vérité** — Un `Episode` référence son `AudioTrack`
+    et son `Transcript`. La durée d'un épisode est celle de l'audio
+    (`getEpisodeDurationFrames`), jamais un maximum de durées de scène.
+65. **Bornes alignées sur l'audio** — Aucune scène (ni segment de transcript) ne
+    dépasse `audio.duration`. `validateEpisode()` rejette un épisode incohérent
+    avant rendu : ordre croissant, pas de chevauchement, `type` connu
+    (`sceneTypes`), composant visuel renseigné.
+66. **Logique d'épisode pure** — La validation, la durée, le branchement des
+    captions et la lecture du transcript par scène vivent dans
+    `src/scenes/episode.ts` (sans React/Remotion) ; `renderer.tsx` ne fait que
+    le rendu. Les captions d'un épisode se dérivent du transcript
+    (`getEpisodeCaptions`), elles ne sont pas ressaisies à la main.

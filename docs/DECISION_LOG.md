@@ -84,3 +84,13 @@ Les entrées doivent rester compactes, factuelles et exploitables sans relire to
 - validation: `npm test` (27 tests, Node built-in runner) passed; `npm run lint` (eslint + tsc) passed; `npx remotion compositions` listed Styleguide + CaptionedVideo and a Styleguide still rendered (no regression)
 - roadmap: updated (M03 done; episode schema moved to M04)
 - next: build the audio-driven `Episode` schema (M04) linking audio + transcript + scenes
+
+### 2026-10-08 — M04 episode schema (audio-driven)
+- status: done
+- scope: linked `Episode` to `AudioTrack` / `Transcript`, added episode-level captions wiring and audio-bound validation
+- files: `src/scenes/{types,episode,renderer,index}.ts(x)`, `src/scenes/episode.test.ts`, `docs/ARCHITECTURE.md`, `docs/RULES.md`, `docs/ROADMAP.md`
+- decision: `Episode` requires `audio` + `transcript`; duration comes from the audio (`getEpisodeDurationFrames`); `validateEpisode` rejects scenes/transcript beyond `audio.duration`; `sceneTypes` is the runtime source of truth for `SceneType`; pure episode logic lives in `episode.ts` (React-free) while `renderer.tsx` handles visuals and overlays transcript-derived captions
+- impact: the audio/transcript layer is now reachable from the scene system; scenes can read their transcript text; captions are derived once at episode level
+- validation: `npm test` (37 tests) passed; `npm run lint` (eslint + tsc) passed; `src/scenes` bundled with esbuild; `npx remotion compositions` still lists Styleguide + CaptionedVideo
+- roadmap: updated (M04 done)
+- next: build one reference episode end to end and render it (M05)
