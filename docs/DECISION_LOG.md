@@ -74,3 +74,13 @@ Les entrées doivent rester compactes, factuelles et exploitables sans relire to
 - validation: `npm run lint` passed; `git diff --check` passed; composition listing bundled but could not finish because Google Fonts fetch failed while offline
 - roadmap: M02 marked complete; M03 is next
 - next: implement complete episode/transcript data model and validation as M03
+
+### 2026-10-08 — M03 audio / transcript pipeline
+- status: done
+- scope: added the data + temporal layer for `Audio → Transcript → Timestamps`
+- files: `src/audio/*` (types, validate, lookup, captions, mock, tests), `tsconfig.json`, `package.json`, `docs/ARCHITECTURE.md`, `docs/RULES.md`, `docs/ROADMAP.md`
+- decision: transcript timestamps in seconds; validate invariants (duration >= 0, start >= 0, end > start, audio bound, ascending order, no overlap); lookup uses half-open `[start, end)`; adapter reuses the existing captions (no new component); no external transcription dependency, only a `TranscriptionProvider` seam
+- impact: the future audio-aware scene system (M04) can resolve scene timing to transcript text; captions can consume the transcript; a real provider can be plugged in without touching visuals
+- validation: `npm test` (27 tests, Node built-in runner) passed; `npm run lint` (eslint + tsc) passed; `npx remotion compositions` listed Styleguide + CaptionedVideo and a Styleguide still rendered (no regression)
+- roadmap: updated (M03 done; episode schema moved to M04)
+- next: build the audio-driven `Episode` schema (M04) linking audio + transcript + scenes

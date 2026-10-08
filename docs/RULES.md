@@ -198,3 +198,17 @@
 60. **Règle d'or** — Un agent ne part jamais d'une tâche sans connaître le
     dernier état du projet et n'achève pas une tâche sans laisser une trace
     exploitable pour le prochain agent.
+
+## 11. Couche Audio / Transcript (`src/audio`)
+
+61. **Unité de temps** — Les types `AudioTrack`, `Transcript` et
+    `TranscriptSegment` expriment le temps en **secondes**, comme `Scene.start`
+    / `Scene.end`. La conversion vers les millisecondes des captions se fait
+    uniquement dans `src/audio/captions.ts`.
+62. **Pas de dépendance à un provider** — La couche audio/transcript ne dépend
+    d'aucun provider de transcription (Whisper, API). Un provider s'ajoute en
+    implémentant `TranscriptionProvider`, sans toucher aux composants visuels
+    ni au modèle de données.
+63. **Pas de composant pour les timestamps** — La logique temporelle de
+    `src/audio` reste pure, sans React ni Remotion ; le lien avec les captions
+    passe par `transcriptToCaptions`, jamais par un composant dédié.

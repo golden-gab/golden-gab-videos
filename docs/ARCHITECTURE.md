@@ -45,6 +45,14 @@ src/
 │   ├── CaptionPage.tsx            rendu d'une page (dimensionnement + animations)
 │   └── from-caption.ts            adaptateur depuis @remotion/captions
 │
+├── audio/                         COUCHE AUDIO — audio → transcript → timestamps
+│   ├── index.ts                   API publique
+│   ├── types.ts                   AudioTrack / Transcript / TranscriptSegment
+│   ├── validate.ts                invariants temporels (validation + assert)
+│   ├── lookup.ts                  segment actif à un instant / dans un intervalle
+│   ├── captions.ts                adaptateur TranscriptSegment → CaptionSegment
+│   └── mock.ts                    transcript + audio de développement
+│
 ├── components/                    COMPOSANTS RÉUTILISABLES (toutes séries)
 │   ├── index.ts
 │   ├── brand/                     logo, filigrane, fond, motif
@@ -132,6 +140,7 @@ interdit** : un composant de `src/components` ne doit jamais importer depuis
 | une nouvelle vidéo | `src/series/<serie>/videos/` + enregistrement dans `src/series/<serie>/index.tsx` |
 | une nouvelle série | `src/series/<serie>/` + une ligne dans `src/series/index.ts` |
 | les types et le rendu des scènes d'épisode | `src/scenes/` |
+| un contrat audio / transcript et sa logique temporelle | `src/audio/` |
 | un helper réutilisable | `src/utils/` |
 | une donnée de contenu d'une série | `src/series/<serie>/data/` |
 | un asset de marque | `public/assets/` (puis `src/config/assets.ts` si réutilisé) |
@@ -411,6 +420,52 @@ const segments = fromRemotionCaptions(captions);
 Pour ajouter un style de captions : ajouter une entrée dans `captionStyles`
 (`src/captions/styles.ts`) et la clé correspondante dans `CaptionStyleName`.
 Aucun composant à modifier.
+
+## Couche Audio / Transcript
+
+`src/audio` est la couche de données du pipeline `Audio → Transcript →
+Timestamps`. L'audio réel de la voix y est traité comme la **source de vérité
+temporelle** (priorité : audio > timestamps > décisions éditoriales > durées de
+template). Elle ne dépend ni de Remotion, ni d'un provider de transcription, ni
+d'un composant visuel : elle ne décrit que des données et de la logique
+temporelle.
+
+```text
+types.ts     AudioTrack / Transcript / TranscriptSegment (+ TranscriptionProvider)
+validate.ts  invariants temporels (validate… / assert…)
+lookup.ts    getTranscriptSegmentAt / getTranscriptSegmentsInRange
+captions.ts  adaptateur TranscriptSegment → CaptionSegment
+mock.ts      mockTranscript + mockAudioTrack (développement)
+```
+
+**Unité de temps : secondes.** Les timestamps de cette couche sont en secondes,
+comme `Scene.start` / `Scene.end`. Le système de captions raisonne en
+millisecondes : la conversion se fait une seule fois, dans `captions.ts`.
+
+**Invariants vérifiés** : `duration >= 0`, `start >= 0`, `end > start`, segment
+borné par la durée audio (si fournie), segments ordonnés par `start` croissant
+et sans chevauchement. `validateTranscript()` renvoie des erreurs explicites ;
+`assertValidTranscript()` lève au point d'entrée du rendu.
+
+**Branché sur les captions sans les recréer** : aucun composant `Caption`
+n'existe ici, seulement un adaptateur de données.
+
+```ts
+import {
+  assertValidTranscript,
+  getTranscriptSegmentAt,
+  transcriptToCaptions,
+} from "../audio";
+
+assertValidTranscript(mockTranscript, { audio: mockAudioTrack });
+const segment = getTranscriptSegmentAt(mockTranscript, 4.5); // segment actif ou null
+const captions = transcriptToCaptions(mockTranscript);
+// <Captions segments={captions} />
+```
+
+Un provider réel (Whisper, API) ne s'ajoute qu'en implémentant
+`TranscriptionProvider` : la forme des données (`Transcript`) et les composants
+visuels ne changent pas.
 
 ## Système de scènes audio-aware
 

@@ -24,7 +24,7 @@ Le projet doit privilégier :
 - [x] Mascotte Golden Gab intégrée comme composant global
 - [x] Bibliothèque initiale de composants Motion finalisée
 - [x] Système de scènes audio-aware (modèle, registry, validation et timeline ; voir M02)
-- [ ] Pipeline Audio → Transcription → Timestamps
+- [x] Couche Audio → Transcript → Timestamps (données M03 ; provider réel à venir)
 - [ ] Schéma de données d'un épisode
 - [ ] Template éditorial d'un épisode
 - [ ] Premier épisode de référence
@@ -276,22 +276,35 @@ de la composition. Les scènes doivent être ordonnées et ne peuvent pas se
 chevaucher ; les espaces sans scène sont permis. Les transitions et le
 branchement complet des couches audio/captions restent hors du périmètre M02.
 
-## M03 — Episode data model
+## M03 — Audio / Transcript pipeline
 
-- [ ] schéma complet de `Episode` et `Scene` ;
-- [ ] transcript segments ;
-- [ ] metadata éditoriale ;
-- [ ] mapping visuel ;
-- [ ] validation de cohérence avant rendu.
+- [x] contrats `AudioTrack` / `Transcript` / `TranscriptSegment` ;
+- [x] invariants temporels (durée, bornes, ordre, chevauchement) ;
+- [x] lookup du segment actif (`getTranscriptSegmentAt`) ;
+- [x] adaptateur vers les captions (`transcriptToCaptions`) ;
+- [x] mock audio + transcript de développement ;
+- [x] tests unitaires (runner natif de Node).
 
-## M04 — Produce a reference episode
+**État : terminé.** La couche `src/audio/` représente `Audio → Transcript →
+Timestamps` en secondes, indépendamment de Remotion et de tout provider de
+transcription. Aucun composant visuel n'a été modifié. Un provider réel
+(Whisper, API) reste à brancher en implémentant `TranscriptionProvider`.
+
+## M04 — Episode schema (audio-driven)
+
+- [ ] schéma complet de `Episode` et `Scene` (metadata éditoriale, mapping visuel) ;
+- [ ] liaison `Episode` ↔ `AudioTrack` / `Transcript` ;
+- [ ] validation de cohérence avant rendu (bornes alignées sur l'audio) ;
+- [ ] branchement des captions depuis le transcript au niveau épisode.
+
+## M05 — Produce a reference episode
 
 - [ ] 1 épisode de référence complet ;
 - [ ] storyboard audio-driven ;
 - [ ] rendu final ;
 - [ ] revue qualité.
 
-## M05 — Production scale
+## M06 — Production scale
 
 - [ ] pipeline répétable ;
 - [ ] assistant IA stable ;
