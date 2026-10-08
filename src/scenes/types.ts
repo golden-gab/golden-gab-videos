@@ -2,18 +2,35 @@
  * Le système de scènes vit dans `src/scenes/` pour distinguer le timing et la
  * narration (pipeline de production) des composants Motion purs, qui restent
  * réutilisables et agnostiques des séries.
+ *
+ * L'épisode est **audio-driven** : il porte son `AudioTrack` et son
+ * `Transcript` (couche `src/audio`), qui sont la source de vérité temporelle.
+ * La logique d'épisode pure vit dans `./episode` (testable sans React) ; le
+ * rendu Remotion vit dans `./renderer.tsx`.
+ *
+ * Note imports : les imports de *valeurs* entre modules testés par le runner
+ * natif de Node portent l'extension `.ts` explicite (voir `docs/ARCHITECTURE.md`).
  */
 
-import { secondsToFrames } from "../utils/time";
+import type { AudioTrack, Transcript } from "../audio/types";
+import { secondsToFrames } from "../utils/time.ts";
 
-export type SceneType =
-  | "hero"
-  | "explanation"
-  | "diagram"
-  | "code"
-  | "comparison"
-  | "callout"
-  | "conclusion";
+/**
+ * Types narratifs d'une scène. La liste est la **source de vérité** :
+ * `SceneType` en est dérivé et la validation pure la réutilise, sans dépendre
+ * du registry visuel (qui vit dans un composant React, `registry.tsx`).
+ */
+export const sceneTypes = [
+  "hero",
+  "explanation",
+  "diagram",
+  "code",
+  "comparison",
+  "callout",
+  "conclusion",
+] as const;
+
+export type SceneType = (typeof sceneTypes)[number];
 
 export type SceneTransition = {
   readonly enter?: string;
@@ -49,11 +66,26 @@ export type Scene = {
   readonly metadata?: Record<string, unknown>;
 };
 
+/** Métadonnées éditoriales d'un épisode (recherche, angle, script…). */
+export type EpisodeMetadata = {
+  readonly series?: string;
+  readonly subject?: string;
+  readonly angle?: string;
+  readonly tags?: readonly string[];
+  readonly script?: string;
+};
+
 export type Episode = {
   readonly id: string;
   readonly title: string;
   readonly description?: string;
+  /** Audio de narration : source de vérité temporelle de l'épisode. */
+  readonly audio: AudioTrack;
+  /** Transcription horodatée de `audio`. */
+  readonly transcript: Transcript;
   readonly scenes: readonly Scene[];
+  /** Métadonnées éditoriales, non consommées par le rendu. */
+  readonly metadata?: EpisodeMetadata;
 };
 
 export const isValidSceneTiming = (scene: Pick<Scene, "start" | "end">): boolean =>
@@ -76,6 +108,11 @@ export const validateSceneTiming = (
 export const getSceneDurationSeconds = (
   scene: Pick<Scene, "start" | "end">,
 ): number => scene.end - scene.start;
+
+/** Durée de l'épisode : celle de l'audio réel, source de vérité temporelle. */
+export const getEpisodeDurationSeconds = (
+  episode: Pick<Episode, "audio">,
+): number => episode.audio.duration;
 
 const validateFps = (fps: number): void => {
   if (!Number.isFinite(fps) || fps <= 0) {
@@ -103,11 +140,6 @@ export const getSceneDurationFrames = (
   scene: Pick<Scene, "start" | "end">,
   fps: number,
 ): number => getSceneEndFrame(scene, fps) - getSceneStartFrame(scene, fps);
-
-export const getEpisodeDurationSeconds = (
-  episode: Pick<Episode, "scenes">,
-): number =>
-  episode.scenes.reduce((duration, scene) => Math.max(duration, scene.end), 0);
 
 export const createScene = <TType extends SceneType>(
   scene: Omit<Scene, "type" | "visual"> & {
