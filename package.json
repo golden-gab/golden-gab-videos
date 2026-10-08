@@ -34,6 +34,7 @@
     "build": "remotion bundle",
     "upgrade": "remotion upgrade",
     "lint": "eslint src && tsc",
+    "test": "node --test --disable-warning=MODULE_TYPELESS_PACKAGE_JSON \"src/**/*.test.ts\"",
     "create-subtitles": "node sub.mjs"
   },
   "sideEffects": [
