@@ -59,6 +59,7 @@ export type Episode = {
 export const isValidSceneTiming = (scene: Pick<Scene, "start" | "end">): boolean =>
   Number.isFinite(scene.start) &&
   Number.isFinite(scene.end) &&
+  scene.start >= 0 &&
   scene.end > scene.start;
 
 export const validateSceneTiming = (
@@ -67,19 +68,41 @@ export const validateSceneTiming = (
 ): void => {
   if (!isValidSceneTiming(scene)) {
     throw new Error(
-      `${context ?? "Scene"} must define a valid timing: end must be greater than start.`,
+      `${context ?? "Scene"} must have a nonnegative start and an end greater than start.`,
     );
   }
 };
 
 export const getSceneDurationSeconds = (
   scene: Pick<Scene, "start" | "end">,
-): number => Math.max(0, scene.end - scene.start);
+): number => scene.end - scene.start;
+
+const validateFps = (fps: number): void => {
+  if (!Number.isFinite(fps) || fps <= 0) {
+    throw new Error(`Scene timing requires a positive fps; received ${fps}.`);
+  }
+};
+
+export const getSceneStartFrame = (
+  scene: Pick<Scene, "start">,
+  fps: number,
+): number => {
+  validateFps(fps);
+  return secondsToFrames(scene.start, fps);
+};
+
+export const getSceneEndFrame = (
+  scene: Pick<Scene, "end">,
+  fps: number,
+): number => {
+  validateFps(fps);
+  return secondsToFrames(scene.end, fps);
+};
 
 export const getSceneDurationFrames = (
   scene: Pick<Scene, "start" | "end">,
   fps: number,
-): number => secondsToFrames(getSceneDurationSeconds(scene), fps);
+): number => getSceneEndFrame(scene, fps) - getSceneStartFrame(scene, fps);
 
 export const getEpisodeDurationSeconds = (
   episode: Pick<Episode, "scenes">,
@@ -92,13 +115,13 @@ export const createScene = <TType extends SceneType>(
     readonly visual?: Partial<SceneVisual>;
   },
 ): Scene => {
-  const validatedScene = {
+  const validatedScene: Scene = {
     ...scene,
     visual: {
       component: scene.visual?.component ?? scene.type,
       props: scene.visual?.props ?? {},
     },
-  } as Scene;
+  };
 
   validateSceneTiming(validatedScene, validatedScene.id);
 

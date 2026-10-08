@@ -79,6 +79,12 @@ src/
 │   ├── index.tsx                  styleguide + dossiers de toutes les séries
 │   └── Styleguide.tsx             composition de QA du design system
 │
+├── scenes/                        SYSTÈME DE SCÈNES NARRATIVES AUDIO-AWARE
+│   ├── types.ts                   Episode / Scene + helpers de timing
+│   ├── registry.tsx               type narratif et visuel → composant Motion
+│   ├── renderer.tsx               validation + placement sur la timeline
+│   └── index.ts                   API publique
+│
 ├── series/                        CONTENU, PAR SÉRIE
 │   ├── index.ts                   registre des séries
 │   ├── types.ts                   contrat d'une série
@@ -125,6 +131,7 @@ interdit** : un composant de `src/components` ne doit jamais importer depuis
 | un composant propre à une série | `src/series/<serie>/components/` |
 | une nouvelle vidéo | `src/series/<serie>/videos/` + enregistrement dans `src/series/<serie>/index.tsx` |
 | une nouvelle série | `src/series/<serie>/` + une ligne dans `src/series/index.ts` |
+| les types et le rendu des scènes d'épisode | `src/scenes/` |
 | un helper réutilisable | `src/utils/` |
 | une donnée de contenu d'une série | `src/series/<serie>/data/` |
 | un asset de marque | `public/assets/` (puis `src/config/assets.ts` si réutilisé) |
@@ -404,6 +411,33 @@ const segments = fromRemotionCaptions(captions);
 Pour ajouter un style de captions : ajouter une entrée dans `captionStyles`
 (`src/captions/styles.ts`) et la clé correspondante dans `CaptionStyleName`.
 Aucun composant à modifier.
+
+## Système de scènes audio-aware
+
+`src/scenes` sépare le timing et le rôle narratif des composants visuels Motion.
+Les scènes stockent `start` / `end` en secondes ; `SceneRenderer` convertit ces
+bornes avec le `fps` Remotion courant et les place dans une `<Sequence>`.
+`EpisodeRenderer` valide l'épisode avant de rendre ses scènes.
+
+```tsx
+import { EpisodeRenderer, getEpisodeDurationFrames } from "../scenes";
+
+const durationInFrames = getEpisodeDurationFrames(episode, fps);
+<EpisodeRenderer episode={episode} />;
+```
+
+Une scène doit avoir un identifiant unique dans l'épisode, un début non négatif,
+une fin strictement supérieure au début et un composant visuel connu. Les scènes
+doivent être listées chronologiquement ; les trous sont permis, les chevauchements
+ne le sont pas tant que les transitions ne sont pas implémentées. Les conversions
+secondes → frames passent par `src/utils/time.ts`.
+
+Le `type` décrit le rôle narratif (`hero`, `diagram`, `conclusion`, etc.) ;
+`visual.component` sélectionne le composant visuel dans le registry (ex. `FlowDiagram`).
+Les props visuelles sont des données pour ce composant. Les champs de transition,
+caption et mascotte font partie du modèle, mais leur orchestration automatique
+n'est pas fournie par M02 : les transitions et le branchement complet audio/captions
+restent des étapes ultérieures de la roadmap.
 
 ## Gestion des assets
 

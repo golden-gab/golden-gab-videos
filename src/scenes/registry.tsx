@@ -87,7 +87,7 @@ export const sceneRegistry: Record<SceneType, SceneComponent> = {
 
     return <FlowDiagram {...props} />;
   },
-  code: ({ scene, tone, style, className }) => {
+  code: ({ scene, style, className }) => {
     const visualProps = getVisualProps<Partial<CodeShowcaseProps>>(scene);
     const props: CodeShowcaseProps = {
       code: visualProps.code ?? scene.transcript ?? "// code à afficher",
@@ -161,8 +161,37 @@ export const sceneRegistry: Record<SceneType, SceneComponent> = {
   },
 };
 
-export const resolveSceneComponent = (scene: Pick<Scene, "type">): SceneComponent =>
-  sceneRegistry[scene.type] ?? sceneRegistry.hero;
+export const visualComponentRegistry: Record<string, SceneComponent> = {
+  ...sceneRegistry,
+  HeroTitle: sceneRegistry.hero,
+  InfoCard: sceneRegistry.explanation,
+  FlowDiagram: sceneRegistry.diagram,
+  CodeShowcase: sceneRegistry.code,
+  Comparison: sceneRegistry.comparison,
+  Callout: ({ scene, ...props }) => {
+    const SceneComponent =
+      scene.type === "conclusion"
+        ? sceneRegistry.conclusion
+        : sceneRegistry.callout;
+
+    return <SceneComponent scene={scene} {...props} />;
+  },
+};
+
+export const resolveSceneComponent = (
+  scene: Pick<Scene, "type" | "visual">,
+): SceneComponent => {
+  const componentName = scene.visual.component;
+  const registeredNames = Object.keys(visualComponentRegistry);
+  const componentIndex = registeredNames.indexOf(componentName);
+  if (componentIndex === -1) {
+    throw new Error(
+      `Scene "${scene.type}" references unknown visual component "${componentName}".`,
+    );
+  }
+
+  return visualComponentRegistry[componentName];
+};
 
 export const getSceneVisualComponent = (scene: Pick<Scene, "visual">): string =>
   scene.visual.component;
