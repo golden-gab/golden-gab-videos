@@ -79,6 +79,36 @@ Ajouter une vidéo = créer un fichier dans `src/series/<serie>/videos/` et
 l'enregistrer dans `src/series/<serie>/index.tsx`.
 Voir [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#organisation-des-vidéos).
 
+## Assets externes (icônes, photos, b-roll)
+
+Le script `npm run asset` récupère les assets dans
+`public/assets/library/` et les trace dans `src/config/assets.manifest.json`.
+Ils se lisent ensuite via `src/config/assetLibrary.ts` (jamais un chemin en
+dur). Les icônes (Iconify) ne demandent aucune clé.
+
+Pour les photos et le b-roll, une clé **gratuite** suffit — **une seule des
+deux** ; le script bascule automatiquement de l'une à l'autre :
+
+- **Pixabay** : <https://pixabay.com/api/docs/> (la clé s'affiche après connexion)
+- **Pexels** : <https://www.pexels.com/api/>
+
+Copier `.env.example` en `.env` et renseigner la valeur :
+
+```console
+cp .env.example .env
+# puis dans .env : PIXABAY_API_KEY=… et/ou PEXELS_API_KEY=…
+```
+
+`.env` est ignoré par Git (voir `.gitignore`) : ne jamais le committer.
+
+```console
+npm run asset -- search icon "receipt"
+npm run asset -- get icon lucide:receipt --id receipt --tags facture,paiement
+npm run asset -- search photo "restaurant kitchen" --orientation portrait
+npm run asset -- get photo pixabay:7654321 --id kitchen-pass --tags cuisine
+npm run asset -- list
+```
+
 ## Captioning (transcription Whisper)
 
 Remplacez `sample-video.mp4` par votre fichier vidéo, puis transcrivez les

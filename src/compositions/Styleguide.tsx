@@ -33,12 +33,14 @@ import {
 import { GoldenGabIntro } from "../components/intro/GoldenGabIntro";
 import { GoldenGabOutro } from "../components/outro/GoldenGabOutro";
 import {
+  brandAssets,
   captionZone,
   colors,
   palette,
   radius,
   safeArea,
   spacing,
+  templateAssets,
   videoFormat,
 } from "../config";
 import { type PaletteColor } from "../config/colors";
@@ -53,6 +55,9 @@ import {
   HeroTitle,
   InfoCard,
   MascotScene as MascotSceneComponent,
+  LibraryIcon,
+  LibraryImage,
+  LibraryVideo,
   NodeGraph,
   ProcessSteps,
   SectionTitle,
@@ -87,6 +92,7 @@ const STAT_SECONDS = 8;
 const BEFORE_AFTER_SECONDS = 8;
 const NODE_GRAPH_SECONDS = 8;
 const MASCOT_MOTION_SECONDS = 8;
+const LIBRARY_SECONDS = 12;
 
 /** Durée totale, en secondes. Maintenue en cohérence avec les sections. */
 export const STYLEGUIDE_DURATION_IN_SECONDS =
@@ -111,6 +117,7 @@ export const STYLEGUIDE_DURATION_IN_SECONDS =
   BEFORE_AFTER_SECONDS +
   NODE_GRAPH_SECONDS +
   MASCOT_MOTION_SECONDS +
+  LIBRARY_SECONDS +
   INTRO_SECONDS +
   OUTRO_SECONDS;
 
@@ -1229,6 +1236,90 @@ const MotionMascotSceneScene: React.FC = () => {
   );
 };
 
+const MotionAssetLibraryScene: React.FC = () => {
+  const { fps } = useVideoConfig();
+  const per = LIBRARY_SECONDS / 4;
+
+  return (
+    <AbsoluteFill>
+      <BrandBackground variant="light" motif motifOpacity={0.25} />
+      <Series>
+        <Series.Sequence
+          name="LibraryIcon · receipt"
+          durationInFrames={secondsToFrames(per, fps)}
+          premountFor={fps}
+        >
+          <SafeArea justify="center">
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: spacing.lg,
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: spacing.xl,
+                }}
+              >
+                <LibraryIcon id="receipt" size={140} accent="accent" draw />
+                <LibraryIcon id="receipt" size={200} accent="secondary" />
+              </div>
+              <BrandText role="label" color={colors.accent}>
+                libraryIcon(&quot;receipt&quot;) · lucide · ISC
+              </BrandText>
+            </div>
+          </SafeArea>
+        </Series.Sequence>
+        <Series.Sequence
+          name="LibraryImage"
+          durationInFrames={secondsToFrames(per, fps)}
+          premountFor={fps}
+        >
+          <SafeArea justify="center">
+            <LibraryImage
+              src={brandAssets.palette}
+              zoom={0.12}
+              overlay={0.5}
+              style={{ maxWidth: 720 }}
+            />
+          </SafeArea>
+        </Series.Sequence>
+        <Series.Sequence
+          name="LibraryVideo"
+          durationInFrames={secondsToFrames(per, fps)}
+          premountFor={fps}
+        >
+          <SafeArea justify="center">
+            <LibraryVideo
+              src={templateAssets.sampleVideo}
+              zoom={0.12}
+              overlay={0.5}
+              style={{ maxWidth: 720 }}
+            />
+          </SafeArea>
+        </Series.Sequence>
+        <Series.Sequence
+          name="LottieAsset"
+          durationInFrames={secondsToFrames(per, fps)}
+          premountFor={fps}
+        >
+          <SafeArea justify="center">
+            <Callout
+              variant="info"
+              title="LottieAsset"
+              text={`Aucun asset Lottie enregistré. Ajouter : npm run asset -- add-url <url> --kind lottie --id <id> --license "..." --source-url <page>`}
+            />
+          </SafeArea>
+        </Series.Sequence>
+      </Series>
+    </AbsoluteFill>
+  );
+};
+
 export const Styleguide: React.FC = () => {
   const { fps } = useVideoConfig();
 
@@ -1381,6 +1472,13 @@ export const Styleguide: React.FC = () => {
           premountFor={fps}
         >
           <MotionMascotSceneScene />
+        </Series.Sequence>
+        <Series.Sequence
+          name="Motion · Asset library"
+          durationInFrames={secondsToFrames(LIBRARY_SECONDS, fps)}
+          premountFor={fps}
+        >
+          <MotionAssetLibraryScene />
         </Series.Sequence>
         <Series.Sequence
           name="Intro"

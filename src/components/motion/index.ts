@@ -67,3 +67,7 @@ export {
   type NodeGraphProps,
 } from "./NodeGraph";
 export { MascotScene, type MascotSceneMascot, type MascotSceneProps } from "./MascotScene";
+export { LibraryIcon, type LibraryIconProps } from "./LibraryIcon";
+export { LibraryImage, type LibraryImageProps } from "./LibraryImage";
+export { LibraryVideo, type LibraryVideoProps } from "./LibraryVideo";
+export { LottieAsset, type LottieAssetProps } from "./LottieAsset";

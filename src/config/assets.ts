@@ -11,6 +11,11 @@
 
 import { staticFile } from "remotion";
 
+// Les assets **externes** (photos, b-roll, icônes, lottie) se lisent via le même
+// registre : `assetLibrary.ts`. Ré-export ici pour que `src/config/assets.ts`
+// reste le point d'entrée des assets (règle 74).
+export * from "./assetLibrary";
+
 export const brandAssets = {
   /**
    * Logo complet Golden Gab prêt à l'emploi : monogramme + wordmark
@@ -58,3 +63,12 @@ export const mascotAssets = {
 
 /** Clés d'asset de la mascotte (une par pose réellement disponible). */
 export type MascotAssetKey = keyof typeof mascotAssets;
+
+/**
+ * Assets du template Remotion conservés dans le repo (registre technique,
+ * règle 21). Ils servent aux démos et à la QA, jamais dans une vidéo de marque.
+ */
+export const templateAssets = {
+  sampleVideo: staticFile("sample-video.mp4"),
+} as const;
+

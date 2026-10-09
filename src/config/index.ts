@@ -4,6 +4,7 @@
  */
 
 export * from "./animation";
+export * from "./assetLibrary";
 export * from "./assets";
 export * from "./brand";
 export * from "./colors";

@@ -37,3 +37,7 @@ export {
   type ConnectorDirection,
   type ConnectorProps,
 } from "./Connector";
+export {
+  AssetTreatment,
+  type AssetTreatmentProps,
+} from "./assetTreatment";
