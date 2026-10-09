@@ -6,8 +6,8 @@
  * sur la timeline et superpose les captions dérivées du transcript. Le contenu
  * vient entièrement de `../data/reference-episode`.
  *
- * Le fond est clair (comme l'intro/outro) et porte un `bottomScrim` : les
- * captions blanches restent lisibles en bas de l'écran.
+ * Le fond bleu nuit et le shell de chaque scène gardent l'épisode dans la DA
+ * Golden Gab ; les captions restent dérivées des mots du transcript.
  */
 
 import React from "react";
@@ -21,10 +21,16 @@ import { ReferenceEpisodeScene } from "./reference-episode-scene";
 export const ReferenceEpisodeVideo: React.FC = () => {
   return (
     <AbsoluteFill>
-      <BrandBackground variant="light" motif motifOpacity={0.35} bottomScrim />
+      <BrandBackground variant="dark" motif motifOpacity={0.12} bottomScrim />
       <EpisodeRenderer
         episode={referenceEpisode}
         captions={{ style: "highlight" }}
+        sceneShell={{
+          camera: "drift",
+          intensity: 0.5,
+          grain: true,
+          vignette: true,
+        }}
         renderScene={(scene) => <ReferenceEpisodeScene scene={scene} />}
       />
     </AbsoluteFill>

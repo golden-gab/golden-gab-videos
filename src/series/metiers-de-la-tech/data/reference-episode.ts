@@ -97,6 +97,18 @@ export const referenceEpisodeTranscript: Transcript = {
   ],
 };
 
+const getTranscriptWordIndex = (word: string): number => {
+  const index = referenceEpisodeTranscript.segments.findIndex(
+    (segment) => segment.text.toLowerCase() === word.toLowerCase(),
+  );
+
+  if (index < 0) {
+    throw new Error(`Transcript word "${word}" is missing from the episode.`);
+  }
+
+  return index;
+};
+
 /** Storyboard illustré, calé sur les temps réels de la narration. */
 export const referenceEpisode: Episode = {
   id: "mdt-data-analyst",
@@ -125,7 +137,11 @@ export const referenceEpisode: Episode = {
         "Imaginez une entreprise qui vend des milliers de produits chaque mois, mais lesquels se vendent vraiment.",
       visual: {
         component: "ReferenceEpisodeScene",
-        props: { questionRevealWord: "lesquels" },
+        props: {
+          productsRevealWord: "milliers",
+          monthRevealWord: "chaque",
+          questionRevealWord: "lesquels",
+        },
       },
       transition: { enter: "fade", exit: "fade" },
       captions: { enabled: true },
@@ -143,19 +159,18 @@ export const referenceEpisode: Episode = {
       transcript: "C'est là qu'intervient le data analyst.",
       visual: {
         component: "ReferenceEpisodeScene",
+        props: {
+          dataRevealWord: "data",
+          analystRevealWord: "analyst.",
+        },
       },
       transition: { enter: "slide-up", exit: "fade" },
       captions: { enabled: true },
-      mascot: {
-        enabled: true,
-        pose: "explaining",
-        attitude: "curious",
-        position: "right",
-        size: 280,
-      },
+      sfx: [{ at: { frame: 0 }, name: "whoosh" }],
+      mascot: { enabled: false },
       metadata: {
-        objective: "Présenter le métier comme le guide qui va répondre à la question.",
-        additionalAsset: "Mascotte Golden Gab, pose explaining.",
+        objective: "Présenter le métier à travers un mock de navigateur et un titre cinétique.",
+        additionalAsset: "Interface de navigateur dessinée localement, aucun asset externe.",
       },
     },
     {
@@ -168,6 +183,7 @@ export const referenceEpisode: Episode = {
       visual: {
         component: "ReferenceEpisodeScene",
         props: {
+          rawRevealWord: "données",
           transformRevealWord: "transformer",
           informationRevealWord: "informations",
         },
@@ -190,17 +206,17 @@ export const referenceEpisode: Episode = {
       visual: {
         component: "ReferenceEpisodeScene",
         props: {
-          trendRevealWord: "identifier",
-          behaviorRevealWord: "comprendre",
-          decisionRevealWord: "aider",
+          trendRevealWord: "tendances,",
+          behaviorRevealWord: "comportements",
+          decisionRevealWord: "décisions.",
         },
       },
       transition: { enter: "slide-up", exit: "fade" },
       captions: { enabled: true },
       mascot: { enabled: false },
       metadata: {
-        objective: "Faire progresser trois gestes d'analyse au moment où ils sont prononcés.",
-        additionalAsset: "Aucun : mini-graphique, comportements et décision en motion design.",
+        objective: "Faire apparaître les étiquettes d'analyse aux mots qui les nomment.",
+        additionalAsset: "Mini-graphiques et étiquettes dessinés localement.",
       },
     },
     {
@@ -211,19 +227,14 @@ export const referenceEpisode: Episode = {
       transcript: "En clair, il ne se contente pas de regarder des chiffres.",
       visual: {
         component: "ReferenceEpisodeScene",
+        props: { figuresRevealWord: "chiffres." },
       },
       transition: { enter: "fade", exit: "fade" },
       captions: { enabled: true },
-      mascot: {
-        enabled: true,
-        pose: "thinking",
-        attitude: "curious",
-        position: "right",
-        size: 280,
-      },
+      mascot: { enabled: false },
       metadata: {
-        objective: "Opposer la lecture passive d'un tableau à la recherche d'une explication.",
-        additionalAsset: "Mascotte Golden Gab, pose thinking.",
+        objective: "Passer de la lecture de chiffres à la recherche d'un motif.",
+        additionalAsset: "Grille et loupe dessinées localement.",
       },
     },
     {
@@ -231,23 +242,26 @@ export const referenceEpisode: Episode = {
       type: "conclusion",
       start: 22.68,
       end: referenceEpisodeAudio.duration,
-      transcript: "Il cherche ce que racontent les chiffres.",
+      transcript: "Il cherche ce qu'il raconte.",
       visual: {
         component: "ReferenceEpisodeScene",
+        props: {
+          searchRevealWord: "cherche",
+          storyRevealWord: "raconte.",
+        },
       },
       transition: { enter: "slide-up", exit: "fade" },
       captions: { enabled: true },
-      mascot: {
-        enabled: true,
-        pose: "point",
-        attitude: "confident",
-        facing: "right",
-        position: "left",
-        size: 320,
-      },
+      sfx: [
+        {
+          at: { wordIndex: getTranscriptWordIndex("raconte.") },
+          name: "ding",
+        },
+      ],
+      mascot: { enabled: false },
       metadata: {
         objective: "Terminer sur la promesse du métier : révéler le sens, pas réciter les nombres.",
-        additionalAsset: "Mascotte Golden Gab et logo officiel.",
+        additionalAsset: "Graphique synthétique dessiné localement, sans données ajoutées.",
       },
     },
   ],

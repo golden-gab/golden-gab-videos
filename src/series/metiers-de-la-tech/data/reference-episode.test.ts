@@ -36,7 +36,7 @@ test("épisode de référence : chaque scène reste dans l'audio et est ordonné
   });
 });
 
-test("storyboard : chaque beat précise son objectif, ses captions et sa transition", () => {
+test("storyboard : chaque beat précise objectif, captions, transition et mascotte intentionnelle", () => {
   referenceEpisode.scenes.forEach((scene) => {
     assert.equal(typeof scene.metadata?.objective, "string", scene.id);
     assert.ok(scene.transition?.enter, `transition d'entrée manquante : ${scene.id}`);
@@ -48,7 +48,29 @@ test("storyboard : chaque beat précise son objectif, ses captions et sa transit
     referenceEpisode.scenes
       .filter((scene) => scene.mascot?.enabled)
       .map((scene) => scene.id),
-    ["role", "insight", "conclusion"],
+    [],
+  );
+});
+
+test("épisode de référence : deux SFX seulement sur des apparitions fortes", () => {
+  const sfx = referenceEpisode.scenes.flatMap((scene) =>
+    (scene.sfx ?? []).map((entry) => ({ scene, entry })),
+  );
+
+  assert.deepEqual(
+    sfx.map(({ entry }) => entry.name),
+    ["whoosh", "ding"],
+  );
+  assert.equal(sfx[0].scene.id, "role");
+  assert.deepEqual(sfx[0].entry.at, { frame: 0 });
+  assert.equal(sfx[1].scene.id, "conclusion");
+
+  if (!("wordIndex" in sfx[1].entry.at)) {
+    assert.fail("Le ding de clôture doit être calé sur un mot du transcript.");
+  }
+  assert.equal(
+    referenceEpisode.transcript.segments[sfx[1].entry.at.wordIndex].text,
+    "raconte.",
   );
 });
 
@@ -68,7 +90,7 @@ test("storyboard : les révélations de la transformation correspondent au trans
 
   const beats = transformationScene.visual.props;
   assert.ok(beats);
-  ["transformRevealWord", "informationRevealWord"].forEach((beatKey) => {
+  ["rawRevealWord", "transformRevealWord", "informationRevealWord"].forEach((beatKey) => {
     const word = beats[beatKey];
     assert.equal(typeof word, "string");
     const segment = referenceEpisode.transcript.segments.find(
@@ -83,7 +105,7 @@ test("storyboard : les révélations de la transformation correspondent au trans
   });
 });
 
-test("épisode de référence : les révélations du diagramme suivent les verbes narrés", () => {
+test("épisode de référence : les étiquettes d'analyse suivent les mots prononcés", () => {
   const analysisScene = referenceEpisode.scenes.find(
     (scene) => scene.id === "analyse",
   );
@@ -94,11 +116,11 @@ test("épisode de référence : les révélations du diagramme suivent les verbe
     "behaviorRevealWord",
     "decisionRevealWord",
   ];
-  const narratedActions = ["identifier", "comprendre", "aider"];
-  const expectedRevealOffsets = [0, 1.88, 3.75];
+  const narratedWords = ["tendances,", "comportements", "décisions."];
+  const expectedRevealOffsets = [1, 2.74, 5.94];
   beatKeys.forEach((beatKey, index) => {
     const word = analysisScene.visual.props?.[beatKey];
-    assert.equal(word, narratedActions[index]);
+    assert.equal(word, narratedWords[index]);
     const transcriptSegment = referenceEpisode.transcript.segments.find(
       (segment) => segment.text.toLowerCase() === String(word),
     );
