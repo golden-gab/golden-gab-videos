@@ -25,8 +25,11 @@
 
 7. **Ne pas dupliquer un composant.** Chercher avant de créer
    (`src/components`, `src/captions`).
-8. **Réutiliser plutôt que recréer** : une nouvelle vidéo doit d'abord essayer
-   de composer l'existant.
+8. **Réutiliser le moteur, pas la composition.** Les primitives
+   (`AnimatedAppear`, `getStaggerDelay`, `config/animation`, tokens,
+   `Connector`, captions) sont toujours réutilisées. Les compositions de haut
+   niveau (cartes, listes, `FlowDiagram`, `Callout`…) ne le sont que si elles
+   expriment exactement l'idée de la phrase.
 9. **Ne pas créer une variante d'un composant quand une variante existante peut
    être paramétrée.** Ajouter une prop ou un preset, pas un nouveau composant.
 10. **Privilégier la composition de composants** à l'ajout de logique dans un
@@ -108,10 +111,13 @@
 38. **Assets** — Ne jamais modifier l'asset source
     `public/assets/images/mascotte.png` sans raison. Une variante se crée
     dans `public/assets/images/derived/` ou `public/assets/images/mascot/`.
-39. **Poses** — Ne jamais utiliser une pose qui ne possède pas d'asset réel.
-    Une pose n'existe que si elle est dans le registre `mascotPoses`
-    (`src/components/mascot/poses.ts`) : `pose="…"` ne compile pas sinon.
-    Ne pas générer de pose par IA pour simuler une posture.
+39. **Poses.** Une pose n'existe que si elle a un asset réel enregistré dans le
+    registre `mascotPoses`. Une nouvelle pose peut être générée par IA à partir
+    des poses de référence, uniquement via le workflow de
+    `docs/MASCOT-POSES.md` : sortie dans
+    `public/assets/images/mascot/_pending/`, enregistrement dans `poses.ts`
+    seulement après validation explicite de l'utilisateur. Interdit : simuler
+    une pose par rotation, flip ou recadrage d'une autre.
 40. **Narration** — La mascotte doit servir la narration et non simplement
     remplir l'espace : elle n'est pas présente « par défaut » dans chaque
     scène, seulement quand elle accompagne l'explication.
@@ -130,26 +136,32 @@
 
 ## 9. Bibliothèque Motion (`src/components/motion`)
 
-44. **Réutiliser avant de créer** — Avant d'écrire un composant, chercher dans
-    la bibliothèque Motion (`src/components/motion`), `src/components/common`
-    et `src/captions`. Si un composant existant peut être paramétré pour le
-    besoin, **améliorer l'existant** plutôt que d'en créer un nouveau (une prop
-    ou un preset plutôt qu'un composant).
+> En cas de conflit entre §9 (réutilisation) et §13 (direction vidéo), §13
+> décide de ce qu'on montre, §9 de la façon de l'animer.
+
+44. **Chercher avant de créer, puis décider.** Chercher dans
+    `src/components/motion`, `src/components/common` et `src/captions`.
+    Convient tel quel → l'utiliser. Convient avec une prop ou un preset →
+    paramétrer. Sinon → construire le visuel localement dans la vidéo avec les
+    primitives et les tokens. Interdit : déformer un composant pour qu'il
+    passe, ou choisir une carte générique par réflexe quand une métaphore
+    visuelle plus forte existe.
 45. **Ne pas dupliquer les animations** — Les entrées passent par
     `<AnimatedAppear />`, `src/utils/animation.ts` et `getStaggerDelay()`
     (`shared/stagger.ts`) ; les traits animés par `Connector` ; les courbes et
     durées viennent de `src/config/animation.ts`. Réécrire `interpolate()`
     avec les mêmes courbes dans un composant = signature motion à deux vitesses.
-46. **Pas de composant pour une seule vidéo** — Un composant Motion doit servir
-    au moins plusieurs scènes / plusieurs séries. Si une structure ne sert
-    qu'une fois, elle vit dans la vidéo elle-même (règle 12).
+46. **Local d'abord, promotion ensuite.** Un visuel créé pour une vidéo vit
+    dans la vidéo (règle 12). Il est promu dans `src/components/motion` dès
+    qu'un second besoin apparaît (2e scène ou 2e vidéo), ou si l'agent le juge
+    explicitement générique, avec une ligne dans `DECISION_LOG`.
 47. **Ne jamais créer de palette par composant** — Les composants Motion ne
     choisissent que parmi `MotionTone` (`light`/`dark`) et `MotionAccent`
     (`accent`/`secondary`/`neutral`/`ink`), via `shared/tokens.ts`. Aucune
     autre hexadécimale n'est autorisée (règle 1 renforcée).
-48. **2 à 4 variantes maximum** — Une variante doit répondre à un besoin visuel
-    réel et différent. Ni `variant1…variant17`, ni une variante « au cas où ».
-    Un composant sans variante est tout à fait acceptable.
+48. **Pas de variantes numérotées.** Plus de plafond de 2 à 4. Une variante
+    porte le nom de son intention visuelle et répond à un besoin réel et
+    différent. Jamais `variant1…variantN`.
 49. **API orientée données** — Préférer `<FlowDiagram nodes={…} />` à un API
     par `children` JSX, pour qu'un agent IA puisse générer une scène depuis un
     script. Le JSX libre n'est réservé qu'à `content` de `MascotScene` et aux
@@ -211,7 +223,8 @@
     ni au modèle de données.
 63. **Pas de composant pour les timestamps** — La logique temporelle de
     `src/audio` reste pure, sans React ni Remotion ; le lien avec les captions
-    passe par `transcriptToCaptions`, jamais par un composant dédié.
+    passe par `transcriptToCaptions`. Les composants de lecture SFX / musique
+    vivent dans `src/components/audio`, hors de cette couche de données.
 
 ## 12. Épisode audio-driven (`src/scenes`)
 
@@ -226,12 +239,17 @@
     captions et la lecture du transcript par scène vivent dans
     `src/scenes/episode.ts` (sans React/Remotion) ; `renderer.tsx` ne fait que
     le rendu. Les captions d'un épisode se dérivent du transcript
-    (`getEpisodeCaptions`), elles ne sont pas ressaisies à la main.
+    (`getEpisodeCaptions`), elles ne sont pas ressaisies à la main. La musique
+    optionnelle est duckée pendant les segments parlés du transcript ; l'absence
+    de musique ou de SFX conserve le rendu existant.
 67. **Révélations internes audio-aware** — Pour séquencer les éléments d'un
     `FlowDiagram` ou d'une `AnimatedList`, renseigner `visual.revealOffsets`
     en secondes depuis le début de la scène, une valeur croissante par élément
     (une valeur par élément) ; `validateEpisode()` en vérifie les bornes. Sans
     timing éditorial explicite, conserver le stagger par défaut du composant.
+    Les SFX de scène se calent sur une image ou un index de segment-mot du
+    transcript et ne s'ajoutent qu'aux apparitions fortes, jamais à chaque
+    élément.
 
 ## 13. Direction vidéo et intention éditoriale
 
@@ -243,7 +261,9 @@
     son intention. Les étapes de script, exemples de storyboard et épisodes
     existants sont des références, pas des templates à recopier. La liberté
     créative reste encadrée par la fidélité au contenu, la DA Golden Gab, la
-    lisibilité et l'exactitude des faits.
+    lisibilité et l'exactitude des faits. La réutilisation ne s'applique jamais
+    au détriment de l'idée visuelle : si le meilleur visuel n'existe pas, il
+    est créé (règle 46).
 70. **Traduire la narration en image** — Chaque idée importante doit avoir un
     visuel qui l'explique ou la matérialise (données, objets, schémas,
     métaphores visuelles), pas seulement un titre ou une carte statique.
@@ -258,4 +278,10 @@
 73. **Mascotte intentionnelle** — Faire intervenir la mascotte aux moments où
     elle sert le récit, avec une expression/pose disposant d'un asset réellement
     enregistré. Ne pas inventer ni simuler une pose manquante ; voir
-    `docs/VIDEO-DIRECTION.md` pour le statut des assets.
+    `docs/VIDEO-DIRECTION.md` pour le statut des assets. Si la pose voulue
+    n'existe pas, la noter « pose à générer » dans le storyboard et utiliser la
+    plus proche, ou aucune mascotte.
+74. **Assets externes** — Toujours via le skill `asset-sourcing`, enregistrés
+    dans `src/config/assets.manifest.json` (source, licence, auteur, tags),
+    lus via `src/config/assets.ts`. Jamais de hotlink, jamais d'asset sans
+    licence notée.

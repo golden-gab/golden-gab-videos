@@ -46,7 +46,7 @@ Interdits : déformer un composant pour qu'il « passe » ; choisir la carte gé
 - Ne pas enchaîner deux scènes de même disposition. Alterner : plein cadre typo → mock → objet → mascotte.
 - Toute scène passe par `SceneShell` quand il existe : caméra lente, parallaxe, grain léger, transitions. Une scène « posée » sans mouvement de caméra est incomplète.
 - Accent de couleur : **un seul mot ou chiffre par plan** porte l'accent, c'est lui que l'œil doit lire.
-- Son : prévoir un SFX aux apparitions fortes (pas à chaque élément) et une musique discrète sous la voix.
+- Son : prévoir un SFX aux apparitions fortes seulement, jamais à chaque élément, et une musique discrète sous la voix (duckée pendant les mots du transcript).
 
 ## 5. Mascotte
 

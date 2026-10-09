@@ -15,6 +15,9 @@ public/
 │       ├── mascot/                poses de la mascotte (thinking, surprised…)
 │       └── derived/
 │           └── logo.png           logo prêt à l'emploi (détouré, 1600×1024)
+├── audio/
+│   ├── sfx/                       SFX nommés (mp3 ou wav ; voir README)
+│   └── music/                     pistes musicales de fond (voir README)
 ├── sample-video.mp4               (template d'origine, conservé)
 ├── theboldfont.ttf                (template d'origine, conservé)
 └── theboldfont-license.rtf
@@ -48,6 +51,8 @@ src/
 ├── audio/                         COUCHE AUDIO — audio → transcript → timestamps
 │   ├── index.ts                   API publique
 │   ├── types.ts                   AudioTrack / Transcript / TranscriptSegment
+│   ├── sfx.manifest.ts            noms, fichiers et volumes par défaut des SFX
+│   ├── music.ts                   intervalles parlés et ducking (logique pure)
 │   ├── validate.ts                invariants temporels (validation + assert)
 │   ├── lookup.ts                  segment actif à un instant / dans un intervalle
 │   ├── captions.ts                adaptateur TranscriptSegment → CaptionSegment
@@ -55,6 +60,7 @@ src/
 │
 ├── components/                    COMPOSANTS RÉUTILISABLES (toutes séries)
 │   ├── index.ts
+│   ├── audio/                     Sfx et MusicBed (lecture Remotion)
 │   ├── brand/                     logo, filigrane, fond, motif
 │   ├── common/                    AnimatedAppear, BrandText, SafeArea
 │   ├── intro/                     GoldenGabIntro
@@ -80,6 +86,8 @@ src/
 │   │   ├── BeforeAfter.tsx        transformation avant → après
 │   │   ├── NodeGraph.tsx          petit schéma de blocs connectés
 │   │   ├── MascotScene.tsx        contenu + mascotte
+│   │   ├── SceneShell.tsx         enveloppe : caméra lente, parallaxe, grain, vignette
+│   │   ├── transitions.ts         presets de transition de scène (@remotion/transitions)
 │   │   └── shared/                primitives internes (tokens, stagger, …)
 │   └── outro/                     GoldenGabOutro
 │
@@ -127,6 +135,11 @@ C'est la règle structurante du repository.
 Un composant de série peut importer les composants globaux. **L'inverse est
 interdit** : un composant de `src/components` ne doit jamais importer depuis
 `src/series`.
+
+`src/audio/` contient les contrats et la logique temporelle sans dépendance à
+React/Remotion. Les composants de lecture vivent dans `src/components/audio/`.
+Les SFX ne ponctuent que les apparitions fortes, jamais chaque élément ; une
+musique discrète peut être duckée à partir des timestamps du transcript.
 
 ## Où placer un nouveau fichier
 
@@ -287,6 +300,24 @@ import { FlowDiagram } from "../series/metiers-de-la-tech/…"; // INTERDIT
 - Les primitives `shared/` sont internes : les importer via le barrel de la
   famille, pas chemin par chemin depuis un composant d'une autre famille.
 
+### Enveloppe de scène — `SceneShell` et transitions
+
+`SceneShell.tsx` donne du mouvement à une scène sans le recoder : caméra lente
+(`camera` : `push` · `pull` · `drift` · `none`, modulée par `intensity`),
+`grain` et `vignette` optionnels, et `ParallaxLayer` (`depth`) pour décaler des
+calques à des vitesses différentes. Le zoom se calcule sur la durée de la scène
+(`useCurrentFrame` + `useVideoConfig`) avec `easings.linear` ; couleurs et
+espacements viennent des tokens (`shared/tokens.ts`). `SceneShell` ne crée
+**aucune valeur de design** (règles 1 et 5).
+
+`transitions.ts` expose des presets de transition nommés par **intention**
+(`cut-doux`, `glisse`, `balayage`, `coupe-franche`), bâtis sur
+`@remotion/transitions`. Une scène les active via `scene.transition.scene`
+(`src/scenes/types.ts`) ; **absente, la scène se rend exactement comme avant**.
+Le rendu d'épisode applique `SceneShell` à chaque scène par défaut
+(`camera: "drift"`) ; `sceneShell={false}` le désactive, un objet règle caméra,
+grain et vignette.
+
 ### Styleguide = galerie
 
 `src/compositions/Styleguide.tsx` contient une scène par composant Motion
@@ -334,19 +365,32 @@ src/components/mascot/
 
 - Poses disponibles : `thinking`, `surprised`, `happy`, `explaining` et `point`
   dans `public/assets/images/mascot/` (1254×1254).
-- L'asset source `public/assets/images/mascotte.png` est conservé intact.
+- L'asset source `public/assets/images/mascotte.png` est conservé intact
+  (c'est, octet pour octet, la pose `point`).
 - Chemins déclarés dans `mascotAssets` (`src/config/assets.ts`) ; le registre
   `mascotPoses` (`src/components/mascot/poses.ts`) associe chaque pose à son
   asset. Les composants ne connaissent aucun chemin en dur (règle 21).
 
 **Ajouter une pose**
 
-1. déposer l'asset dans `public/assets/images/mascot/` ;
-2. l'ajouter dans `mascotAssets` (`src/config/assets.ts`) ;
-3. l'enregistrer dans `mascotPoses` (`src/components/mascot/poses.ts`)
-   (`src`, `label`, `aspectRatio`, `description`) ;
-4. éventuellement ajouter une attitude dans `mascotAttitudes`
+Workflow en 5 étapes, fiche de cohérence et briefs : **`docs/MASCOT-POSES.md`**.
+
+1. **brief** — écrire l'intention, la posture, l'expression ;
+2. **génération** — `node scripts/generate-mascot-pose.mjs <pose> --brief "…"`
+   (poses existantes en images de référence, `GEMINI_API_KEY` lue dans `.env`) ;
+3. **candidats** — `public/assets/images/mascot/_pending/<pose>-<n>.png`
+   (jamais lus par une vidéo) ;
+4. **validation humaine** — toi seul regardes et valides ;
+5. **promotion** — `node scripts/promote-mascot-pose.mjs <candidat.png> <pose> --validated`,
+   qui recadre/normalise le cadrage, écrit l'asset dans
+   `public/assets/images/mascot/`, l'ajoute à `mascotAssets`
+   (`src/config/assets.ts`) **et** `mascotPoses`
+   (`src/components/mascot/poses.ts`), et le retire de `mascotPlannedPoses`.
+   Éventuellement : ajouter une attitude dans `mascotAttitudes`
    (`src/components/mascot/animations.ts`).
+
+Sans `--validated`, le script de promotion **refuse de s'exécuter** : rien n'est
+enregistré sans validation humaine (règle 39).
 
 Le type `MascotPose` est **dérivé du registre** : la nouvelle pose devient
 utilisable immédiatement, sans toucher aux vidéos existantes. Tant qu'une
@@ -545,6 +589,12 @@ l'extension `.ts` explicite ; ailleurs, les imports restent sans extension.
   (aujourd'hui : `logo.png`, détouré et dimensionné pour la vidéo).
 - Pipeline de transcription : `node sub.mjs` produit un JSON au format
   `Caption[]` à côté de chaque vidéo de `public/`. Voir `README.md`.
+
+## Bibliothèque d'assets externes
+
+1. **Récupérer** avec `npm run asset -- …` (`scripts/fetch-asset.mjs`) : le fichier est téléchargé dans `public/assets/library/` et tracé dans `src/config/assets.manifest.json` (source, licence, auteur, tags).
+2. **Lire** via `src/config/assetLibrary.ts` (`libraryAsset`, `libraryIcon`, `listLibrary`) — seul endroit qui appelle `staticFile` (règle 21) ; un id inconnu ou une entrée sans licence lève une erreur explicite.
+3. **Utiliser** avec `LibraryIcon` / `LibraryImage` / `LibraryVideo` / `LottieAsset` (`src/components/motion`) : jamais un chemin en dur, toujours un `id` du manifeste.
 
 ## Conventions
 

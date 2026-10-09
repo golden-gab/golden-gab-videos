@@ -275,6 +275,7 @@ Jeune garçon noir **sans traits du visage** (aucun œil, aucune bouche) :
 | Short cargo | `#E4DAC5` | beige / crème |
 | Chaussettes | blanc pur | hautes, au-dessus des chaussures |
 | Chaussures | `#132642` + blanc | bleu nuit, semelles et bandes blanches |
+| Contour | `#000000` (noir plein) | trait épais sur toute la silhouette — **pas** de contour blanc (mesure : 72–83 % des pixels de bord en noir pur, 100 % sombres) |
 
 > Ces valeurs sont un **relevé pixel**, pas une charte : les bleus de la
 > mascotte ne sont **pas identiques** à `palette.navy`. Ne pas en déduire un
@@ -301,13 +302,20 @@ Poses **prévues**, sans asset → **impossible** à passer au composant (le typ
 `MascotPose` les refuse à la compilation) :
 `neutral`, `confused`.
 
-Ajouter une pose :
+Ajouter une pose : suivre le workflow en 5 étapes de **`docs/MASCOT-POSES.md`**
+(brief → génération → candidats dans `_pending/` → **validation humaine** →
+promotion).
 
-1. déposer `public/assets/images/mascot/<pose>.png` ;
-2. l'ajouter dans `mascotAssets` (`src/config/assets.ts`) ;
-3. l'enregistrer dans `mascotPoses` (`src/components/mascot/poses.ts`).
+```bash
+node scripts/generate-mascot-pose.mjs <pose> --brief "…"   # 3 candidats dans _pending/
+node scripts/promote-mascot-pose.mjs public/assets/images/mascot/_pending/<pose>-1.png <pose> --validated
+```
 
-Le type `MascotPose` suit automatiquement : aucune vidéo existante à modifier.
+La promotion met à jour `mascotAssets` (`src/config/assets.ts`) **et**
+`mascotPoses` (`src/components/mascot/poses.ts`), normalise le cadrage sur
+celui des poses existantes, et retire la pose de `mascotPlannedPoses`. Le type
+`MascotPose` suit automatiquement : aucune vidéo existante à modifier.
+**Aucune pose n'est enregistrée sans validation humaine explicite** (règle 39).
 
 ### Attitudes — rôle narratif
 
@@ -368,14 +376,18 @@ Principes :
 - Ne jamais déclarer une pose sans asset réel (règle 39).
 - Ne pas générer une pose par IA « pour faire joli » : la posture doit être
   dessinée dans la DA de la marque (mêmes couleurs, même style, même logo).
+- Une pose générée suit la fiche de cohérence et le workflow de
+  `docs/MASCOT-POSES.md` : contour **noir**, fond transparent, cadrage ≈ 95 % de
+  la hauteur, candidats dans `_pending/`, enregistrement **après validation
+  humaine** uniquement.
 - Le styleguide ne rend que les poses réelles : aucun faux aperçu.
 
 ## 9. Bibliothèque Motion — composants réutilisables
 
-Les 13 composants de `src/components/motion` (titre, flux, étapes, code,
-comparaison, callout, carte, liste, chiffre, avant/après, schéma, mascotte)
-reprend les tokens ci-dessus **sans en créer aucun**. Trois notions suffisent à
-faire cohabiter toutes les scènes.
+Les composants de `src/components/motion` (titre, flux, étapes, code,
+comparaison, callout, carte, liste, chiffre, avant/après, schéma, mascotte, plus
+l'enveloppe `SceneShell`) reprennent les tokens ci-dessus **sans en créer
+aucun**. Trois notions suffisent à faire cohabiter toutes les scènes.
 
 ### 9.1 Tons et accents
 
@@ -452,6 +464,26 @@ variante : leurs props suffisent.
 - Longueurs : les textes doivent pouvoir se casser sans déborder (les blocs
   passent par `width: 100%` + `minWidth: 0`), et `CodeShowcase` expose
   `maxLines` pour les extraits longs.
+
+### 9.6 Mouvement de scène — `SceneShell`
+
+Le mouvement « de cadre » (caméra, profondeur, grain, vignette) est isolé dans
+`SceneShell` : une seule enveloppe, réglée par des données (`camera`,
+`intensity`, `grain`, `vignette`), jamais recodée scène par scène. Elle
+n'introduit **aucun token** : caméra lente sur `easings.linear`, grain en
+neutre chaud (`neutral`), vignette en `colors.ink`, tout passant par les tokens.
+Les transitions entre scènes sont des presets nommés par intention (`cut-doux`,
+`glisse`, `balayage`, `coupe-franche`) appliqués via `scene.transition.scene`.
+Voir `docs/ARCHITECTURE.md` (section Motion).
+
+### 9.7 Assets externes — traitement DA
+
+Une photo ou un b-roll brut ne respecte pas la DA : on le désature puis on
+superpose `AssetTreatment` (`shared/assetTreatment.tsx`) — un voile **bleu nuit**
+(`secondary`, `mixBlendMode: multiply`) pour les ombres et un voile **corail**
+(`accent`, `mixBlendMode: screen`) pour les hautes lumières. Les icônes du
+manifeste se colorent avec un token via `currentColor` (`LibraryIcon.accent`).
+Aucune couleur libre : le traitement ne consomme que `MotionAccent`.
 
 ## 10. Incertitudes à trancher
 

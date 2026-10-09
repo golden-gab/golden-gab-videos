@@ -68,6 +68,27 @@ Pour chaque phrase ou idée importante, se demander :
 - Les illustrations servent le propos et ne doivent pas répéter mot pour mot
   tout le script à l'écran.
 
+## Moyens visuels
+
+La direction décide **ce qu'on montre** ; la bibliothèque décide **comment on
+l'anime**. Pour choisir un moyen visuel (réutiliser, paramétrer, créer, ou
+sourcer un asset externe), suivre les skills :
+
+- **`visual-storytelling`** — échelle de décision et vocabulaire visuel :
+traduire chaque idée en image, tenir le rythme, faire intervenir la mascotte
+avec intention.
+- **`asset-sourcing`** — recherche et enregistrement d'assets externes (icônes,
+photos, vidéos, lottie) avec licence et provenance.
+
+Échelle de décision, à appliquer à chaque visuel :
+
+1. un composant existant exprime l'idée telle quelle → **l'utiliser** ;
+2. il convient avec une prop ou un preset → **paramétrer** ;
+3. sinon → **créer localement** dans la vidéo avec les primitives et les
+tokens (cas normal d'une nouvelle idée, pas une exception) ;
+4. le besoin revient dans une 2e scène ou une 2e vidéo → **promouvoir** dans
+`src/components/motion` (règle 46).
+
 ## Rythme et animation
 
 - Maintenir du mouvement **à l'intérieur** des scènes, pas uniquement lors des
@@ -112,6 +133,9 @@ Pour chaque phrase ou idée importante, se demander :
 - Seules les poses présentes dans `mascotPoses` sont disponibles au rendu :
   `thinking`, `surprised`, `happy`, `explaining` et `point`. Les poses encore
   absentes du registre ne doivent pas être simulées par une attitude.
+- Ne jamais brancher un candidat de `public/assets/images/mascot/_pending/` dans
+  une scène : ce dossier est une salle d'attente, pas une source. Un candidat
+  n'entre dans une vidéo qu'après promotion (`docs/MASCOT-POSES.md`).
 
 ## Revue avant rendu
 

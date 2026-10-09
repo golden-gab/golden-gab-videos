@@ -124,3 +124,43 @@ Les entrées doivent rester compactes, factuelles et exploitables sans relire to
 - validation: `npm test` (44 passed), `npm run lint` and TypeScript passed; Studio preview at the second analysis beat shows two items while the third remains hidden; no MP4 render
 - roadmap: updated (M07 complete for sequential lists/diagrams)
 - next: M08, concretely illustrating products and sales without inventing data
+
+### 2026-10-09 — Reuse the engine, not the composition
+- status: done
+- scope: resolved the contradiction between §9 (reuse) and §13 (video direction) by rewriting rules 8/39/44/46/48, extending 69/73, adding rule 74 and a §9 precedence note, and adding a "Moyens visuels" section to `VIDEO-DIRECTION.md`
+- files: `docs/RULES.md`, `docs/VIDEO-DIRECTION.md`, `docs/DECISION_LOG.md`
+- decision: reuse always covers the motion engine (primitives, tokens, stagger, captions); high-level compositions are used only when they express the exact idea of the sentence; otherwise the visual is built locally and promoted only on a genuine second need; §13 decides what is shown, §9 how it animates
+- impact: agents stop defaulting to the safe title+card; creating a local visual becomes the normal path for a new idea, and remaining §9/§13 conflicts now have an explicit arbiter
+- validation: documentation-only change, no code touched; numbering and tone preserved (rule 22 unchanged; rule 74 appended in §13 to keep order)
+- roadmap: not-needed
+- next: apply the decision scale on the next storyboard and promote any genuinely generic visual to `src/components/motion`
+
+### 2026-10-09 — Scene motion envelope and named transitions
+- status: done
+- scope: added a data-oriented scene envelope (slow camera, parallax, grain, vignette) and named transition presets, wired into the scene renderer so scenes move without hand-coded motion
+- files: `src/components/motion/{SceneShell,transitions,index}.tsx`, `src/scenes/{types,renderer}.ts(x)`, `src/compositions/Styleguide.tsx`, `package.json`, `docs/{ARCHITECTURE,DESIGN-SYSTEM,DECISION_LOG}.md`
+- decision: add `SceneShell` (default `camera: "drift"`) as the reusable motion engine for every scene; `scene.transition.scene` selects a transition preset and its absence preserves the exact previous rendering; install `@remotion/{lottie,shapes,paths,transitions,motion-blur,light-leaks,noise}` at 4.0.533
+- impact: scenes gain slow camera/parallax/grain without per-scene code; transitions become opt-in per scene; the motion library gains one envelope plus a preset module naming transitions by intention
+- validation: `npm run lint` (eslint + tsc) passed; `npm test` (46 passed); `npx remotion compositions` lists Styleguide (192 s), mdt-data-analyst (752 frames), CaptionedVideo; two `mdt-data-analyst` stills rendered and decoded (1080×1920, real content); a temporary `scene.transition.scene` flag confirmed the preset drives the render (frame 163 shifted), then reverted; Styleguide `Motion · SceneShell` scene renders the three cameras
+- roadmap: not-needed
+- next: apply the camera and transition presets to a real episode and review the 1–2 s visual rhythm
+
+### 2026-10-09 — External asset library (fetch → manifest → components)
+- status: done
+- scope: built the external-asset pipeline around the existing fetch script — it writes `src/config/assets.manifest.json`, a reader resolves it, and four motion components consume it; initialized the library folder, `.env.example` and the `asset` npm script
+- files: `scripts/fetch-asset.mjs` (read only, unchanged), `src/config/{assetLibrary.ts,assets.manifest.json,assets.ts,index.ts}`, `src/components/motion/{LibraryIcon,LibraryImage,LibraryVideo,LottieAsset}.tsx`, `src/components/motion/shared/assetTreatment.tsx`, `src/compositions/Styleguide.tsx`, `tsconfig.json`, `package.json`, `.env.example`, `public/assets/library/.gitkeep`, `docs/{ARCHITECTURE,DESIGN-SYSTEM,DECISION_LOG}.md`, `README.md`
+- decision: register external assets in the manifest (source/license/author/tags) and read them only through `src/config/assetLibrary.ts` — the sole `staticFile` call site (rule 21); `libraryAsset`/`libraryIcon` throw on unknown id or missing license; `LibraryImage`/`LibraryVideo` accept a resolved `src` for demo/QA only, production uses an `id`
+- impact: every fetched asset is usable without a hardcoded path; one real icon is registered (`receipt`, lucide, ISC) and rendered in the Styleguide; `resolveJsonModule` plus a JSON import attribute keep the manifest readable by tsc/esbuild and the node test runner alike
+- validation: `npm run lint` passed; `npm test` (46 passed); `npx remotion compositions` lists Styleguide (204 s) + mdt-data-analyst + CaptionedVideo; the asset-library Styleguide stills (icon/image/video/lottie) rendered and decoded; `assetLibrary` imported in node (list, icon lookup, error paths)
+- roadmap: not-needed
+- next: add a real photo and a b-roll with a Pixabay/Pexels key, then swap the Styleguide demo `src` overrides for library `id`s
+
+### 2026-10-09 — Data Analyst reference episode redesign
+- status: done
+- scope: storyboarded and rebuilt the existing 25.08 s Data Analyst episode in the navy DA, with transcript-synced local visuals and two strong-beat SFX
+- files: `docs/series/data-analyst-test-storyboard.md`, `src/series/metiers-de-la-tech/data/reference-episode{,.test}.ts`, `src/series/metiers-de-la-tech/videos/reference-episode{,-scene}.tsx`
+- decision: reuse the existing Whisper.cpp French transcript and narration; build the browser/results mock and analytic visuals locally; omit the mascot because no pose adds clarity, and omit the music bed because no file is deposited
+- impact: six audio-driven scenes use `SceneShell`; SFX trigger on the browser reveal and final insight; no external visual assets or invented metrics
+- validation: `npm run lint`, `npm test` (51 passed), composition list; four episode stills plus Styleguide and CaptionedVideo stills rendered; targeted `git diff --check`
+- roadmap: not-needed
+- next: add a music bed under `public/audio/music/` if desired; no code blocker remains
