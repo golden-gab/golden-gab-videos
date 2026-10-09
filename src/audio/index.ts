@@ -17,3 +17,5 @@ export * from "./validate";
 export * from "./lookup";
 export * from "./captions";
 export * from "./mock";
+export * from "./music";
+export * from "./sfx.manifest";

@@ -32,6 +32,7 @@ import {
 } from "../components/mascot/types";
 import { GoldenGabIntro } from "../components/intro/GoldenGabIntro";
 import { GoldenGabOutro } from "../components/outro/GoldenGabOutro";
+import { Sfx } from "../components/audio";
 import {
   brandAssets,
   captionZone,
@@ -59,9 +60,12 @@ import {
   LibraryImage,
   LibraryVideo,
   NodeGraph,
+  ParallaxLayer,
   ProcessSteps,
+  SceneShell,
   SectionTitle,
   Stat,
+  type SceneCamera,
 } from "../components/motion";
 import { type AppearAnimation } from "../utils/animation";
 import { withAlpha } from "../utils/color";
@@ -75,6 +79,7 @@ const MASCOT_POSES_SECONDS = 6;
 const MASCOT_POSITIONS_SECONDS = 7;
 const MASCOT_SCENE_SECONDS = 8;
 const CAPTIONS_SECONDS = 12;
+const SFX_SECONDS = 5;
 const INTRO_SECONDS = 6;
 const OUTRO_SECONDS = 6;
 
@@ -92,6 +97,7 @@ const STAT_SECONDS = 8;
 const BEFORE_AFTER_SECONDS = 8;
 const NODE_GRAPH_SECONDS = 8;
 const MASCOT_MOTION_SECONDS = 8;
+const SHELL_SECONDS = 9;
 const LIBRARY_SECONDS = 12;
 
 /** Durée totale, en secondes. Maintenue en cohérence avec les sections. */
@@ -104,6 +110,7 @@ export const STYLEGUIDE_DURATION_IN_SECONDS =
   MASCOT_POSITIONS_SECONDS +
   MASCOT_SCENE_SECONDS +
   CAPTIONS_SECONDS +
+  SFX_SECONDS +
   HERO_TITLE_SECONDS +
   SECTION_TITLE_SECONDS +
   FLOW_SECONDS +
@@ -117,6 +124,7 @@ export const STYLEGUIDE_DURATION_IN_SECONDS =
   BEFORE_AFTER_SECONDS +
   NODE_GRAPH_SECONDS +
   MASCOT_MOTION_SECONDS +
+  SHELL_SECONDS +
   LIBRARY_SECONDS +
   INTRO_SECONDS +
   OUTRO_SECONDS;
@@ -556,6 +564,28 @@ const CaptionsScene: React.FC = () => {
           Captions : default · card · subtle
         </BrandText>
       </SafeArea>
+    </AbsoluteFill>
+  );
+};
+
+const SfxScene: React.FC = () => {
+  const { fps } = useVideoConfig();
+
+  return (
+    <AbsoluteFill style={{ backgroundColor: colors.surface }}>
+      <BrandBackground variant="light" motif motifOpacity={0.25} />
+      <SafeArea justify="center">
+        <div style={{ display: "flex", flexDirection: "column", gap: spacing.lg }}>
+          <BrandText role="h2" align="center" color={colors.ink}>
+            SFX · apparitions fortes
+          </BrandText>
+          <BrandText role="body" align="center" color={colors.ink}>
+            POP à 1 s · DING à 3 s — déposer les fichiers dans public/audio/sfx/
+          </BrandText>
+        </div>
+      </SafeArea>
+      <Sfx name="pop" at={secondsToFrames(1, fps)} />
+      <Sfx name="ding" at={secondsToFrames(3, fps)} />
     </AbsoluteFill>
   );
 };
@@ -1236,6 +1266,45 @@ const MotionMascotSceneScene: React.FC = () => {
   );
 };
 
+const MotionSceneShellScene: React.FC = () => {
+  const { fps } = useVideoConfig();
+  const cameras: readonly SceneCamera[] = ["push", "pull", "drift"];
+  const per = SHELL_SECONDS / cameras.length;
+
+  return (
+    <AbsoluteFill>
+      <BrandBackground variant="light" motif motifOpacity={0.25} />
+      <Series>
+        {cameras.map((camera) => (
+          <Series.Sequence
+            key={camera}
+            name={`SceneShell · ${camera}`}
+            durationInFrames={secondsToFrames(per, fps)}
+            premountFor={fps}
+          >
+            <SceneShell camera={camera} grain vignette>
+              <SafeArea justify="center">
+                <ParallaxLayer depth={-0.4} style={{ marginBottom: spacing.sm }}>
+                  <BrandText role="label" color={colors.accent}>
+                    {`caméra · ${camera}`}
+                  </BrandText>
+                </ParallaxLayer>
+                <ParallaxLayer depth={0.6}>
+                  <HeroTitle
+                    title="SceneShell"
+                    subtitle="caméra lente, parallaxe, grain"
+                    variant="compact"
+                  />
+                </ParallaxLayer>
+              </SafeArea>
+            </SceneShell>
+          </Series.Sequence>
+        ))}
+      </Series>
+    </AbsoluteFill>
+  );
+};
+
 const MotionAssetLibraryScene: React.FC = () => {
   const { fps } = useVideoConfig();
   const per = LIBRARY_SECONDS / 4;
@@ -1383,6 +1452,13 @@ export const Styleguide: React.FC = () => {
           <CaptionsScene />
         </Series.Sequence>
         <Series.Sequence
+          name="Audio · deux SFX"
+          durationInFrames={secondsToFrames(SFX_SECONDS, fps)}
+          premountFor={fps}
+        >
+          <SfxScene />
+        </Series.Sequence>
+        <Series.Sequence
           name="Motion · HeroTitle"
           durationInFrames={secondsToFrames(HERO_TITLE_SECONDS, fps)}
           premountFor={fps}
@@ -1472,6 +1548,13 @@ export const Styleguide: React.FC = () => {
           premountFor={fps}
         >
           <MotionMascotSceneScene />
+        </Series.Sequence>
+        <Series.Sequence
+          name="Motion · SceneShell"
+          durationInFrames={secondsToFrames(SHELL_SECONDS, fps)}
+          premountFor={fps}
+        >
+          <MotionSceneShellScene />
         </Series.Sequence>
         <Series.Sequence
           name="Motion · Asset library"

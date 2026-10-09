@@ -11,9 +11,16 @@
     "@remotion/cli": "4.0.533",
     "@remotion/google-fonts": "4.0.533",
     "@remotion/layout-utils": "4.0.533",
+    "@remotion/light-leaks": "4.0.533",
+    "@remotion/lottie": "4.0.533",
     "@remotion/media": "4.0.533",
     "@remotion/media-utils": "4.0.533",
+    "@remotion/motion-blur": "4.0.533",
+    "@remotion/noise": "4.0.533",
+    "@remotion/paths": "4.0.533",
+    "@remotion/shapes": "4.0.533",
     "@remotion/tailwind-v4": "4.0.533",
+    "@remotion/transitions": "4.0.533",
     "@remotion/zod-types": "4.0.533",
     "react": "19.2.3",
     "react-dom": "19.2.3",
@@ -36,7 +43,8 @@
     "upgrade": "remotion upgrade",
     "lint": "eslint src && tsc",
     "test": "node --test --disable-warning=MODULE_TYPELESS_PACKAGE_JSON \"src/**/*.test.ts\"",
-    "create-subtitles": "node sub.mjs"
+    "create-subtitles": "node sub.mjs",
+    "asset": "node scripts/fetch-asset.mjs"
   },
   "sideEffects": [
     "*.css"

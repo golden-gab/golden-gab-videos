@@ -4,6 +4,7 @@
  */
 
 export * from "./brand";
+export * from "./audio";
 export * from "./common";
 export * from "./intro";
 export * from "./mascot";

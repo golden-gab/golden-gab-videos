@@ -62,6 +62,41 @@ test("episode : un épisode audio-driven valide passe la validation", () => {
   assert.doesNotThrow(() => validateEpisode(validEpisode, 30));
 });
 
+test("episode : les SFX optionnels acceptent un frame ou un segment-mot", () => {
+  const episode: Episode = {
+    ...validEpisode,
+    scenes: [
+      {
+        ...validEpisode.scenes[0],
+        sfx: [
+          { at: { frame: 30 }, name: "pop" },
+          { at: { wordIndex: 1 }, name: "ding", volume: 0.2 },
+        ],
+      },
+      validEpisode.scenes[1],
+    ],
+  };
+
+  assert.doesNotThrow(() => validateEpisode(episode, 30));
+});
+
+test("episode : un SFX hors scène ou avec un index de transcript inconnu est rejeté", () => {
+  for (const at of [{ frame: 8_700 }, { wordIndex: 99 }]) {
+    const episode: Episode = {
+      ...validEpisode,
+      scenes: [
+        {
+          ...validEpisode.scenes[0],
+          sfx: [{ at, name: "pop" }],
+        },
+        validEpisode.scenes[1],
+      ],
+    };
+
+    assert.throws(() => validateEpisode(episode, 30), /sfx/);
+  }
+});
+
 test("episode : la durée vient de l'audio réel", () => {
   assert.equal(
     getEpisodeDurationFrames(validEpisode, 30),

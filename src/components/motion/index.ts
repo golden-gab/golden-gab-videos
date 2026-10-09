@@ -67,6 +67,21 @@ export {
   type NodeGraphProps,
 } from "./NodeGraph";
 export { MascotScene, type MascotSceneMascot, type MascotSceneProps } from "./MascotScene";
+export {
+  SceneShell,
+  ParallaxLayer,
+  type SceneCamera,
+  type SceneShellProps,
+  type SceneShellOptions,
+  type ParallaxLayerProps,
+} from "./SceneShell";
+export {
+  sceneTransitionPresets,
+  sceneTransitionNames,
+  getSceneTransitionPreset,
+  type SceneTransitionName,
+  type SceneTransitionPreset,
+} from "./transitions";
 export { LibraryIcon, type LibraryIconProps } from "./LibraryIcon";
 export { LibraryImage, type LibraryImageProps } from "./LibraryImage";
 export { LibraryVideo, type LibraryVideoProps } from "./LibraryVideo";

@@ -11,6 +11,7 @@
 
 import { transcriptToCaptions } from "../audio/captions.ts";
 import { getTranscriptSegmentsInRange } from "../audio/lookup.ts";
+import { isSfxName } from "../audio/sfx.manifest.ts";
 import type { AudioTrack, TranscriptSegment } from "../audio/types";
 import {
   TIMESTAMP_EPSILON,
@@ -147,6 +148,98 @@ const validateSceneProps = (scene: Scene): void => {
   });
 };
 
+const validateSceneSfx = (
+  scene: Scene,
+  episode: Episode,
+  fps: number,
+): void => {
+  if (scene.sfx === undefined) {
+    return;
+  }
+  if (!Array.isArray(scene.sfx)) {
+    throw new Error(`Scene "${scene.id}" sfx must be an array when provided.`);
+  }
+
+  const durationInFrames = getSceneDurationFrames(scene, fps);
+  scene.sfx.forEach((sfx, index) => {
+    if (!sfx || typeof sfx !== "object" || !isSfxName(sfx.name)) {
+      throw new Error(
+        `Scene "${scene.id}" sfx[${index}] must use a known SFX name.`,
+      );
+    }
+    if (!sfx.at || typeof sfx.at !== "object") {
+      throw new Error(
+        `Scene "${scene.id}" sfx[${index}] must define a frame or wordIndex.`,
+      );
+    }
+    if (
+      sfx.volume !== undefined &&
+      (!Number.isFinite(sfx.volume) || sfx.volume < 0 || sfx.volume > 1)
+    ) {
+      throw new Error(
+        `Scene "${scene.id}" sfx[${index}] volume must be between 0 and 1.`,
+      );
+    }
+
+    if ("frame" in sfx.at) {
+      if (
+        !Number.isInteger(sfx.at.frame) ||
+        sfx.at.frame < 0 ||
+        sfx.at.frame >= durationInFrames
+      ) {
+        throw new Error(
+          `Scene "${scene.id}" sfx[${index}] frame must be an integer within the scene.`,
+        );
+      }
+      return;
+    }
+
+    const wordIndex = sfx.at.wordIndex;
+    const segment = episode.transcript.segments[wordIndex];
+    if (
+      !Number.isInteger(wordIndex) ||
+      wordIndex < 0 ||
+      !segment ||
+      segment.start < scene.start ||
+      segment.start >= scene.end
+    ) {
+      throw new Error(
+        `Scene "${scene.id}" sfx[${index}] wordIndex must reference a transcript segment inside the scene.`,
+      );
+    }
+  });
+};
+
+const validateEpisodeMusic = (episode: Episode): void => {
+  const music = episode.music;
+  if (music === undefined) {
+    return;
+  }
+  if (
+    !music ||
+    typeof music !== "object" ||
+    typeof music.src !== "string" ||
+    !music.src.trim()
+  ) {
+    throw new Error(`Episode "${episode.id}" music must define a non-empty src.`);
+  }
+
+  const volume = music.volume ?? 0.14;
+  const duckTo = music.duckTo ?? 0.045;
+  if (
+    !Number.isFinite(volume) ||
+    volume < 0 ||
+    volume > 1 ||
+    !Number.isFinite(duckTo) ||
+    duckTo < 0 ||
+    duckTo > volume
+  ) {
+    throw new Error(
+      `Episode "${episode.id}" music volume must be between 0 and 1, and duckTo between 0 and volume.`,
+    );
+  }
+};
+
 /**
  * Valide un épisode avant rendu : identité, audio, transcript, scènes.
  *
@@ -186,6 +279,7 @@ export const validateEpisode = (episode: Episode, fps: number): void => {
   if (transcriptErrors.length > 0) {
     throw new Error(transcriptErrors.join("\n"));
   }
+  validateEpisodeMusic(episode);
 
   if (!Array.isArray(episode.scenes) || episode.scenes.length === 0) {
     throw new Error(`Episode "${episode.id}" must contain at least one scene.`);
@@ -249,6 +343,7 @@ export const validateEpisode = (episode: Episode, fps: number): void => {
       );
     }
     validateSceneProps(scene);
+    validateSceneSfx(scene, episode, fps);
 
     if (!isSceneWithinAudio(scene, episode.audio)) {
       throw new Error(

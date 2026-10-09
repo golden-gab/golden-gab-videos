@@ -13,6 +13,7 @@
  */
 
 import type { AudioTrack, Transcript } from "../audio/types";
+import type { SfxName } from "../audio/sfx.manifest";
 import type { MascotPosition } from "../components/mascot/positions";
 import type {
   MascotAttitude,
@@ -20,6 +21,7 @@ import type {
   MascotPose,
   MascotSize,
 } from "../components/mascot/types";
+import type { SceneTransitionName } from "../components/motion/transitions";
 import type { AppearAnimation } from "../utils/animation";
 import { secondsToFrames } from "../utils/time.ts";
 
@@ -43,6 +45,11 @@ export type SceneType = (typeof sceneTypes)[number];
 export type SceneTransition = {
   readonly enter?: AppearAnimation;
   readonly exit?: AppearAnimation;
+  /**
+   * Preset de transition `@remotion/transitions` appliqué en entrée et sortie
+   * de la scène (`src/components/motion/transitions`). Absent = rendu inchangé.
+   */
+  readonly scene?: SceneTransitionName;
 };
 
 export type SceneMascot = {
@@ -65,6 +72,16 @@ export type SceneVisual = {
   readonly revealOffsets?: readonly number[];
 };
 
+export type SceneSfxAt =
+  | { readonly frame: number }
+  | { readonly wordIndex: number };
+
+export type SceneSfx = {
+  readonly at: SceneSfxAt;
+  readonly name: SfxName;
+  readonly volume?: number;
+};
+
 export type Scene = {
   readonly id: string;
   readonly type: SceneType;
@@ -73,9 +90,18 @@ export type Scene = {
   readonly transcript?: string;
   readonly visual: SceneVisual;
   readonly transition?: SceneTransition;
+  /** Sound effects for strong visual beats; omitted scenes remain unchanged. */
+  readonly sfx?: readonly SceneSfx[];
   readonly captions?: SceneCaptionConfig;
   readonly mascot?: SceneMascot;
   readonly metadata?: Record<string, unknown>;
+};
+
+export type EpisodeMusic = {
+  /** Relative path inside public/, for example "audio/music/ambient.mp3". */
+  readonly src: string;
+  readonly volume?: number;
+  readonly duckTo?: number;
 };
 
 /** Métadonnées éditoriales d'un épisode (recherche, angle, script…). */
@@ -96,6 +122,8 @@ export type Episode = {
   /** Transcription horodatée de `audio`. */
   readonly transcript: Transcript;
   readonly scenes: readonly Scene[];
+  /** Optional background music, automatically ducked during transcript speech. */
+  readonly music?: EpisodeMusic;
   /** Métadonnées éditoriales, non consommées par le rendu. */
   readonly metadata?: EpisodeMetadata;
 };
