@@ -1,0 +1,7 @@
+Salle d'attente des poses de la mascotte — voir docs/MASCOT-POSES.md.
+
+Rien de ce dossier n'est lu par une vidéo ni par le Styleguide.
+Un fichier ici n'est qu'un candidat : il ne devient une pose qu'après
+validation humaine puis promotion :
+
+  node scripts/promote-mascot-pose.mjs public/assets/images/mascot/_pending/<pose>-1.png <pose> --validated

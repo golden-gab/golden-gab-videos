@@ -5,10 +5,14 @@
  * Une image plate ne se déforme pas : on ne peut changer de posture qu'en
  * changeant d'asset. C'est pour ça que les poses vivent dans un registre.
  *
- * Ajouter une pose :
- *   1. déposer `public/assets/images/mascot/<pose>.png` ;
+ * Ajouter une pose — workflow en 5 étapes (brief → génération → `_pending/` →
+ * validation humaine → promotion) décrit dans `docs/MASCOT-POSES.md` :
+ *   1. déposer `public/assets/images/mascot/mascot-<pose>.png` ;
  *   2. référencer l'asset dans `mascotAssets` (`src/config/assets.ts`) ;
  *   3. ajouter l'entrée ici.
+ * Les étapes 2 et 3 sont faites automatiquement par
+ * `node scripts/promote-mascot-pose.mjs <candidat.png> <pose> --validated`
+ * (qui refuse de s'exécuter sans `--validated`).
  * Le type `MascotPose` (dans `types.ts`, dérivé de ce registre) se met alors
  * à jour automatiquement : aucune vidéo existante à modifier.
  *
@@ -71,7 +75,8 @@ export const mascotPoses = {
 /**
  * Poses **prévues mais sans asset** : elles ne font pas partie du type
  * `MascotPose` et ne peuvent donc pas être utilisées dans une vidéo.
- * Leur ajout suit la procédure de ce fichier (asset → `mascotAssets` → ici).
+ * Leur ajout suit le workflow de `docs/MASCOT-POSES.md` (asset → `mascotAssets`
+ * → ici) ; `scripts/promote-mascot-pose.mjs` les retire automatiquement.
  */
 export const mascotPlannedPoses = [
   "neutral",
