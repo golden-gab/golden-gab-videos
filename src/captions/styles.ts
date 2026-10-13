@@ -159,7 +159,8 @@ const subtleStyle: CaptionStylePreset = {
 
 /**
  * Style mot courant inspiré des captions creator : texte blanc détouré et
- * mot prononcé sur un cartouche bleu nuit de la palette Golden Gab.
+ * mot prononcé sur un cartouche corail (`colors.accent`). Le corail se détache
+ * du fond bleu nuit des vidéos, ce que le bleu nuit ne faisait pas.
  */
 const highlightStyle: CaptionStylePreset = {
   name: "highlight",
@@ -171,7 +172,7 @@ const highlightStyle: CaptionStylePreset = {
   lineHeight: 1.1,
   color: colors.surfaceLight,
   emphasisColor: colors.surfaceLight,
-  wordHighlightBackground: colors.secondary,
+  wordHighlightBackground: colors.accent,
   emphasisMode: "word",
   strokeWidth: 5,
   strokeColor: colors.ink,

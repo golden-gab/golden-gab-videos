@@ -29,6 +29,8 @@ import {
   H,
   Icon,
   lerp,
+  getSceneLane,
+  getStage,
   Magnifier,
   MascotShot,
   rand,
@@ -327,6 +329,7 @@ export const HookScene: React.FC<{ readonly scene: Scene }> = ({ scene }) => {
         pose="thinking"
         attitude="curious"
         size={520}
+        lift={-getStage(getSceneLane(scene)).dy}
         delay={0.1}
         entrance="slide-up"
       />

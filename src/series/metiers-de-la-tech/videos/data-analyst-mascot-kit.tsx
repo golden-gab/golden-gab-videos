@@ -10,6 +10,7 @@
 
 import React from "react";
 import {
+  AbsoluteFill,
   interpolate,
   Sequence,
   useCurrentFrame,
@@ -23,16 +24,19 @@ import type {
   MascotAttitude,
   MascotPose,
 } from "../../../components/mascot/types";
+import type { CaptionPosition } from "../../../captions/types";
 import {
   captionZone,
   colors,
   durations,
   easings,
+  getCaptionBoxTop,
   radius,
   safeArea,
   strokeWidths,
   videoFormat,
 } from "../../../config";
+import { defaultEpisodeCaptionPosition } from "../../../scenes";
 import type { Scene } from "../../../scenes/types";
 import type { AppearAnimation } from "../../../utils/animation";
 import { withAlpha } from "../../../utils/color";
@@ -53,6 +57,72 @@ export const band = {
   left: safeArea.left,
   right: W - safeArea.right,
 } as const;
+
+/* -------------------------------------------------------------------------- */
+/*  Plateau : les illustrations suivent la position des captions               */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Les plans sont dessinés dans la bande `band` (de `band.top` à `band.bottom`).
+ * Quand les captions descendent ou montent, la place libre change : le plateau
+ * déplace (et, si la place manque, réduit) toute la scène pour la centrer dans
+ * la plus grande zone libre — la mascotte et les illustrations bougent d'un
+ * bloc, rien n'est redessiné.
+ */
+
+/** Demi-hauteur d'un bloc de captions sur deux lignes, en pixels. */
+const CAPTION_TEXT_HALF_HEIGHT = 110;
+/** Air laissé entre le texte des captions et les illustrations. */
+const CAPTION_CLEARANCE = 60;
+const designHeight = band.bottom - band.top;
+const designCenterY = (band.top + band.bottom) / 2;
+
+export type Stage = {
+  readonly dy: number;
+  readonly scale: number;
+};
+
+/** Translation et échelle qui placent la scène dans la zone libre d'une position. */
+export const getStage = (lane: CaptionPosition): Stage => {
+  const textCenter = getCaptionBoxTop(lane) + captionZone.height / 2;
+  const above = [
+    band.top,
+    textCenter - CAPTION_TEXT_HALF_HEIGHT - CAPTION_CLEARANCE,
+  ] as const;
+  const below = [
+    textCenter + CAPTION_TEXT_HALF_HEIGHT + CAPTION_CLEARANCE,
+    H - safeArea.bottom,
+  ] as const;
+  const region =
+    above[1] - above[0] >= below[1] - below[0] ? above : below;
+
+  return {
+    dy: (region[0] + region[1]) / 2 - designCenterY,
+    scale: Math.min(1, (region[1] - region[0]) / designHeight),
+  };
+};
+
+/** Position des captions d'une scène (celle de l'épisode si elle n'en choisit pas). */
+export const getSceneLane = (scene: Scene): CaptionPosition =>
+  scene.captions?.position ?? defaultEpisodeCaptionPosition;
+
+export const CaptionStage: React.FC<{
+  readonly lane: CaptionPosition;
+  readonly children: React.ReactNode;
+}> = ({ lane, children }) => {
+  const stage = getStage(lane);
+
+  return (
+    <AbsoluteFill
+      style={{
+        transform: `translateY(${stage.dy}px) scale(${stage.scale})`,
+        transformOrigin: `${W / 2}px ${designCenterY}px`,
+      }}
+    >
+      {children}
+    </AbsoluteFill>
+  );
+};
 
 /** Style d'un élément positionné en absolu dans le repère de la composition. */
 export const abs = (

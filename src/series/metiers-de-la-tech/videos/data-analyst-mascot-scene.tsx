@@ -12,6 +12,7 @@ import { AbsoluteFill } from "remotion";
 
 import { SceneShell, type SceneCamera } from "../../../components/motion";
 import type { Scene } from "../../../scenes/types";
+import { CaptionStage, getSceneLane } from "./data-analyst-mascot-kit";
 import {
   BehaviorScene,
   ConclusionScene,
@@ -28,10 +29,12 @@ import {
 type ShotPlan = {
   readonly Component: React.FC<{ readonly scene: Scene }>;
   readonly camera: SceneCamera;
+  /** Plan plein cadre : il gère lui-même sa place par rapport aux captions. */
+  readonly fullBleed?: boolean;
 };
 
 const shots: Record<string, ShotPlan> = {
-  hook: { Component: HookScene, camera: "push" },
+  hook: { Component: HookScene, camera: "push", fullBleed: true },
   role: { Component: RoleScene, camera: "pull" },
   transform: { Component: TransformScene, camera: "drift" },
   trend: { Component: TrendScene, camera: "push" },
@@ -50,12 +53,18 @@ export const DataAnalystMascotScene: React.FC<{ readonly scene: Scene }> = ({
     throw new Error(`Unknown Data Analyst mascot scene "${scene.id}".`);
   }
 
-  const { Component, camera } = shot;
+  const { Component, camera, fullBleed } = shot;
 
   return (
     <SceneShell camera={camera} intensity={0.6} grain vignette>
       <AbsoluteFill>
-        <Component scene={scene} />
+        {fullBleed ? (
+          <Component scene={scene} />
+        ) : (
+          <CaptionStage lane={getSceneLane(scene)}>
+            <Component scene={scene} />
+          </CaptionStage>
+        )}
       </AbsoluteFill>
     </SceneShell>
   );

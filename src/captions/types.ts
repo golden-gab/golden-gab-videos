@@ -34,8 +34,30 @@ export type CaptionSegment = {
   readonly pageBreakBefore?: boolean;
 };
 
-/** Position verticale des captions dans la composition. */
-export type CaptionPosition = "top" | "center" | "bottom";
+/**
+ * Positions verticales des captions dans la composition.
+ *
+ * - `top`    : en haut, sous la zone haute de l'UI ;
+ * - `center` : au centre de l'écran ;
+ * - `bottom` : bas de la zone captions standard ;
+ * - `low`    : plus bas encore, juste au-dessus de l'UI de TikTok — libère le
+ *              plus de place pour les illustrations.
+ */
+export const captionPositionNames = ["top", "center", "bottom", "low"] as const;
+
+export type CaptionPosition = (typeof captionPositionNames)[number];
+
+/**
+ * Placement d'une fenêtre de temps : permet de faire varier la position des
+ * captions au fil de la vidéo (par exemple scène par scène).
+ */
+export type CaptionPlacement = {
+  readonly startMs: number;
+  readonly endMs: number;
+  readonly position: CaptionPosition;
+  /** Décalage vertical en pixels, positif = vers le haut. */
+  readonly offsetY?: number;
+};
 
 /** Mot prêt à être rendu. */
 export type CaptionToken = {

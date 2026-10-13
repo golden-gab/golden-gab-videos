@@ -95,7 +95,7 @@ export const dataAnalystMascotEpisode: Episode = {
         "Imaginez une entreprise qui vend des milliers de produits chaque mois, mais lesquels se vendent vraiment.",
       visual: { component: "DataAnalystMascotScene" },
       transition: { scene: "cut-doux" },
-      captions: { enabled: true },
+      captions: { enabled: true, position: "low" },
       mascot: {
         enabled: true,
         pose: "thinking",
@@ -121,7 +121,7 @@ export const dataAnalystMascotEpisode: Episode = {
       transcript: "C'est là qu'intervient le data analyst.",
       visual: { component: "DataAnalystMascotScene" },
       transition: { scene: "glisse" },
-      captions: { enabled: true },
+      captions: { enabled: true, position: "low" },
       mascot: {
         enabled: true,
         pose: "point",
@@ -144,7 +144,7 @@ export const dataAnalystMascotEpisode: Episode = {
         "Son rôle est de transformer des données brutes en informations utiles.",
       visual: { component: "DataAnalystMascotScene" },
       transition: { scene: "balayage" },
-      captions: { enabled: true },
+      captions: { enabled: true, position: "low" },
       mascot: {
         enabled: true,
         pose: "explaining",
@@ -166,7 +166,7 @@ export const dataAnalystMascotEpisode: Episode = {
       transcript: "Identifier les tendances,",
       visual: { component: "DataAnalystMascotScene" },
       transition: { scene: "coupe-franche" },
-      captions: { enabled: true },
+      captions: { enabled: true, position: "top" },
       mascot: {
         enabled: true,
         pose: "point",
@@ -188,7 +188,7 @@ export const dataAnalystMascotEpisode: Episode = {
       transcript: "comprendre les comportements",
       visual: { component: "DataAnalystMascotScene" },
       transition: { scene: "coupe-franche" },
-      captions: { enabled: true },
+      captions: { enabled: true, position: "low" },
       mascot: {
         enabled: true,
         pose: "thinking",
@@ -210,7 +210,7 @@ export const dataAnalystMascotEpisode: Episode = {
         "et aider l'entreprise à prendre de meilleures décisions.",
       visual: { component: "DataAnalystMascotScene" },
       transition: { scene: "coupe-franche" },
-      captions: { enabled: true },
+      captions: { enabled: true, position: "bottom" },
       mascot: {
         enabled: true,
         pose: "explaining",
@@ -232,7 +232,7 @@ export const dataAnalystMascotEpisode: Episode = {
       transcript: "En clair, il ne se contente pas de regarder des chiffres.",
       visual: { component: "DataAnalystMascotScene" },
       transition: { scene: "cut-doux" },
-      captions: { enabled: true },
+      captions: { enabled: true, position: "top" },
       mascot: {
         enabled: true,
         pose: "explaining",
@@ -255,7 +255,7 @@ export const dataAnalystMascotEpisode: Episode = {
       transcript: "Il cherche ce qu'il raconte.",
       visual: { component: "DataAnalystMascotScene" },
       transition: { scene: "glisse" },
-      captions: { enabled: true },
+      captions: { enabled: true, position: "low" },
       mascot: {
         enabled: true,
         pose: "happy",
