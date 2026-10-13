@@ -164,3 +164,13 @@ Les entrées doivent rester compactes, factuelles et exploitables sans relire to
 - validation: `npm run lint`, `npm test` (51 passed), composition list; four episode stills plus Styleguide and CaptionedVideo stills rendered; targeted `git diff --check`
 - roadmap: not-needed
 - next: add a music bed under `public/audio/music/` if desired; no code blocker remains
+
+### 2026-10-13 — Data Analyst : montage dynamique avec la mascotte
+- status: done
+- scope: second montage de la même voix (25,08 s), huit plans courts (hook, role, transform, trend, behavior, decision, numbers, conclusion) où la mascotte accompagne chaque idée ; l'épisode de référence `mdt-data-analyst` reste intact
+- files: `src/series/metiers-de-la-tech/{index.tsx,data/data-analyst-mascot-episode{,.test}.ts,videos/data-analyst-mascot{,-kit,-intro,-analysis,-scene}.tsx}`
+- decision: réutiliser voix, transcript et validation de l'épisode de référence ; construire les visuels localement (règles 12, 46) ; 5 poses réelles de la mascotte, changement de pose = enchaînement de prises `Sequence` (jamais de pose simulée) ; chaque révélation se cale sur le mot du transcript via `useBeat()` ; caméra `SceneShell` alternée par plan (push / pull / drift) ; SFX calés sur des mots (6 au total)
+- impact: nouvelle composition `mdt-data-analyst-mascotte` (752 images) ; aucun asset externe, aucune donnée chiffrée inventée (chiffres décoratifs non interprétables) ; l'outillage local (`useBeat`, `MascotShot`, icônes, étincelles) est candidat à promotion dans `src/components/motion` dès un second épisode
+- validation: `npm run lint` ; `npm test` (57 passés) ; 8 stills (un par plan) rendus et inspectés ; rendu MP4 complet
+- roadmap: not-needed
+- next: ajouter une musique sous `public/audio/music/` si souhaité ; promouvoir `MascotShot` / `useBeat` au prochain épisode
