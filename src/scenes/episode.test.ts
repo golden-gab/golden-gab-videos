@@ -9,7 +9,10 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 
 import type { AudioTrack, Transcript } from "../audio/types.ts";
+import type { CaptionSegment } from "../captions/types.ts";
 import {
+  breakCaptionsAtScenes,
+  getEpisodeCaptionPlacements,
   getEpisodeCaptions,
   getEpisodeDurationFrames,
   getSceneTranscriptSegments,
@@ -147,7 +150,13 @@ test("episode : un type de scène inconnu est rejeté", () => {
   const episode = {
     ...validEpisode,
     scenes: [
-      { id: "s1", type: "inconnu", start: 0, end: 5, visual: { component: "X" } },
+      {
+        id: "s1",
+        type: "inconnu",
+        start: 0,
+        end: 5,
+        visual: { component: "X" },
+      },
     ],
   } as unknown as Episode;
   assert.throws(() => validateEpisode(episode, 30), /unknown narrative type/);
@@ -157,8 +166,20 @@ test("episode : un doublon d'id de scène est rejeté", () => {
   const episode: Episode = {
     ...validEpisode,
     scenes: [
-      { id: "s1", type: "hero", start: 0, end: 5, visual: { component: "HeroTitle" } },
-      { id: "s1", type: "hero", start: 5, end: 10, visual: { component: "HeroTitle" } },
+      {
+        id: "s1",
+        type: "hero",
+        start: 0,
+        end: 5,
+        visual: { component: "HeroTitle" },
+      },
+      {
+        id: "s1",
+        type: "hero",
+        start: 5,
+        end: 10,
+        visual: { component: "HeroTitle" },
+      },
     ],
   };
   assert.throws(() => validateEpisode(episode, 30), /duplicate scene id/);
@@ -241,4 +262,64 @@ test("episode : le texte d'une scène est reconstruit depuis le transcript", () 
 test("episode : isSceneWithinAudio borne la scène à la durée audio", () => {
   assert.equal(isSceneWithinAudio({ start: 0, end: 42.5 }, audio), true);
   assert.equal(isSceneWithinAudio({ start: 0, end: 42.6 }, audio), false);
+});
+
+test("captions : la position d'une scène devient un placement en millisecondes", () => {
+  const episode: Episode = {
+    ...validEpisode,
+    scenes: [
+      validEpisode.scenes[0],
+      { ...validEpisode.scenes[1], captions: { position: "top" } },
+    ],
+  };
+
+  assert.deepEqual(getEpisodeCaptionPlacements(episode), [
+    { startMs: 8700, endMs: 14100, position: "top" },
+  ]);
+  assert.deepEqual(getEpisodeCaptionPlacements(validEpisode), []);
+});
+
+test("captions : une position inconnue est rejetée à la validation", () => {
+  const episode: Episode = {
+    ...validEpisode,
+    scenes: [
+      {
+        ...validEpisode.scenes[0],
+        captions: { position: "middle" as never },
+      },
+      validEpisode.scenes[1],
+    ],
+  };
+
+  assert.throws(() => validateEpisode(episode, 30), /captions\.position/);
+  assert.doesNotThrow(() =>
+    validateEpisode(
+      {
+        ...validEpisode,
+        scenes: [
+          { ...validEpisode.scenes[0], captions: { position: "low" } },
+          validEpisode.scenes[1],
+        ],
+      },
+      30,
+    ),
+  );
+});
+
+test("captions : une nouvelle page démarre à chaque début de scène", () => {
+  const captions: CaptionSegment[] = [
+    { text: "Un", startMs: 0, endMs: 400 },
+    { text: "deux", startMs: 8000, endMs: 8400 },
+    { text: "trois", startMs: 8700, endMs: 9100 },
+  ];
+  const broken = breakCaptionsAtScenes(captions, validEpisode.scenes);
+
+  assert.equal(broken.length, captions.length);
+  // La scène 1 démarre à 0 : pas de coupure. La scène 2 démarre à 8,7 s,
+  // début du segment « trois » : coupure.
+  assert.equal(broken[0].pageBreakBefore, undefined);
+  assert.equal(broken[1].pageBreakBefore, undefined);
+  assert.equal(broken[2].pageBreakBefore, true);
+  // Les segments d'origine ne sont pas modifiés.
+  assert.equal(captions[2].pageBreakBefore, undefined);
 });

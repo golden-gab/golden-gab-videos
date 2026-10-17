@@ -13,6 +13,7 @@
  */
 
 import type { AudioTrack, Transcript } from "../audio/types";
+import type { CaptionPosition } from "../captions/types";
 import type { SfxName } from "../audio/sfx.manifest";
 import type { MascotPosition } from "../components/mascot/positions";
 import type {
@@ -63,6 +64,12 @@ export type SceneMascot = {
 
 export type SceneCaptionConfig = {
   readonly enabled?: boolean;
+  /**
+   * Position des captions pendant cette scène. Absente : celle de l'épisode
+   * (`low` par défaut). Elle change à la coupure de scène, jamais en cours de
+   * page.
+   */
+  readonly position?: CaptionPosition;
 };
 
 export type SceneVisual = {

@@ -29,8 +29,10 @@ export {
   fromRemotionCaptions,
   type FromRemotionCaptionsOptions,
 } from "./from-caption";
+export { captionPositionNames } from "./types";
 export type {
   CaptionPage as CaptionPageModel,
+  CaptionPlacement,
   CaptionPosition,
   CaptionSegment,
   CaptionToken,

@@ -111,15 +111,20 @@ tokens (cas normal d'une nouvelle idée, pas une exception) ;
 ## Captions
 
 - Pour une vidéo audio-driven, choisir le preset `highlight` de
-  `src/captions/styles.ts` : le mot prononcé est blanc sur un cartouche bleu
-  nuit Golden Gab ; les autres mots sont blancs avec contour sombre.
+  `src/captions/styles.ts` : le mot prononcé est blanc sur un cartouche
+  corail Golden Gab ; les autres mots sont blancs avec contour sombre.
 - Le mot actif vient des timestamps mot à mot ; ne pas simuler le karaoké par
   une seule couleur fixe sur une phrase entière.
 - Garder les captions courtes, lisibles sur mobile et dans leur zone sûre.
-- La référence visuelle fournie montre un fond bleu vif. Le preset utilise le
-  bleu nuit (`colors.secondary`) pour respecter la palette actuellement
-  documentée ; ne pas introduire une nouvelle couleur de marque sans décision
-  explicite.
+- La référence visuelle fournie montre un cartouche sur fond bleu vif. Le preset
+  utilise le corail (`colors.accent`), couleur primaire de la DA : le bleu nuit
+  se confondait avec le fond des vidéos. Ne pas introduire une nouvelle couleur
+  de marque sans décision explicite.
+- Placer les captions pour laisser de la place à l'illustration : `low` par
+  défaut dans un épisode audio-driven, puis `captions.position` par scène
+  (`top`, `bottom`, `center`, `low`) quand l'image s'y prête. Une position qui
+  change doit servir le plan (l'illustration occupe l'autre moitié de l'écran),
+  pas varier pour varier ; le changement se fait à la coupure de scène.
 
 ## Mascotte
 

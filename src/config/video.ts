@@ -55,9 +55,21 @@ export const captionZone = {
 /** Positions verticales supportées par le système de captions. */
 export const captionPositions: Record<CaptionPosition, number> = {
   bottom: captionZone.bottom,
+  /** Distance depuis le bas : la zone captions descend vers l'UI de TikTok. */
+  low: 400,
   center: (videoFormat.height - captionZone.height) / 2,
   top: safeArea.top,
 };
+
+/**
+ * Ordonnée (px depuis le haut) du bloc de captions pour une position donnée.
+ * `bottom` et `low` sont exprimées depuis le bas, `top` et `center` depuis le
+ * haut : ce helper les ramène au même repère.
+ */
+export const getCaptionBoxTop = (position: CaptionPosition): number =>
+  position === "bottom" || position === "low"
+    ? videoFormat.height - captionPositions[position] - captionZone.height
+    : captionPositions[position];
 
 /** Échelle la zone sûre pour une largeur de composition donnée. */
 export const scaleSafeArea = (compositionWidth: number) => {

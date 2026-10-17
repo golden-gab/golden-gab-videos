@@ -164,3 +164,23 @@ Les entrées doivent rester compactes, factuelles et exploitables sans relire to
 - validation: `npm run lint`, `npm test` (51 passed), composition list; four episode stills plus Styleguide and CaptionedVideo stills rendered; targeted `git diff --check`
 - roadmap: not-needed
 - next: add a music bed under `public/audio/music/` if desired; no code blocker remains
+
+### 2026-10-13 — Data Analyst : montage dynamique avec la mascotte
+- status: done
+- scope: second montage de la même voix (25,08 s), huit plans courts (hook, role, transform, trend, behavior, decision, numbers, conclusion) où la mascotte accompagne chaque idée ; l'épisode de référence `mdt-data-analyst` reste intact
+- files: `src/series/metiers-de-la-tech/{index.tsx,data/data-analyst-mascot-episode{,.test}.ts,videos/data-analyst-mascot{,-kit,-intro,-analysis,-scene}.tsx}`
+- decision: réutiliser voix, transcript et validation de l'épisode de référence ; construire les visuels localement (règles 12, 46) ; 5 poses réelles de la mascotte, changement de pose = enchaînement de prises `Sequence` (jamais de pose simulée) ; chaque révélation se cale sur le mot du transcript via `useBeat()` ; caméra `SceneShell` alternée par plan (push / pull / drift) ; SFX calés sur des mots (6 au total)
+- impact: nouvelle composition `mdt-data-analyst-mascotte` (752 images) ; aucun asset externe, aucune donnée chiffrée inventée (chiffres décoratifs non interprétables) ; l'outillage local (`useBeat`, `MascotShot`, icônes, étincelles) est candidat à promotion dans `src/components/motion` dès un second épisode
+- validation: `npm run lint` ; `npm test` (57 passés) ; 8 stills (un par plan) rendus et inspectés ; rendu MP4 complet
+- roadmap: not-needed
+- next: ajouter une musique sous `public/audio/music/` si souhaité ; promouvoir `MascotShot` / `useBeat` au prochain épisode
+
+### 2026-10-13 — Captions : mot actif corail et position dynamique
+- status: done
+- scope: le mot actif du preset `highlight` passe du bleu nuit au corail ; nouvelle position `low` (la plus basse) ; position de captions par scène (`captions.position`) avec coupure de page à chaque début de scène ; le montage mascotte déplace ses illustrations selon la position choisie
+- files: `src/captions/{styles,types,Captions,CaptionPage,index}.ts(x)`, `src/config/video.ts`, `src/scenes/{types,episode,renderer,episode.test}.ts(x)`, `src/series/metiers-de-la-tech/{data/data-analyst-mascot-episode.ts,videos/data-analyst-mascot-{kit,scene,intro}.tsx}`, `docs/{DESIGN-SYSTEM,VIDEO-DIRECTION,RULES}.md`
+- decision: le bleu nuit se confondait avec le fond ; `EpisodeRenderer` utilise `low` par défaut (affecte aussi l'épisode de référence) ; la position se règle par donnée de scène, validée contre `captionPositionNames`, jamais en cours de page ; `center` reste disponible mais déconseillé quand l'illustration occupe la hauteur
+- impact: tous les épisodes en `highlight` ont le mot actif corail et des captions plus basses ; `<Captions />` seul garde `bottom` par défaut ; le plateau (`CaptionStage`) reste local au montage mascotte (promotion si un second épisode en a besoin)
+- validation: `npm run lint` ; `npm test` (60 passés) ; 8 stills rendus et inspectés ; rendu MP4 complet
+- roadmap: not-needed
+- next: décider si l'épisode de référence doit aussi adapter ses visuels à `low`
