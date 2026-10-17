@@ -273,8 +273,8 @@
     Utiliser les composants Motion existants avant d'en créer.
 72. **Captions mot courant** — Pour une vidéo audio-driven, utiliser le preset
     `highlight` sauf indication éditoriale contraire : mot courant blanc sur
-    cartouche bleu nuit, autres mots blancs détourés, selon la palette et la
-    capture de référence documentée.
+    cartouche corail (`colors.accent`), autres mots blancs détourés. Position
+    par défaut `low` ; une scène peut la changer avec `captions.position`.
 73. **Mascotte intentionnelle** — Faire intervenir la mascotte aux moments où
     elle sert le récit, avec une expression/pose disposant d'un asset réellement
     enregistré. Ne pas inventer ni simuler une pose manquante ; voir

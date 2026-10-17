@@ -22,6 +22,8 @@ import type { MotionTone } from "../components/motion/shared";
 import { easings } from "../config/animation";
 import { secondsToFrames } from "../utils/time";
 import {
+  breakCaptionsAtScenes,
+  getEpisodeCaptionPlacements,
   getEpisodeCaptions,
   validateEpisode,
 } from "./episode";
@@ -165,6 +167,13 @@ export const SceneRenderer: React.FC<SceneRendererComponentProps> = ({
   );
 };
 
+/**
+ * Position des captions d'un épisode quand rien n'est précisé : la plus basse,
+ * pour laisser le maximum de place aux illustrations. Une scène peut en choisir
+ * une autre avec `captions.position`.
+ */
+export const defaultEpisodeCaptionPosition: CaptionPosition = "low";
+
 /** Réglages des captions construites depuis le transcript de l'épisode. */
 export type EpisodeCaptionsOptions = {
   readonly style?: CaptionStyleName;
@@ -220,6 +229,10 @@ export const EpisodeRenderer: React.FC<EpisodeRendererProps> = ({
     captions === true || (typeof captions === "object" && captions !== null);
   const captionsOptions: EpisodeCaptionsOptions =
     typeof captions === "object" && captions !== null ? captions : {};
+  const captionSegments = breakCaptionsAtScenes(
+    getEpisodeCaptions(episode),
+    episode.scenes,
+  );
 
   return (
     <AbsoluteFill style={style}>
@@ -267,10 +280,11 @@ export const EpisodeRenderer: React.FC<EpisodeRendererProps> = ({
       ))}
       {captionsEnabled ? (
         <Captions
-          segments={getEpisodeCaptions(episode)}
+          segments={captionSegments}
           style={captionsOptions.style}
-          position={captionsOptions.position}
+          position={captionsOptions.position ?? defaultEpisodeCaptionPosition}
           offsetY={captionsOptions.offsetY}
+          placements={getEpisodeCaptionPlacements(episode)}
         />
       ) : null}
     </AbsoluteFill>

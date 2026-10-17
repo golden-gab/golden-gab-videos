@@ -16,7 +16,9 @@ import { Composition, Folder } from "remotion";
 import { videoFormat } from "../../config/video";
 import { getEpisodeDurationFrames } from "../../scenes";
 import type { SeriesDefinition } from "../types";
+import { dataAnalystMascotEpisode } from "./data/data-analyst-mascot-episode";
 import { referenceEpisode } from "./data/reference-episode";
+import { DataAnalystMascotVideo } from "./videos/data-analyst-mascot";
 import { ReferenceEpisodeVideo } from "./videos/reference-episode";
 
 export const METIERS_DE_LA_TECH_ID = "metiers-de-la-tech";
@@ -31,6 +33,12 @@ const referenceEpisodeDurationInFrames = getEpisodeDurationFrames(
   videoFormat.fps,
 );
 
+/** Durée du montage mascotte : même voix, donc même durée. */
+const dataAnalystMascotDurationInFrames = getEpisodeDurationFrames(
+  dataAnalystMascotEpisode,
+  videoFormat.fps,
+);
+
 /** Dossier Remotion de la série et ses compositions. */
 const MetiersDeLaTechFolder: React.FC = () => {
   return (
@@ -39,6 +47,14 @@ const MetiersDeLaTechFolder: React.FC = () => {
         id="mdt-data-analyst"
         component={ReferenceEpisodeVideo}
         durationInFrames={referenceEpisodeDurationInFrames}
+        fps={videoFormat.fps}
+        width={videoFormat.width}
+        height={videoFormat.height}
+      />
+      <Composition
+        id="mdt-data-analyst-mascotte"
+        component={DataAnalystMascotVideo}
+        durationInFrames={dataAnalystMascotDurationInFrames}
         fps={videoFormat.fps}
         width={videoFormat.width}
         height={videoFormat.height}

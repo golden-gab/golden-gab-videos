@@ -99,8 +99,8 @@ export const CaptionPage: React.FC<CaptionPageProps> = ({
         : "center";
 
   const verticalStyle: React.CSSProperties =
-    position === "bottom"
-      ? { bottom: captionPositions.bottom + offsetY, top: undefined }
+    position === "bottom" || position === "low"
+      ? { bottom: captionPositions[position] + offsetY, top: undefined }
       : {
           top: captionPositions[position] + offsetY,
           bottom: undefined,

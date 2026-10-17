@@ -18,7 +18,11 @@ import {
   validateAudioTrack,
   validateTranscript,
 } from "../audio/validate.ts";
-import type { CaptionSegment } from "../captions/types";
+import {
+  captionPositionNames,
+  type CaptionPlacement,
+  type CaptionSegment,
+} from "../captions/types.ts";
 import { secondsToFrames } from "../utils/time.ts";
 
 import {
@@ -87,6 +91,51 @@ export const getEpisodeCaptions = (
   episode: Pick<Episode, "transcript">,
 ): CaptionSegment[] => transcriptToCaptions(episode.transcript);
 
+/**
+ * Placements de captions déduits des scènes : une fenêtre par scène qui
+ * déclare `captions.position`. Les autres scènes gardent la position de
+ * l'épisode.
+ */
+export const getEpisodeCaptionPlacements = (
+  episode: Pick<Episode, "scenes">,
+): CaptionPlacement[] =>
+  episode.scenes.flatMap((scene) =>
+    scene.captions?.position
+      ? [
+          {
+            startMs: Math.round(scene.start * 1000),
+            endMs: Math.round(scene.end * 1000),
+            position: scene.captions.position,
+          },
+        ]
+      : [],
+  );
+
+/** Tolérance (ms) pour rapprocher un début de scène d'un début de mot. */
+const SCENE_BREAK_TOLERANCE_MS = 20;
+
+/**
+ * Force une nouvelle page de captions au début de chaque scène : le texte
+ * change en même temps que le plan, et une page ne chevauche jamais deux
+ * positions de captions. Les segments sont copiés, jamais modifiés.
+ */
+export const breakCaptionsAtScenes = (
+  captions: readonly CaptionSegment[],
+  scenes: readonly Pick<Scene, "start">[],
+): CaptionSegment[] => {
+  const sceneStartsMs = scenes.map((scene) => Math.round(scene.start * 1000));
+
+  return captions.map((segment) => {
+    const startsScene = sceneStartsMs.some(
+      (start) =>
+        start > 0 &&
+        Math.abs(segment.startMs - start) <= SCENE_BREAK_TOLERANCE_MS,
+    );
+
+    return startsScene ? { ...segment, pageBreakBefore: true } : segment;
+  });
+};
+
 const validateSceneProps = (scene: Scene): void => {
   const props = scene.visual.props;
   if (
@@ -146,6 +195,18 @@ const validateSceneProps = (scene: Scene): void => {
     }
     previousOffset = offset;
   });
+};
+
+const validateSceneCaptionPosition = (scene: Scene): void => {
+  const position = scene.captions?.position;
+  if (position === undefined) {
+    return;
+  }
+  if (captionPositionNames.indexOf(position) === -1) {
+    throw new Error(
+      `Scene "${scene.id}" captions.position must be one of ${captionPositionNames.join(", ")}; received "${String(position)}".`,
+    );
+  }
 };
 
 const validateSceneSfx = (
@@ -344,6 +405,7 @@ export const validateEpisode = (episode: Episode, fps: number): void => {
     }
     validateSceneProps(scene);
     validateSceneSfx(scene, episode, fps);
+    validateSceneCaptionPosition(scene);
 
     if (!isSceneWithinAudio(scene, episode.audio)) {
       throw new Error(

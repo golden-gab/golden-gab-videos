@@ -22,7 +22,11 @@ import {
   type CaptionStyleOverrides,
 } from "./styles";
 import { CaptionPage } from "./CaptionPage";
-import type { CaptionPosition, CaptionSegment } from "./types";
+import type {
+  CaptionPlacement,
+  CaptionPosition,
+  CaptionSegment,
+} from "./types";
 
 export type CaptionsProps = {
   /** Contenu et timings (millisecondes, relatives à la composition parente). */
@@ -37,6 +41,12 @@ export type CaptionsProps = {
   readonly paging?: CaptionPagingOptions;
   /** Surcharges ponctuelles du style, sans créer une nouvelle variante. */
   readonly overrides?: CaptionStyleOverrides;
+  /**
+   * Placements par fenêtre de temps : une page démarrant dans une fenêtre
+   * prend sa position (et son décalage). Hors fenêtre : `position`/`offsetY`.
+   * Une page garde sa position du début à la fin : elle ne saute jamais.
+   */
+  readonly placements?: readonly CaptionPlacement[];
 };
 
 export const Captions: React.FC<CaptionsProps> = ({
@@ -46,6 +56,7 @@ export const Captions: React.FC<CaptionsProps> = ({
   offsetY = 0,
   paging,
   overrides,
+  placements,
 }) => {
   const { fps } = useVideoConfig();
 
@@ -67,22 +78,29 @@ export const Captions: React.FC<CaptionsProps> = ({
 
   return (
     <AbsoluteFill style={{ pointerEvents: "none" }}>
-      {pages.map((page, index) => (
-        <Sequence
-          key={`${page.startMs}-${index}`}
-          name={`Caption ${index + 1}`}
-          from={msToFrames(page.startMs, fps)}
-          durationInFrames={durationInFrames(page.startMs, page.endMs, fps)}
-          premountFor={fps}
-        >
-          <CaptionPage
-            page={page}
-            preset={preset}
-            position={position}
-            offsetY={offsetY}
-          />
-        </Sequence>
-      ))}
+      {pages.map((page, index) => {
+        const placement = placements?.find(
+          (candidate) =>
+            page.startMs >= candidate.startMs && page.startMs < candidate.endMs,
+        );
+
+        return (
+          <Sequence
+            key={`${page.startMs}-${index}`}
+            name={`Caption ${index + 1}`}
+            from={msToFrames(page.startMs, fps)}
+            durationInFrames={durationInFrames(page.startMs, page.endMs, fps)}
+            premountFor={fps}
+          >
+            <CaptionPage
+              page={page}
+              preset={preset}
+              position={placement?.position ?? position}
+              offsetY={placement?.offsetY ?? offsetY}
+            />
+          </Sequence>
+        );
+      })}
     </AbsoluteFill>
   );
 };

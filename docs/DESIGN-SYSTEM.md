@@ -181,7 +181,7 @@ typographie, couleurs, gabarit et animations.
 | `default` | Darker Grotesque 900, capitales, texte blanc, contour bleu nuit 8 px, mot actif en corail | usage courant sur vidéo |
 | `card` | bloc bleu nuit arrondi, texte crème, mot actif en corail | fonds vidéo clairs ou chargés |
 | `subtle` | Darker Grotesque 600, casse normale, texte crème sur fond charbon translucide | passages posés / narratifs |
-| `highlight` | Darker Grotesque 900, casse normale, texte blanc détouré, mot actif sur cartouche bleu nuit | narration creator, lecture mot à mot |
+| `highlight` | Darker Grotesque 900, casse normale, texte blanc détouré, mot actif sur cartouche corail (`colors.accent`) | narration creator, lecture mot à mot |
 
 Principes :
 
@@ -190,11 +190,18 @@ Principes :
   (`fitText`, avec 4 % de marge de sécurité), plafonnée par `maxFontSize` ;
 - le mot prononcé est mis en évidence en corail (`emphasisMode: "word"`), ou
   tous les mots marqués `emphasis` restent en corail (`"segment"`) ;
-- le preset `highlight` place le mot courant sur un cartouche `colors.secondary`
-  et garde les autres mots en blanc détouré ; ce choix reprend la composition
-  de la référence fournie tout en restant dans la palette de marque ;
-- position par défaut : `bottom`, dans la zone captions (au-dessus de l'UI basse
-  de TikTok).
+- le preset `highlight` place le mot courant sur un cartouche `colors.accent`
+  (corail) et garde les autres mots en blanc détouré. Le corail se détache du
+  fond bleu nuit des vidéos ; le bleu nuit (`colors.secondary`) s'y confondait ;
+- positions (`CaptionPosition`) : `top`, `center`, `bottom` (zone captions
+  standard) et `low` (juste au-dessus de l'UI basse de TikTok, la plus basse :
+  elle libère le plus de place aux illustrations). Position par défaut de
+  `<Captions />` : `bottom` ; position par défaut d'un épisode audio-driven
+  (`EpisodeRenderer`) : `low` ;
+- une scène peut choisir sa position avec `captions.position` : les captions
+  bougent à la coupure de plan, jamais en cours de page, et une nouvelle page
+  démarre à chaque début de scène. Éviter `center` quand l'illustration occupe
+  la hauteur de l'écran : c'est la position qui en prend le plus.
 
 ## 6. Animations
 
