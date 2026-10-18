@@ -86,3 +86,8 @@ export { LibraryIcon, type LibraryIconProps } from "./LibraryIcon";
 export { LibraryImage, type LibraryImageProps } from "./LibraryImage";
 export { LibraryVideo, type LibraryVideoProps } from "./LibraryVideo";
 export { LottieAsset, type LottieAssetProps } from "./LottieAsset";
+export * from "./stage";
+export { BrowserFrame, type BrowserFrameProps } from "./BrowserFrame";
+export { PhoneMock, type PhoneMockProps } from "./PhoneMock";
+export { ActionTile, type ActionTileProps } from "./ActionTile";
+export { ConceptCard, type ConceptCardProps } from "./ConceptCard";

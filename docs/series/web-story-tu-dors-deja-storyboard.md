@@ -1,0 +1,94 @@
+# Storyboard — Web Story · « Tu dors déjà »
+
+## Source et intention
+
+- **Audio** : `public/audio/series/web-story/tu_dors_deja.m4a` (74,50 s).
+- **Transcription** : Produite localement avec Whisper.cpp (`small`, multilingue `fr`), 235 mots avec timestamps au mot en secondes.
+- **Intention** : Démontrer concrètement l'intérêt d'avoir un site web vitrine pour un créateur ou entrepreneur qui communique sur TikTok : transformer un prospect nocturne (23h) en lead informé, sans attendre le réveil.
+- **Captions** : Preset `highlight` (mot actif blanc sur cartouche corail `colors.accent`, autres mots blancs avec contour sombre). Position dynamique par scène (`low`, `top`, `bottom`, `center`).
+- **Mascotte** : Poses réelles uniquement (`thinking`, `surprised`, `happy`, `explaining`, `point`). Pose souhaitée notée en brief : `sleeping` (endormie). En attendant validation, substitution par métaphores visuelles (lune, horloge nocturne, Zzz vectoriels) et pose `thinking` / `surprised`.
+- **Direction du mouvement** : Enveloppe `SceneShell` (drift, push, pull), animations synchronisées aux mots (`wordClock`, `useBeat`), changement visible toutes les 1 à 3 s, aucune scène ne dépasse 6 s.
+- **Exactitude** : Aucune donnée inventée, aucun faux chiffre ni fausse statistique.
+
+---
+
+## Blocs du Storyboard
+
+### Bloc 1 (Beats 1 à 10 · 0,00 s à 23,86 s) : Le problème nocturne
+
+| Beat | Début-fin (s) | Phrase (transcript réel) | Visuel | Source | Animation | SFX | Position captions |
+|---|---|---|---|---|---|---|---|
+| **1** | 0,00–4,20 s | « Et si un client voulait découvrir tes services alors que tu dors déjà ? » | Fond nuit étoilé discret ; horloge nocturne stylisée marquant minuit avec croissant de lune brillant ; mascotte en pose `thinking` observant l'heure avec des petits « Zzz » vectoriels flottants. | **Crée local** (horloge + lune en SVG) & **Réutilise** `GoldenGabMascot` (pose `thinking`). *Raison :* introduit le sujet avec une métaphore concrète du sommeil sans nécessiter de pose non validée. | Arrivée de l'horloge sur « client » (0,74 s), rotation lente des aiguilles sur « services » (2,10 s), lune qui pulse et Zzz qui s'élèvent sur « dors » (3,29 s). | `whoosh` doux à 0,20 s | `low` |
+| **2** | 4,20–7,11 s | « Imagine qu'un client X ait entendu parler de ton activité... » | Mock de smartphone moderne avec notification stylisée d'un profil prospect (« Client X ») et badge « Découverte activité ». | **Crée local** (PhoneMock + carte notification). *Raison :* personnalise l'avatar prospect sans inventer d'identité réelle ni de marque tierce. | Entrée du PhoneMock par translation verticale sur « Imagine » (4,20 s) ; pop de la bulle prospect sur « client X » (5,17 s) ; surbrillance du badge sur « activité » (6,42 s). | `pop` à 5,17 s | `low` |
+| **3** | 7,11–10,04 s | « ...que tu nous présentes ici chaque jour sur TikTok. » | Dans l'écran smartphone, interface vidéo verticale stylisée (feed vidéo abstrait avec bouton de profil et badge « TikTok » / icône vidéo). | **Crée local** (feed vidéo mock en CSS/SVG). *Raison :* respecte la règle 61 (pas de marque brute, pas d'asset externe non tracé, mock vectoriel conforme DA). | Défilement d'un post vidéo sur « présentes » (7,45 s) ; icône calendrier / pulsation sur « chaque jour » (8,20 s) ; logo TikTok stylisé en token accent sur « TikTok » (9,04 s). | Aucun | `top` |
+| **4** | 10,04–11,88 s | « Il semble intéressé par ce que tu proposes... » | Le smartphone zoome légèrement ; une main stylisée ou un curseur tapote sur le profil ; le prospect passe en mode « Intéressé » avec un cœur/étincelle corail. | **Crée local** (bouton interaction + particules d'intérêt). *Raison :* matérialise l'intérêt sans texte verbeux. | Zoom caméra subtil sur « intéressé » (10,42 s) ; étincelles corail qui jaillissent sur « proposes » (11,45 s). | `ding` discret à 10,95 s | `bottom` |
+| **5** | 11,88–13,38 s | « ...et il va en savoir plus. » | La notification se transforme en bouton d'action CTA lumineux : « En savoir plus » avec flèche interactive pointant vers le bas. | **Réutilise** `ActionTile` / primitives tokens. *Raison :* composant d'action standard avec bordure animée. | Révélation du bouton CTA sur « savoir » (12,14 s) ; impulsion d'échelle sur « plus » (12,44 s). | Aucun | `top` |
+| **6** | 13,38–15,09 s | « Mais le problème, il est déjà 23h... » | L'écran s'assombrit légèrement en mode nuit ; affichage numérique proéminent « 23:00 » dans un cadre horloge digitale avec icône lune. | **Crée local** (ClockDigital SVG + ambiance nocturne). *Raison :* contraste immédiat entre l'envie du prospect et l'heure tardive. | Apparition brusque avec léger shake sur « problème » (13,54 s) ; les chiffres « 23:00 » s'allument en corail sur « 23h » (14,64 s). | `alarm` / tic-tac feutré à 14,64 s | `top` |
+| **7** | 15,09–17,05 s | « ...tu n'es plus disponible, tu dors déjà. » | Mascotte en pose `thinking` assise sous une bulle de sommeil avec voyant d'état « Hors ligne / Ne pas déranger » rougeoyant qui passe au gris. | **Réutilise** `GoldenGabMascot` (pose `thinking`) + pastille de statut SVG locale. *Raison :* exprime l'indisponibilité sans déformer de composant. | Statut « Absent » qui clignote sur « disponible » (15,59 s) ; fondu vers le noir partiel sur « dors déjà » (16,49 s). | Aucun | `low` |
+| **8** | 17,05–18,77 s | « Alors, qu'est-ce qu'il va faire ? » | Plein cadre centré avec grand point d'interrogation stylisé à double branche ; mascotte en pose `surprised` sur le côté. | **Réutilise** `GoldenGabMascot` (pose `surprised`) + grand point d'interrogation vectoriel animé. *Raison :* pose réelle parfaitement alignée sur l'interrogation. | Entrée dynamique de la mascotte par bond sur « Alors » (17,05 s) ; point d'interrogation qui se balance sur « faire » (18,35 s). | `whoosh` rapide à 17,05 s | `center` |
+| **9** | 18,77–21,17 s | « Est-ce qu'il va attendre demain pour en savoir plus ? » | Calendrier stylisé « DEMAIN » avec horloge qui tourne à toute vitesse et sablier qui s'écoule lentement. | **Crée local** (CalendarMock + Sablier animé). *Raison :* illustre la friction et la lenteur d'attendre le lendemain. | Le calendrier « Demain » arrive avec un léger délai d'inertie sur « attendre » (19,47 s) ; le sable s'écoule sur « demain » (20,13 s). | Aucun | `low` |
+| **10** | 21,17–23,86 s | « Non, il va probablement passer à autre chose. » | Le smartphone du prospect swipe vers le haut (geste de balayage) ; la page disparaît pour laisser place à un flux concurrent / distraction (icône croix rouge corail discrète). | **Crée local** (Animation de swipe dismiss + icône passage). *Raison :* montre la perte concrète du prospect dans le flux TikTok. | Texte « NON » barré ou tamponné sur « Non » (21,17 s) ; swipe brutal vers la gauche/haut sur « passer à autre chose » (22,68 s). | `swoosh` / swipe à 22,68 s | `top` |
+
+---
+
+### Bloc 2 (Beats 11 à 20 · 23,86 s à 48,76 s) : La solution du site web & ce qu'on y trouve
+
+| Beat | Début-fin (s) | Phrase (transcript réel) | Visuel | Source | Animation | SFX | Position captions |
+|---|---|---|---|---|---|---|---|
+| **11** | 23,86–27,24 s | « Et c'est justement là l'un des avantages des sites web. » | Un mockup élégant de navigateur web (`BrowserFrame`) apparaît au centre, arborant une URL sécurisée `https://ton-activite.fr` et un badge lumineux « Ouvert 24h/24 ». | **Crée local** (`BrowserFrame` avec barre d'URL) & tokens DA. *Raison :* introduit le sujet central (le site web) comme vitrine toujours accessible. | Révélation en perspective de la fenêtre du navigateur sur « avantages » (25,56 s) ; badge vert 24/7 qui s'allume sur « sites web » (26,63 s). | `ding` d'opportunité à 26,63 s | `bottom` |
+| **12** | 27,24–29,55 s | « Tu peux y présenter toute ton entreprise... » | Dans le navigateur, la section « À propos » se déploie : carte d'identité de l'entreprise, bannière hero, mission et valeurs. | **Crée local** (carte de présentation dans le BrowserFrame). *Raison :* structure propre d'un site vitrine sans éléments fictifs lourds. | Déploiement en accordéon du bloc entreprise sur « présenter » (27,64 s) ; tag « Mission & Histoire » sur « entreprise » (28,76 s). | Aucun | `top` |
+| **13** | 29,55–31,30 s | « ...expliquer tes services... » | La section services apparaît : 3 tuiles de prestations stylisées avec icônes distinctes et descriptions synthétiques. | **Crée local** (Grille de 3 offres / services avec `ActionTile`). *Raison :* illustration directe de l'offre claire. | Cascade d'apparition des 3 cartes sur « expliquer » (29,55 s) puis « services » (30,34 s). | Aucun | `top` |
+| **14** | 31,30–32,76 s | « ...montrer tes réalisations... » | Galerie portfolio / avant-après : grille de projets achevés avec aperçus d'écrans et étoiles de satisfaction. | **Crée local** (Portfolio grid mock). *Raison :* matérialise la preuve sociale et le portfolio. | Zoom sur les vignettes de projets sur « montrer » (31,30 s) et « réalisations » (31,67 s). | Aucun | `top` |
+| **15** | 32,76–34,73 s | « ...et indiquer comment te contacter. » | Bouton et formulaire de contact direct : champs « Message », bouton WhatsApp / Appel et calendrier de réservation. | **Crée local** (ContactCard interactive). *Raison :* montre la passerelle directe vers la prise de contact. | Le formulaire glisse au premier plan sur « indiquer » (33,30 s) ; mise en avant du bouton d'envoi sur « contacter » (33,95 s). | `pop` à 33,95 s | `top` |
+| **16** | 34,73–37,59 s | « Comme ça, même quand tu n'es pas disponible... » | Écran scindé métaphorique : à gauche, le site web reste illuminé et actif ; à droite, le panneau « Bureau fermé » avec volet baissé. | **Crée local** (Split-view Présence vs Absence). *Raison :* comparaison visuelle immédiate du bénéfice. | Transition en split vertical sur « Comme ça » (34,73 s) ; volet qui se ferme à droite sur « disponible » (36,64 s). | Aucun | `low` |
+| **17** | 37,59–39,90 s | « ...tu es occupé, tu dors, je ne sais pas quoi. » | Mini-scènes en triptyque rapide : icône réunion/occupé, croissant de lune sommeil, et café détente. Mascotte en pose `thinking`. | **Crée local** (Triptyque d'icônes d'activités) + **Réutilise** `GoldenGabMascot` (pose `thinking`). *Raison :* illustre les différentes indisponibilités de l'artisan/créateur. | Allumage successif des 3 pastilles sur « occupé » (38,00 s), « dors » (38,66 s), « sais pas quoi » (39,47 s). | Aucun | `low` |
+| **18** | 39,90–43,54 s | « Les personnes intéressées peuvent toujours découvrir ton activité... » | Le prospect navigue sereinement sur le site web : curseur animé qui survole les offres et fait défiler la page. | **Crée local** (Mock curseur fluide + scroll automatique). *Raison :* matérialise l'expérience utilisateur nocturne autonome. | Trait de souris / curseur qui glisse sur « intéressées » (40,55 s) ; scroll doux de la page sur « découvrir ton activité » (42,68 s). | Aucun | `bottom` |
+| **19** | 43,54–46,47 s | « ...et décider si ce que tu proposes... » | Le visiteur compare deux options d'offres : jauges d'adéquation et coche verte sur l'option idéale. | **Crée local** (Comparatif 2 colonnes avec sélecteur). *Raison :* rend le processus de décision du prospect visible. | Rapprochement des deux options sur « décider » (44,32 s) ; mise en valeur sur « proposes » (45,05 s). | Aucun | `top` |
+| **20** | 46,47–48,76 s | « ...correspond à ce qu'il veut à leur besoin. » | Une pièce de puzzle s'emboîte parfaitement dans le bloc besoin du prospect ; halo de confirmation corail. | **Crée local** (Puzzle / Fit visuel SVG). *Raison :* métaphore classique et universelle du « problem-solution fit ». | Emboîtement de la pièce sur « correspond » (46,47 s) ; lueur de validation sur « besoin » (47,97 s). | `ding` de confirmation à 47,97 s | `bottom` |
+
+---
+
+### Bloc 3 (Beats 21 à 30 · 48,76 s à 74,50 s) : La nuance essentielle, la question & l'outro
+
+| Beat | Début-fin (s) | Phrase (transcript réel) | Visuel | Source | Animation | SFX | Position captions |
+|---|---|---|---|---|---|---|---|
+| **21** | 48,76–51,65 s | « Mais il faut faire la différence, ça ne veut pas dire... » | Panneau de mise en garde élégant avec icône balance / attention ; mascotte en pose `explaining`. | **Réutilise** `GoldenGabMascot` (pose `explaining`) + `ConceptCard` d'avertissement. *Raison :* pose explicative parfaite pour poser une distinction rationnelle. | Mascotte qui entre par la gauche avec geste explicatif sur « différence » (49,73 s) ; carte attention sur « veut pas dire » (50,75 s). | `whoosh` doux à 49,00 s | `low` |
+| **22** | 51,65–54,56 s | « ...qu'un site web va automatiquement t'apporter des clients. » | Symbole magique / baguette barrée : le site web n'est pas un bouton magique à fabriquer des clients spontanés (pas de faux chiffres, pas de graphique trompeur). | **Crée local** (Baguette magique avec trait d'invalidation). *Raison :* évite toute fausse promesse commerciale en image. | La baguette étincelante apparaît sur « automatiquement » (52,17 s) ; cercle d'interdiction qui s'anime par-dessus sur « clients » (53,93 s). | Cliquetis d'annulation à 53,93 s | `bottom` |
+| **23** | 54,56–57,32 s | « Mais si quelqu'un entend parler de ton activité... » | Schéma relationnel simple : du bouche-à-oreille / réseau TikTok vers une flèche guidant vers le logo de l'activité. | **Crée local** (Réseau de points connectés avec flèche d'orientation). *Raison :* montre le parcours naturel du prospect qui cherche. | Impulsion d'ondes sur « entend parler » (55,87 s) ; tracé du chemin vers l'entreprise sur « activité » (56,56 s). | Aucun | `low` |
+| **24** | 57,32–59,37 s | « ...il aura au moins un endroit où se renseigner... » | Un repère géographique / pin de localisation virtuel au-dessus du site web sécurisé, formant un point d'ancrage fixe. | **Crée local** (Balise repère d'ancrage au-dessus du BrowserFrame). *Raison :* concrétise « l'endroit » fiable et pérenne. | Descente et rebond de la balise sur « endroit » (58,08 s) ; documents d'info qui s'ouvrent sur « renseigner » (58,79 s). | `pop` à 58,08 s | `top` |
+| **25** | 59,37–62,09 s | « ...sans devoir attendre que tu sois disponible. » | Cadenas qui s'ouvre : l'accès à l'information est libre 24/7, plus de barrière d'attente. | **Crée local** (Cadenas déverrouillé vert & horloge barrée). *Raison :* symbolise l'autonomie du prospect. | Cadenas fermé qui se déverrouille sur « attendre » (60,42 s) ; éclat lumineux sur « disponible » (60,95 s). | `click` de déverrouillage à 60,42 s | `top` |
+| **26** | 62,09–65,30 s | « Alors dis-moi, si quelqu'un découvre ton entreprise... » | Gros plan sur la mascotte en pose `point` pointant le spectateur du doigt, regard direct vers la caméra. | **Réutilise** `GoldenGabMascot` (pose `point`). *Raison :* pose réelle d'adresse directe au spectateur pour poser la question finale. | Entrée franche de la mascotte sur « dis-moi » (62,42 s) ; le doigt pointe l'écran sur « découvre ton entreprise » (64,40 s). | Aucun | `low` |
+| **27** | 65,30–66,80 s | « ...ce soir pendant que tu dors. » | Fond bleu nuit tamisé avec fenêtre éclairée et croissant de lune ; oreiller stylisé avec Zzz. | **Crée local** (Ambiance nocturne chambre / lune). *Raison :* rappelle le hook du début et ferme la boucle narrative. | Le voile nocturne s'intensifie sur « ce soir » (65,42 s) ; étoiles qui scintillent sur « dors » (66,38 s). | Aucun | `top` |
+| **28** | 66,80–70,28 s | « Est-ce qu'il va en savoir plus sans t'envoyer un message ? » | Carte interrogative contrastée : à gauche, bulle message en attente (grisée) ; à droite, lien web immédiat (corail éclatant). | **Crée local** (Dilemme visuel Message bloqué vs Site immédiat). *Raison :* pose l'enjeu crucial pour l'entrepreneur. | Apparition de la question sur « savoir plus » (67,70 s) ; point d'interrogation qui pulse sur « message » (69,45 s). | `ding` d'interpellation à 67,70 s | `bottom` |
+| **29** | 70,28–72,36 s | « N'hésite pas à t'abonner si tu aimes ce genre de contenu. » | Badge d'abonnement animé : bouton « S'abonner » corail avec cloche de notification et étoiles. Mascotte en pose `happy`. | **Réutilise** `GoldenGabMascot` (pose `happy`) & composant bouton d'abonnement. *Raison :* pose positive et accueillante pour le call-to-action. | La mascotte salue avec joie sur « t'abonner » (71,06 s) ; impulsion d'échelle de la cloche sur « contenu » (71,92 s). | `bell` / carillon à 71,06 s | `low` |
+| **30** | 72,36–74,50 s | « Allez, ciao ! [Outro & Musique] » | Logo officiel Golden Gab sur fond bleu nuit avec vague corail signature et mention « golden-gab.fr ». | **Réutilise** Outro officielle de marque. *Raison :* signature de clôture standard conforme au design system. | Animation du logo de signature sur « ciao » (73,12 s) jusqu'à la fin de la piste audio (74,50 s). | `whoosh` final de clôture à 73,12 s | `center` |
+
+---
+
+## Résumé technique pour validation
+
+### 1. Poses de mascotte
+- **Poses réelles utilisées** :
+  - `thinking` (Beats 1, 7, 17) : réflexion sur l'heure, l'indisponibilité, la nuit.
+  - `surprised` (Beat 8) : réaction d'interrogation (« qu'est-ce qu'il va faire ? »).
+  - `explaining` (Beat 21) : explication de la nuance (« ça ne veut pas dire... »).
+  - `point` (Beat 26) : apostrophe directe du spectateur (« Alors dis-moi... »).
+  - `happy` (Beat 29) : CTA d'abonnement chaleureux.
+- **Pose à générer (brief futur)** :
+  - `sleeping` : Mascotte assoupie avec bonnet de nuit ou oreiller. Notée comme candidat dans `public/assets/images/mascot/_pending/` quand elle sera requise ; pour cette vidéo, les métaphores vectorielles (horloge, croissant de lune, Zzz flottants) avec `thinking` couvrent parfaitement le besoin sans bloquer la production.
+
+### 2. Assets externes à récupérer
+- **Icônes Iconify (libres, Lucide / Tabler)** :
+  - `clock` / `moon` (ambiance nocturne et 23h)
+  - `bell` (cloche de notification TikTok & abonnement)
+  - `lock-open` (accès libre sans barrière)
+  - `sparkles` / `check-circle` (validation et atouts du site)
+- Aucun b-roll ni photo externe nécessaire : tout le storytelling s'exprime par des mocks dessinés en code (SVG/CSS), fidèles à la règle d'or du skill `asset-sourcing` (si un mock ou un SVG peut exprimer l'idée, c'est lui qu'on préfère).
+
+### 3. Composants à promouvoir dans `src/components/motion` (règle 46)
+Suite au montage mascotte précédent et pour ce nouvel épisode :
+- `BrowserFrame` : cadre de navigateur stylisé avec barre d'adresse et fenêtrage (utilisé dans Data Analyst et ici pour les sites web).
+- `PhoneMock` : maquette de smartphone vertical pour les notifications et feeds sociaux.
+- `wordClock` & `useBeat` : synchronisation millimétrée des révélations graphiques sur les mots du transcript.
+- `MascotShot` : cadrage et composition standardisée de la mascotte avec sa scène et son plateau.
+- `TagPill` / `ActionTile` : badges et cartes d'action dynamiques.

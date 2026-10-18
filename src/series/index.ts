@@ -10,10 +10,12 @@
  */
 
 import { metiersDeLaTechSeries } from "./metiers-de-la-tech";
+import { webStorySeries } from "./web-story";
 import type { SeriesDefinition } from "./types";
 
 export const seriesRegistry: readonly SeriesDefinition[] = [
   metiersDeLaTechSeries,
+  webStorySeries,
 ];
 
 export type { SeriesDefinition };

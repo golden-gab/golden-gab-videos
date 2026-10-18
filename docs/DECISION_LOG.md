@@ -184,3 +184,14 @@ Les entrées doivent rester compactes, factuelles et exploitables sans relire to
 - validation: `npm run lint` ; `npm test` (60 passés) ; 8 stills rendus et inspectés ; rendu MP4 complet
 - roadmap: not-needed
 - next: décider si l'épisode de référence doit aussi adapter ses visuels à `low`
+
+### 2026-10-18 — Web Story : « Tu dors déjà » & promotion des outils motion
+- status: done
+- scope: promotion dans `src/components/motion` des outils créés pour le montage mascotte (wordClock, MascotShot, CaptionStage, LibIcon, TagPill, BrowserFrame, PhoneMock, ConceptCard, ActionTile, effects) ; création de la série `web-story` avec transcription Whisper (74,5 s, modèle small fr) et composition `web-story-c-est-quoi-site-web` (30 beats audio-driven)
+- files: `src/components/motion/*`, `src/config/assets.manifest.json`, `src/series/index.ts`, `src/series/web-story/*`, `docs/series/web-story-tu-dors-deja-storyboard.md`, `docs/DECISION_LOG.md`
+- decision: promouvoir les outils réutilisables selon la règle 46 plutôt que de les dupliquer ; découpage en 30 scènes contiguës calées sur les mots ; 4 poses réelles de mascotte + 1 brief `sleeping` en métaphores SVG ; captions `highlight` avec mot actif corail
+- impact: nouvelle série `web-story` déclarée dans `seriesRegistry` ; 30 beats rythmés sans aucune donnée chiffrée inventée ; boîte à outils motion partagée et testée
+- validation: `npm run lint` (0 erreur), `npm test` (65 passés), 4 stills rendus (frames 75, 765, 1425, 1905), rendu MP4 complet
+- roadmap: not-needed
+- next: revoir les assets optionnels ou décliner un nouvel épisode de la série Web Story
+
