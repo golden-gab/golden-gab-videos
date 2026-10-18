@@ -12,12 +12,20 @@ import { videoFormat } from "../../config/video";
 import { getEpisodeDurationFrames } from "../../scenes";
 import type { SeriesDefinition } from "../types";
 import { webStoryEpisode } from "./data/episode";
-import { WebStorySiteWebVideo } from "./videos/web-story-c-est-quoi-site-web";
+import { WebStoryTuDorsDejaVideo } from "./videos/web-story-tu-dors-deja";
+
+import { siteWebEpisode } from "./episodes/c-est-quoi-site-web/data/episode";
+import { WebStorySiteWebVideo } from "./episodes/c-est-quoi-site-web/videos/web-story-c-est-quoi-site-web";
 
 export const WEB_STORY_ID = "web-story";
 
-const durationInFrames = getEpisodeDurationFrames(
+const tuDorsDejaDurationInFrames = getEpisodeDurationFrames(
   webStoryEpisode,
+  videoFormat.fps,
+);
+
+const siteWebDurationInFrames = getEpisodeDurationFrames(
+  siteWebEpisode,
   videoFormat.fps,
 );
 
@@ -25,9 +33,17 @@ const WebStoryFolder: React.FC = () => {
   return (
     <Folder name={WEB_STORY_ID}>
       <Composition
+        id="web-story-tu-dors-deja"
+        component={WebStoryTuDorsDejaVideo}
+        durationInFrames={tuDorsDejaDurationInFrames}
+        fps={videoFormat.fps}
+        width={videoFormat.width}
+        height={videoFormat.height}
+      />
+      <Composition
         id="web-story-c-est-quoi-site-web"
         component={WebStorySiteWebVideo}
-        durationInFrames={durationInFrames}
+        durationInFrames={siteWebDurationInFrames}
         fps={videoFormat.fps}
         width={videoFormat.width}
         height={videoFormat.height}

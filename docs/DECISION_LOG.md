@@ -205,3 +205,11 @@ Les entrées doivent rester compactes, factuelles et exploitables sans relire to
 - roadmap: not-needed
 - next: écouter l'audio pour valider les corrections du transcript ; rendre le MP4 complet ; migrer `metiers-de-la-tech` vers `ZoneStage`
 
+### 2026-10-18 — Web Story : clarification des épisodes & renommage « Tu dors déjà »
+- status: done
+- scope: séparation nette entre les 2 vidéos de la série (`tu-dors-deja` et `c-est-quoi-site-web`) ; renommage de la composition en `web-story-tu-dors-deja`
+- files: `src/series/web-story/{index.tsx,data/episode.ts,videos/web-story-tu-dors-deja.tsx}`, `docs/DECISION_LOG.md`
+- decision: la composition et le composant vidéo portaient par erreur le nom de la future vidéo « C'est quoi un site web » alors que tout le contenu, l'audio et le storyboard étaient ceux de « Tu dors déjà » ; renommage propre pour accueillir les 2 vidéos dans la série sans collision
+- impact: composition `web-story-tu-dors-deja` disponible et propre pour le rendu
+- validation: `npm run lint` (0 erreur), `npm test` (68 passés), rendu vidéo lancé vers `out/web-story-tu-dors-deja.mp4`
+

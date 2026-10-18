@@ -10,7 +10,7 @@ import type { Episode } from "../../../scenes/types";
 import { webStoryAudio, webStoryTranscript } from "./transcript.ts";
 
 export const webStoryEpisode: Episode = {
-  id: "web-story-c-est-quoi-site-web",
+  id: "web-story-tu-dors-deja",
   title: "Tu dors déjà ? — Pourquoi avoir un site web",
   description: "Comment un site vitrine informe tes prospects TikTok à 23h quand tu dors déjà.",
   audio: webStoryAudio,
