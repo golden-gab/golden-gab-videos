@@ -19,3 +19,18 @@ export { TagPill } from "./TagPill";
 export { Burst, Confetti, Magnifier, Shockwave, Sparkle } from "./effects";
 export { MascotShot, type MascotShotProps } from "./MascotShot";
 export { LibIcon, type LibIconProps } from "./LibIcon";
+export { Art, ZoneMascot, ZoneStage } from "./ZoneStage";
+export {
+  CAPTION_CLEARANCE,
+  CAPTION_TEXT_HALF_HEIGHT,
+  fitScale,
+  getCaptionRect,
+  getFreeRegion,
+  getZones,
+  rectsOverlap,
+  ZONE_GAP,
+  type Rect,
+  type ZoneLayout,
+  type Zones,
+} from "./zones";
+export { lit, punch, shake } from "./emphasis";

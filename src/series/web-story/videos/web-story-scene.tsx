@@ -9,12 +9,7 @@
 import React from "react";
 import { AbsoluteFill } from "remotion";
 
-import {
-  CaptionStage,
-  getSceneLane,
-  SceneShell,
-  type SceneCamera,
-} from "../../../components/motion";
+import { SceneShell, type SceneCamera } from "../../../components/motion";
 import type { Scene } from "../../../scenes/types";
 import {
   Beat01,
@@ -96,19 +91,11 @@ export const WebStoryScene: React.FC<{ readonly scene: Scene }> = ({ scene }) =>
 
   const beatNum = typeof scene.metadata?.beatNumber === "number" ? scene.metadata.beatNumber : 1;
   const camera = cameras[beatNum % cameras.length];
-  const lane = getSceneLane(scene);
-  const isCenter = lane === "center";
 
   return (
     <SceneShell camera={camera} intensity={0.4} grain vignette>
       <AbsoluteFill>
-        {isCenter ? (
-          <Component scene={scene} />
-        ) : (
-          <CaptionStage lane={lane}>
-            <Component scene={scene} />
-          </CaptionStage>
-        )}
+        <Component scene={scene} />
       </AbsoluteFill>
     </SceneShell>
   );

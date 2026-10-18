@@ -114,7 +114,7 @@ export const webStoryTranscript: Transcript = {
   {
     "start": 5.22,
     "end": 5.39,
-    "text": "est"
+    "text": "ait"
   },
   {
     "start": 5.39,
@@ -319,7 +319,7 @@ export const webStoryTranscript: Transcript = {
   {
     "start": 16.29,
     "end": 16.49,
-    "text": "dois"
+    "text": "dors"
   },
   {
     "start": 16.49,
@@ -519,7 +519,7 @@ export const webStoryTranscript: Transcript = {
   {
     "start": 28.38,
     "end": 28.56,
-    "text": "tout"
+    "text": "toute"
   },
   {
     "start": 28.56,

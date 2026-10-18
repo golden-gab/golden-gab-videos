@@ -37,6 +37,11 @@ export type MascotShotProps = {
   readonly entrance?: AppearAnimation;
   /** Retard de l'entrée dans la prise, en secondes. */
   readonly delay?: number;
+  /**
+   * Carré imposé par les zones du plan (`ZoneStage`) : la mascotte s'y inscrit
+   * et ignore `side`, `size`, `lift` et `bleed`.
+   */
+  readonly rect?: { readonly x: number; readonly y: number; readonly w: number; readonly h: number };
 };
 
 const MascotHalo: React.FC<{
@@ -99,21 +104,28 @@ export const MascotShot: React.FC<MascotShotProps> = ({
   pose,
   attitude = "neutral",
   side = "right",
-  size = 480,
+  size: sizeProp = 480,
   lift = 0,
   bleed = 0,
   mirrored = false,
   halo = "soft",
   entrance,
   delay = 0,
+  rect,
 }) => {
   const { fps } = useVideoConfig();
   const sceneDuration = scene.end - scene.start;
   const startFrame = secondsToFrames(from, fps);
   const endFrame = secondsToFrames(to ?? sceneDuration, fps);
-  const left =
-    side === "right" ? band.right - size + bleed : band.left - bleed;
-  const top = band.bottom - size - lift;
+  const size = rect ? Math.min(rect.w, rect.h) : sizeProp;
+  const left = rect
+    ? rect.x + (rect.w - size) / 2
+    : side === "right"
+      ? band.right - size + bleed
+      : band.left - bleed;
+  const top = rect
+    ? rect.y + (rect.h - size) / 2
+    : band.bottom - size - lift;
 
   return (
     <Sequence

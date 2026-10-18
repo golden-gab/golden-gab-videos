@@ -53,7 +53,7 @@ export const webStoryEpisode: Episode = {
     "type": "callout",
     "start": 4.2,
     "end": 7.11,
-    "transcript": "Imagine qu'un client X est entendu parler de ton activité que",
+    "transcript": "Imagine qu'un client X ait entendu parler de ton activité que",
     "visual": {
       "component": "WebStoryScene"
     },
@@ -167,7 +167,7 @@ export const webStoryEpisode: Episode = {
     "type": "explanation",
     "start": 15.09,
     "end": 17.05,
-    "transcript": "tu n'es plus disponible, tu dois déjà.",
+    "transcript": "tu n'es plus disponible, tu dors déjà.",
     "visual": {
       "component": "WebStoryScene"
     },
@@ -281,7 +281,7 @@ export const webStoryEpisode: Episode = {
     "type": "explanation",
     "start": 27.24,
     "end": 29.55,
-    "transcript": "Tu peux y présenter tout ton entreprise,",
+    "transcript": "Tu peux y présenter toute ton entreprise,",
     "visual": {
       "component": "WebStoryScene"
     },

@@ -142,6 +142,18 @@ tokens (cas normal d'une nouvelle idée, pas une exception) ;
   une scène : ce dossier est une salle d'attente, pas une source. Un candidat
   n'entre dans une vidéo qu'après promotion (`docs/MASCOT-POSES.md`).
 
+## Zones d'un plan : captions, mascotte, illustration
+
+Les captions, la mascotte et l'illustration ne se recouvrent **jamais**. Un plan ne place pas ses éléments à la main : il déclare un gabarit à `ZoneStage` (`src/components/motion/stage/zones.ts`), qui découpe l'écran à partir de la position des captions.
+
+- Gabarits : `art` (illustration seule), `side-left` / `side-right` (mascotte à côté), `stack-left` / `stack-right` (mascotte sous l'illustration), `mascot` (mascotte seule).
+- `center` + `stack-*` laisse trop peu de hauteur : en captions centrées, préférer `side-*` ou `art`.
+- `<Art w h>` fait tenir l'illustration dans sa zone ; elle ne déborde jamais.
+- Un message par plan, 3 mots maximum à l'écran, texte ≥ 52 px. Pas de phrase d'explication : si la voix le dit, l'image le montre.
+- Tout est visible dès le début du plan. Un mot prononcé déclenche une **réaction** (`punch`, `lit`, `shake`), pas l'apparition : jamais de `scale(0)` en attendant un mot.
+- Le test `zones.test.ts` échoue si un gabarit recouvre les captions.
+- Le logo Golden Gab (« gab » en bleu nuit) se pose sur une plaque claire, jamais directement sur le fond sombre.
+
 ## Revue avant rendu
 
 - Chaque phrase clé a-t-elle une représentation visuelle pertinente ?

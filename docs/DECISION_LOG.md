@@ -195,3 +195,13 @@ Les entrées doivent rester compactes, factuelles et exploitables sans relire to
 - roadmap: not-needed
 - next: revoir les assets optionnels ou décliner un nouvel épisode de la série Web Story
 
+### 2026-10-18 — Web Story « Tu dors déjà » : zones sans chevauchement, un message par plan
+- status: done
+- scope: refonte des 30 plans de `web-story` ; nouveau système de zones (`zones.ts`, `ZoneStage`, `Art`, `ZoneMascot`) et helpers d'emphase (`punch`, `lit`, `shake`) dans `src/components/motion/stage`
+- files: `src/components/motion/stage/{zones.ts,zones.test.ts,ZoneStage.tsx,emphasis.ts,MascotShot.tsx,index.ts}`, `src/series/web-story/videos/*`, `src/series/web-story/data/{episode.ts,transcript.ts}`, `docs/VIDEO-DIRECTION.md`
+- decision: le plan déclare un gabarit, les rectangles captions / mascotte / illustration sont calculés (et testés) au lieu d'être placés à la main ; 3 mots max par plan, illustrations dessinées (blocs fantômes au lieu de faux textes) ; éléments visibles dès le début, mots = réactions ; logo sur plaque claire (le « gab » bleu nuit était invisible sur fond sombre) ; domaine `golden-gab.com` (et non `.fr`) ; corrections du transcript : « est entendu » → « ait entendu », « dois » → « dors », « tout » → « toute »
+- impact: plus de chevauchement mascotte / captions / illustration ; plans vides au début supprimés (le `scale(0)` attendant le mot) ; `CaptionStage` reste utilisé par `metiers-de-la-tech`
+- validation: `npm run lint` ; `npm test` (68 passés) ; 30 stills rendus et inspectés
+- roadmap: not-needed
+- next: écouter l'audio pour valider les corrections du transcript ; rendre le MP4 complet ; migrer `metiers-de-la-tech` vers `ZoneStage`
+
