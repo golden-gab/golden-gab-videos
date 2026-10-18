@@ -1,16 +1,26 @@
 /**
- * Petites briques visuelles de l'épisode « Tu dors déjà » : peu de texte, de
- * grandes formes, tout est dessiné dans un repère de dessin (`w × h`) que
- * `<Art />` fait tenir dans la zone d'illustration.
+ * Briques visuelles de la série Web Story : peu de texte, de grandes formes,
+ * tout est dessiné dans un repère de dessin (`w × h`) que `<Art />` fait tenir
+ * dans la zone d'illustration.
  */
 
 import React from "react";
 import { useCurrentFrame, useVideoConfig } from "remotion";
 
-import { BrandText } from "../../../components/common/BrandText";
-import { abs, Sparkle } from "../../../components/motion";
-import { colors, radius, strokeWidths } from "../../../config";
-import { withAlpha } from "../../../utils/color";
+import type { Scene } from "../../scenes/types";
+
+import { BrandText } from "../../components/common/BrandText";
+import {
+  abs,
+  getSceneLane,
+  LibIcon,
+  PhoneMock,
+  Sparkle,
+  ZoneStage,
+  type ZoneLayout,
+} from "../../components/motion";
+import { colors, radius, strokeWidths } from "../../config";
+import { withAlpha } from "../../utils/color";
 
 /** Gros libellé : 2 à 3 mots maximum, jamais de phrase. */
 export const Pill: React.FC<{
@@ -313,4 +323,165 @@ export const NotEqual: React.FC<{ readonly size: number; readonly color?: string
       strokeLinecap="round"
     />
   </svg>
+);
+
+/* -------------------------------------------------------------------------- */
+/*  Briques communes aux épisodes de la série                                  */
+/* -------------------------------------------------------------------------- */
+
+/** Plateau d'un plan : le gabarit de zones suit la position des captions. */
+export const Shot: React.FC<{
+  readonly scene: Scene;
+  readonly layout: ZoneLayout;
+  readonly children: React.ReactNode;
+}> = ({ scene, layout, children }) => (
+  <ZoneStage lane={getSceneLane(scene)} layout={layout}>
+    {children}
+  </ZoneStage>
+);
+
+/** Secondes écoulées depuis `startSeconds` (0 avant). */
+export const useSince = (startSeconds: number): number => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+
+  return Math.max(0, frame / fps - startSeconds);
+};
+
+/** Engrenage dessiné (SVG) qui tourne avec `angle`. */
+export const Gear: React.FC<{
+  readonly size: number;
+  readonly angle: number;
+  readonly color?: string;
+}> = ({ size, angle, color = colors.accent }) => (
+  <svg width={size} height={size} viewBox="0 0 100 100" aria-hidden="true" style={{ transform: `rotate(${angle}deg)` }}>
+    {[0, 45, 90, 135].map((deg) => (
+      <rect key={deg} x="42" y="4" width="16" height="92" rx="6" fill={color} transform={`rotate(${deg} 50 50)`} />
+    ))}
+    <circle cx="50" cy="50" r="33" fill={color} />
+    <circle cx="50" cy="50" r="14" fill={colors.ink} />
+  </svg>
+);
+
+/** Flèche qui se trace de (x1, y1) vers (x2, y2) avec `progress` 0 → 1. */
+export const Arrow: React.FC<{
+  readonly x1: number;
+  readonly y1: number;
+  readonly x2: number;
+  readonly y2: number;
+  readonly progress: number;
+  readonly color?: string;
+}> = ({ x1, y1, x2, y2, progress, color = colors.accent }) => {
+  const p = Math.max(0, Math.min(1, progress));
+  const ex = x1 + (x2 - x1) * p;
+  const ey = y1 + (y2 - y1) * p;
+  const angle = Math.atan2(y2 - y1, x2 - x1);
+  const head = 34;
+  const left = [ex - head * Math.cos(angle - 0.5), ey - head * Math.sin(angle - 0.5)];
+  const right = [ex - head * Math.cos(angle + 0.5), ey - head * Math.sin(angle + 0.5)];
+
+  return (
+    <g opacity={p > 0 ? 1 : 0}>
+      <line x1={x1} y1={y1} x2={ex} y2={ey} stroke={color} strokeWidth={12} strokeLinecap="round" />
+      <path d={`M${left[0]} ${left[1]} L${ex} ${ey} L${right[0]} ${right[1]}`} fill="none" stroke={color} strokeWidth={12} strokeLinecap="round" strokeLinejoin="round" />
+    </g>
+  );
+};
+
+/** Pastille ronde avec une icône : un acteur (utilisateur, système, visiteur). */
+export const Bubble: React.FC<{
+  readonly size: number;
+  readonly children: React.ReactNode;
+  readonly active?: boolean;
+  readonly style?: React.CSSProperties;
+}> = ({ size, children, active = true, style }) => (
+  <div
+    style={{
+      width: size,
+      height: size,
+      borderRadius: radius.pill,
+      backgroundColor: active ? colors.accent : withAlpha(colors.ink, 0.85),
+      border: `${strokeWidths.thick}px solid ${active ? withAlpha(colors.inkInverse, 0.5) : withAlpha(colors.inkInverse, 0.35)}`,
+      boxShadow: `0 16px 40px ${withAlpha(colors.ink, 0.4)}`,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      flexShrink: 0,
+      ...style,
+    }}
+  >
+    {children}
+  </div>
+);
+
+/** Tuile d'application (icône + libellé court) pour l'écran d'accueil. */
+export const AppTile: React.FC<{
+  readonly icon: string;
+  readonly label: string;
+  readonly on: number;
+}> = ({ icon, label, on }) => (
+  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 14, opacity: 0.25 + 0.75 * on, transform: `scale(${0.9 + 0.1 * on})` }}>
+    <div
+      style={{
+        width: 150,
+        height: 150,
+        borderRadius: radius.lg,
+        backgroundColor: on > 0.5 ? colors.accent : withAlpha(colors.inkInverse, 0.2),
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <LibIcon id={icon} size={88} color={colors.inkInverse} />
+    </div>
+    <BrandText role="label" color={colors.inkInverse} style={{ fontSize: 34, lineHeight: 1 }}>
+      {label}
+    </BrandText>
+  </div>
+);
+
+/** Écran d'accueil d'un téléphone avec ses tuiles. */
+export const PhoneHome: React.FC<{
+  readonly width: number;
+  readonly height: number;
+  readonly tiles: readonly { readonly icon: string; readonly label: string; readonly on: number }[];
+  readonly children?: React.ReactNode;
+}> = ({ width, height, tiles, children }) => (
+  <PhoneMock width={width} height={height}>
+    <div style={{ padding: 34, display: "flex", flexWrap: "wrap", gap: 30, justifyContent: "center", alignContent: "flex-start", paddingTop: 70 }}>
+      {tiles.map((tile) => (
+        <AppTile key={tile.label} icon={tile.icon} label={tile.label} on={tile.on} />
+      ))}
+    </div>
+    {children}
+  </PhoneMock>
+);
+
+/** Carte d'un concept (SITE WEB / APPLICATION WEB) : titre + icône. */
+export const ModeCard: React.FC<{
+  readonly w: number;
+  readonly h: number;
+  readonly label: string;
+  readonly icon: string;
+  readonly active?: boolean;
+  readonly dim?: number;
+  readonly style?: React.CSSProperties;
+}> = ({ w, h, label, icon, active = false, dim = 1, style }) => (
+  <Card w={w} h={h} active={active} dim={dim} style={style}>
+    <LibIcon id={icon} size={Math.min(w, h) * 0.38} color={active ? colors.accent : colors.inkInverse} />
+    <Pill size={Math.min(60, w / 7)} tone={active ? "accent" : "dark"}>
+      {label}
+    </Pill>
+  </Card>
+);
+
+/** Ligne de page web : une barre de texte « fantôme ». */
+export const Lines: React.FC<{ readonly fill: number; readonly count?: number; readonly w?: number }> = ({ fill, count = 3, w = 520 }) => (
+  <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
+    {Array.from({ length: count }, (_, index) => (
+      <div key={index} style={{ width: w * (1 - index * 0.14), height: 24, borderRadius: radius.pill, backgroundColor: withAlpha(colors.inkInverse, 0.18), overflow: "hidden" }}>
+        <div style={{ width: `${Math.max(0, Math.min(1, fill * (count + 1) - index)) * 100}%`, height: "100%", backgroundColor: withAlpha(colors.inkInverse, 0.7) }} />
+      </div>
+    ))}
+  </div>
 );

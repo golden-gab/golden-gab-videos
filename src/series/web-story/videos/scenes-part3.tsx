@@ -40,7 +40,7 @@ import {
   Skeleton,
   Stars,
   Zzz,
-} from "./kit";
+} from "../kit";
 
 type BeatProps = { readonly scene: Scene };
 

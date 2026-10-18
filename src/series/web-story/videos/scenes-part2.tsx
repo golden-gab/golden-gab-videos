@@ -29,7 +29,7 @@ import { colors, radius, strokeWidths } from "../../../config";
 import type { Scene } from "../../../scenes/types";
 import { withAlpha } from "../../../utils/color";
 import { webStoryTranscript } from "../data/transcript.ts";
-import { Card, CheckMark, CrossMark, Moon, Pill, Skeleton } from "./kit";
+import { Card, CheckMark, CrossMark, Moon, Pill, Skeleton } from "../kit";
 
 type BeatProps = { readonly scene: Scene };
 

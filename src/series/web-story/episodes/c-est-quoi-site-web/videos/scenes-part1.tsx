@@ -1,466 +1,553 @@
 /**
- * Scènes 1 à 18 — Web Story « C'est quoi un site web »
+ * Scènes 1 à 16 — Web Story « C'est quoi un site web »
  *
- * Bloc 1 : Hook, promesse & distinction site vs application web (1 à 9)
- * Bloc 2 : L'application web sur mobile et dans le navigateur (10 à 18)
+ * Bloc 1 : hook et promesse, site vs application web (1 à 9)
+ * Bloc 2 : l'application web sur le téléphone puis dans le navigateur (10 à 16)
+ *
+ * Règles de la série : un message par plan, 3 mots maximum à l'écran, tout est
+ * visible dès le début du plan (un mot prononcé déclenche une *réaction*, pas
+ * l'apparition), et chaque plan déclare son gabarit de zones : la mascotte,
+ * l'illustration et les captions ne se recouvrent jamais.
  */
 
 import React from "react";
-import { interpolate } from "remotion";
+import { interpolate, useCurrentFrame } from "remotion";
 
 import { BrandText } from "../../../../../components/common/BrandText";
 import {
-  ActionTile,
-  Appear,
+  abs,
+  Art,
   BrowserFrame,
-  ConceptCard,
   LibIcon,
-  MascotShot,
-  PhoneMock,
+  lit,
+  punch,
   Shockwave,
   Sparkle,
-  TagPill,
-  abs,
-  band,
-  H,
   useWordClock,
-  W,
+  ZoneMascot,
 } from "../../../../../components/motion";
-import { colors, durations, easings, radius, spacing, strokeWidths } from "../../../../../config";
+import { colors, radius, strokeWidths } from "../../../../../config";
 import type { Scene } from "../../../../../scenes/types";
 import { withAlpha } from "../../../../../utils/color";
+import {
+  Bubble,
+  Card,
+  Gear,
+  ModeCard,
+  PhoneHome,
+  Pill,
+  Shot,
+  Skeleton,
+} from "../../../kit";
 import { siteWebTranscript } from "../data/transcript.ts";
 
-/* -------------------------------------------------------------------------- */
-/*  Bloc 1 : Beats 01 à 09                                                     */
-/* -------------------------------------------------------------------------- */
+type BeatProps = { readonly scene: Scene };
 
-export const Beat01: React.FC<{ readonly scene: Scene }> = ({ scene }) => {
-  const clock = useWordClock(scene, siteWebTranscript);
-  const qScale = clock.p(clock.at("web", 0), durations.fast, easings.spring);
+const useClock = (scene: Scene) => useWordClock(scene, siteWebTranscript);
+
+/** Gros « ? » corail. */
+const Question: React.FC<{ readonly size: number }> = ({ size }) => (
+  <div
+    style={{
+      width: size,
+      height: size,
+      borderRadius: radius.pill,
+      backgroundColor: colors.accent,
+      boxShadow: `0 20px 50px ${withAlpha(colors.accent, 0.5)}`,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    }}
+  >
+    <BrandText role="display" color={colors.inkInverse} style={{ fontSize: size * 0.78, lineHeight: 1 }}>
+      ?
+    </BrandText>
+  </div>
+);
+
+/** Page de site : bandeau + blocs fantômes. */
+const PageBody: React.FC<{ readonly fill?: number }> = ({ fill = 1 }) => (
+  <div style={{ padding: 36, display: "flex", flexDirection: "column", gap: 26 }}>
+    <div style={{ display: "flex", gap: 24, alignItems: "center" }}>
+      <div style={{ width: 100, height: 100, borderRadius: radius.pill, backgroundColor: colors.accent }} />
+      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        <Skeleton w={340} h={28} />
+        <Skeleton w={240} h={22} />
+      </div>
+    </div>
+    <Skeleton w="100%" h={110} style={{ borderRadius: radius.md, opacity: fill }} />
+    <Skeleton w="75%" h={24} />
+  </div>
+);
+
+/* -------------------------------------------------------------------------- */
+/*  01 · « C'est quoi un site web ? »                                          */
+/* -------------------------------------------------------------------------- */
+export const Beat01: React.FC<BeatProps> = ({ scene }) => {
+  const clock = useClock(scene);
+  const t = clock.at("web", 0);
+  const hit = punch(clock, t, 0.2, 0.45);
+  const ring = clock.p(t, 0.6);
 
   return (
-    <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-      <Appear animation="pop" duration={0.4}>
-        <BrowserFrame width={820} height={520} address="c-est-quoi-un-site-web" secure tone="dark">
-          <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+    <Shot scene={scene} layout="art">
+      <Art w={936} h={700}>
+        <div style={abs(38, 40, 860, 560)}>
+          <BrowserFrame width={860} height={560} address="nom-du-site" secure tone="dark">
+            <PageBody />
+          </BrowserFrame>
+        </div>
+        <div style={{ ...abs(468 - 150, 190, 300, 300), transform: `scale(${hit})` }}>
+          <Question size={300} />
+        </div>
+        <Shockwave x={468} y={340} size={300} progress={ring} />
+      </Art>
+    </Shot>
+  );
+};
+
+/* -------------------------------------------------------------------------- */
+/*  02 · « On m'a déjà posé cette question »                                   */
+/* -------------------------------------------------------------------------- */
+const AskBubble: React.FC<{
+  readonly x: number;
+  readonly y: number;
+  readonly on: number;
+  readonly hot?: boolean;
+}> = ({ x, y, on, hot = false }) => (
+  <div
+    style={{
+      ...abs(x, y, 400, 190),
+      borderRadius: radius.lg,
+      backgroundColor: hot ? colors.accent : withAlpha(colors.ink, 0.85),
+      border: `${strokeWidths.thick}px solid ${hot ? withAlpha(colors.inkInverse, 0.5) : withAlpha(colors.inkInverse, 0.3)}`,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      opacity: 0.3 + 0.7 * on,
+      transform: `scale(${0.9 + 0.1 * on})`,
+    }}
+  >
+    <BrandText role="display" color={colors.inkInverse} style={{ fontSize: 150, lineHeight: 1 }}>
+      ?
+    </BrandText>
+  </div>
+);
+
+export const Beat02: React.FC<BeatProps> = ({ scene }) => {
+  const clock = useClock(scene);
+
+  return (
+    <Shot scene={scene} layout="art">
+      <Art w={936} h={640}>
+        <AskBubble x={0} y={0} on={lit(clock, 0, 0.2)} />
+        <AskBubble x={536} y={220} on={lit(clock, clock.at("posé", 0), 0.2)} />
+        <AskBubble x={60} y={440} on={lit(clock, clock.at("question", 0), 0.2)} hot />
+      </Art>
+    </Shot>
+  );
+};
+
+/* -------------------------------------------------------------------------- */
+/*  03 · « plusieurs fois, c'est tellement même déjà demandé »                  */
+/* -------------------------------------------------------------------------- */
+export const Beat03: React.FC<BeatProps> = ({ scene }) => {
+  const clock = useClock(scene);
+  const total = 15;
+
+  return (
+    <Shot scene={scene} layout="stack-right">
+      <Art w={936} h={510}>
+        {Array.from({ length: total }, (_, index) => {
+          const on = lit(clock, (index / total) * 1.7, 0.18);
+          const col = index % 5;
+          const row = Math.floor(index / 5);
+
+          return (
             <div
+              key={index}
               style={{
-                width: 170,
-                height: 170,
-                borderRadius: radius.pill,
-                backgroundColor: colors.accent,
+                ...abs(col * 190 + 6, row * 165, 150, 140),
+                borderRadius: radius.lg,
+                backgroundColor: index % 4 === 0 ? colors.accent : withAlpha(colors.ink, 0.85),
+                border: `${strokeWidths.medium}px solid ${withAlpha(colors.inkInverse, 0.3)}`,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                transform: `scale(${qScale})`,
-                boxShadow: `0 14px 34px ${withAlpha(colors.accent, 0.45)}`,
+                opacity: 0.2 + 0.8 * on,
+                transform: `scale(${0.8 + 0.2 * on})`,
               }}
             >
-              <BrandText role="display" color={colors.inkInverse} style={{ fontSize: 130 }}>
+              <BrandText role="display" color={colors.inkInverse} style={{ fontSize: 100, lineHeight: 1 }}>
                 ?
               </BrandText>
             </div>
-            <Sparkle x={510} y={150} size={50} progress={qScale} color={colors.accent} />
-          </div>
-        </BrowserFrame>
-      </Appear>
-    </div>
-  );
-};
-
-export const Beat02: React.FC<{ readonly scene: Scene }> = ({ scene }) => {
-  const clock = useWordClock(scene, siteWebTranscript);
-  const p1 = clock.p(clock.at("m'a", 0));
-  const p2 = clock.p(clock.at("posé", 0));
-  const p3 = clock.p(clock.at("question", 0));
-
-  return (
-    <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: spacing.lg }}>
-      <div style={{ transform: `scale(${p1})`, opacity: p1 }}>
-        <TagPill tone="ghost" icon="bulb">« Comment ça marche ? »</TagPill>
-      </div>
-      <div style={{ transform: `scale(${p2})`, opacity: p2 }}>
-        <TagPill tone="light" icon="user">« C&apos;est quoi la différence ? »</TagPill>
-      </div>
-      <div style={{ transform: `scale(${p3})`, opacity: p3 }}>
-        <TagPill tone="accent" icon="check">« C&apos;est quoi un site web ? »</TagPill>
-      </div>
-    </div>
-  );
-};
-
-export const Beat03: React.FC<{ readonly scene: Scene }> = ({ scene }) => {
-  const clock = useWordClock(scene, siteWebTranscript);
-  const p1 = clock.p(clock.at("plusieurs", 0));
-  const p2 = clock.p(clock.at("tellement", 0));
-
-  return (
-    <div style={{ width: "100%", height: "100%", position: "relative" }}>
-      <div style={{ ...abs(120, band.top + 100), transform: `scale(${p1})`, opacity: p1 }}>
-        <TagPill tone="ghost" icon="bulb">Plusieurs fois...</TagPill>
-      </div>
-      <div style={{ ...abs(140, band.top + 240), transform: `scale(${p2})`, opacity: p2 }}>
-        <TagPill tone="accent" icon="box">Même question !</TagPill>
-      </div>
-      <MascotShot
-        scene={scene}
-        pose="surprised"
-        attitude="surprised"
-        side="right"
-        size={460}
-        from={clock.at("tellement", 0)}
-        halo="accent"
-      />
-    </div>
-  );
-};
-
-export const Beat04: React.FC<{ readonly scene: Scene }> = ({ scene }) => {
-  const clock = useWordClock(scene, siteWebTranscript);
-  const pOpen = clock.p(clock.at("fonctionne", 0), durations.slow);
-
-  return (
-    <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-      <div
-        style={{
-          width: 580,
-          height: 440,
-          borderRadius: radius.lg,
-          backgroundColor: colors.surfaceDark,
-          border: `${strokeWidths.medium}px solid ${colors.accent}`,
-          boxShadow: `0 20px 50px ${withAlpha(colors.ink, 0.4)}`,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: spacing.md,
-          position: "relative",
-          overflow: "hidden",
-        }}
-      >
-        <LibIcon id="web-puzzle" size={130} color={colors.accent} style={{ transform: `rotate(${pOpen * 180}deg)` }} />
-        <BrandText role="h2" color={colors.inkInverse}>
-          FONCTIONNEMENT
-        </BrandText>
-        <span style={{ width: "60%", height: strokeWidths.thin, backgroundColor: withAlpha(colors.inkInverse, 0.3) }} />
-      </div>
-    </div>
-  );
-};
-
-export const Beat05: React.FC<{ readonly scene: Scene }> = ({ scene }) => {
-  const clock = useWordClock(scene, siteWebTranscript);
-  const pLine = clock.p(clock.at("simplement", 0), durations.base);
-
-  return (
-    <div style={{ width: "100%", height: "100%", position: "relative" }}>
-      <div style={{ ...abs(120, band.top + 160, 480) }}>
-        <BrandText role="h2" color={colors.inkInverse}>
-          EXPLICATION
-        </BrandText>
-        <BrandText role="display" color={colors.accent} style={{ fontSize: 110 }}>
-          SIMPLE
-        </BrandText>
-        <div style={{ width: 440 * pLine, height: strokeWidths.thick, backgroundColor: colors.accent, borderRadius: radius.pill, marginTop: spacing.sm }} />
-      </div>
-      <MascotShot
-        scene={scene}
-        pose="explaining"
-        attitude="friendly"
-        side="right"
-        size={470}
-        from={clock.at("je", 0)}
-        halo="soft"
-      />
-    </div>
-  );
-};
-
-export const Beat06: React.FC<{ readonly scene: Scene }> = ({ scene }) => {
-  const clock = useWordClock(scene, siteWebTranscript);
-  const pDiff = clock.p(clock.at("différence", 0), durations.fast, easings.spring);
-
-  return (
-    <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: spacing.md }}>
-      <div
-        style={{
-          width: 220,
-          height: 220,
-          borderRadius: radius.pill,
-          backgroundColor: colors.surfaceDark,
-          border: `${strokeWidths.thick}px solid ${colors.accent}`,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          transform: `scale(${pDiff})`,
-        }}
-      >
-        <BrandText role="display" color={colors.accent} style={{ fontSize: 140, lineHeight: 1 }}>
-          ≠
-        </BrandText>
-      </div>
-      <BrandText role="h1" color={colors.inkInverse}>
-        DIFFÉRENCE
-      </BrandText>
-    </div>
-  );
-};
-
-export const Beat07: React.FC<{ readonly scene: Scene }> = ({ scene }) => {
-  const clock = useWordClock(scene, siteWebTranscript);
-  const pSite = clock.p(clock.at("site", 0));
-  const pApp = clock.p(clock.at("application", 0));
-
-  return (
-    <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between", alignItems: "center", padding: "100px 0" }}>
-      <div style={{ transform: `scale(${pSite})`, opacity: pSite }}>
-        <ConceptCard title="SITE WEB" subtitle="Présenter des infos" icon="web-globe" width={760} height={180} />
-      </div>
-      <div style={{ transform: `scale(${pApp})`, opacity: pApp }}>
-        <ConceptCard title="APPLICATION WEB" subtitle="Effectuer des actions" icon="web-pointer-click" width={760} height={180} accent />
-      </div>
-    </div>
-  );
-};
-
-export const Beat08: React.FC<{ readonly scene: Scene }> = ({ scene }) => {
-  const clock = useWordClock(scene, siteWebTranscript);
-  const pSwap = clock.p(clock.at("confondent", 0), durations.base);
-  const dy = interpolate(pSwap, [0, 1], [0, 180]);
-
-  return (
-    <div style={{ width: "100%", height: "100%", position: "relative" }}>
-      <div style={{ ...abs(80, band.top + 80 + dy) }}>
-        <ConceptCard title="SITE WEB" icon="web-globe" width={520} height={150} />
-      </div>
-      <div style={{ ...abs(80, band.top + 260 - dy) }}>
-        <ConceptCard title="APPLICATION WEB" icon="web-pointer-click" width={520} height={150} accent />
-      </div>
-      <MascotShot
-        scene={scene}
-        pose="thinking"
-        attitude="curious"
-        side="right"
-        size={450}
-        from={clock.at("confondent", 0)}
-        halo="accent"
-      />
-    </div>
-  );
-};
-
-export const Beat09: React.FC<{ readonly scene: Scene }> = ({ scene }) => {
-  const clock = useWordClock(scene, siteWebTranscript);
-  const pFocus = clock.p(clock.at("l'application", 0), durations.base, easings.spring);
-
-  return (
-    <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-      <div style={{ transform: `scale(${pFocus})` }}>
-        <ConceptCard title="L&apos;APPLICATION WEB" subtitle="Commençons par là !" icon="web-pointer-click" width={820} height={220} accent />
-      </div>
-      <Shockwave x={W / 2} y={H / 2} size={300} progress={pFocus} color={colors.accent} />
-    </div>
+          );
+        })}
+      </Art>
+      <ZoneMascot scene={scene} pose="surprised" attitude="surprised" from={clock.at("tellement", 0)} halo="accent" />
+    </Shot>
   );
 };
 
 /* -------------------------------------------------------------------------- */
-/*  Bloc 2 : Beats 10 à 18                                                     */
+/*  04 · « comment est-ce que ça fonctionne, »                                  */
 /* -------------------------------------------------------------------------- */
-
-export const Beat10: React.FC<{ readonly scene: Scene }> = ({ scene }) => {
-  const clock = useWordClock(scene, siteWebTranscript);
-  const pWa = clock.p(clock.at("whatsapp", 0));
+export const Beat04: React.FC<BeatProps> = ({ scene }) => {
+  const clock = useClock(scene);
+  const frame = useCurrentFrame();
+  const open = clock.p(clock.at("fonctionne", 0), 0.5);
+  const spin = frame * 3;
 
   return (
-    <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-      <PhoneMock width={480} height={700}>
-        <div style={{ padding: spacing.lg, display: "flex", flexDirection: "column", gap: spacing.md, marginTop: 40 }}>
-          <BrandText role="label" color={colors.inkInverse}>Vos applications</BrandText>
-          <div style={{ transform: `scale(${pWa})`, opacity: pWa }}>
-            <ActionTile icon="web-message-circle" label="WhatsApp" width={400} active />
+    <Shot scene={scene} layout="art">
+      <Art w={936} h={700}>
+        <div style={{ ...abs(168, 200, 600, 420), borderRadius: radius.lg, backgroundColor: withAlpha(colors.ink, 0.92), border: `${strokeWidths.thick}px solid ${colors.accent}`, overflow: "hidden", boxShadow: `0 24px 60px ${withAlpha(colors.ink, 0.5)}` }}>
+          <div style={{ ...abs(0, 0, 600, 420), display: "flex", alignItems: "center", justifyContent: "center", gap: 20, opacity: open }}>
+            <Gear size={200} angle={spin} />
+            <Gear size={150} angle={-spin * 1.3 + 20} color={colors.inkInverse} />
           </div>
         </div>
-      </PhoneMock>
-    </div>
-  );
-};
-
-export const Beat11: React.FC<{ readonly scene: Scene }> = ({ scene }) => {
-  const clock = useWordClock(scene, siteWebTranscript);
-  const pFb = clock.p(clock.at("facebook", 0));
-  const pYt = clock.p(clock.at("youtube", 0));
-
-  return (
-    <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-      <PhoneMock width={480} height={700}>
-        <div style={{ padding: spacing.lg, display: "flex", flexDirection: "column", gap: spacing.md, marginTop: 40 }}>
-          <ActionTile icon="web-message-circle" label="WhatsApp" width={400} />
-          <div style={{ transform: `scale(${pFb})`, opacity: pFb }}>
-            <ActionTile icon="web-users" label="Facebook" width={400} active />
-          </div>
-          <div style={{ transform: `scale(${pYt})`, opacity: pYt }}>
-            <ActionTile icon="web-play" label="YouTube" width={400} active />
-          </div>
-        </div>
-      </PhoneMock>
-    </div>
-  );
-};
-
-export const Beat12: React.FC<{ readonly scene: Scene }> = ({ scene }) => {
-  const clock = useWordClock(scene, siteWebTranscript);
-  const pTap = clock.p(clock.at("utilisez", 0));
-  const pCal = clock.p(clock.at("jour", 0));
-
-  return (
-    <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: spacing.xl }}>
-      <PhoneMock width={440} height={680}>
-        <div style={{ padding: spacing.md, display: "flex", flexDirection: "column", gap: spacing.sm, marginTop: 40 }}>
-          <ActionTile icon="web-message-circle" label="WhatsApp" width={380} active={pTap > 0.5} />
-          <ActionTile icon="web-users" label="Facebook" width={380} />
-          <ActionTile icon="web-play" label="YouTube" width={380} />
-        </div>
-      </PhoneMock>
-      <div style={{ display: "flex", flexDirection: "column", gap: spacing.md, transform: `scale(${pCal})` }}>
-        <TagPill tone="accent" icon="calendar">Tous les jours</TagPill>
-        <TagPill tone="light" icon="check">Des tas de choses</TagPill>
-      </div>
-    </div>
-  );
-};
-
-export const Beat13: React.FC<{ readonly scene: Scene }> = ({ scene }) => {
-  const clock = useWordClock(scene, siteWebTranscript);
-  const p1 = clock.p(clock.at("messages", 0));
-  const p2 = clock.p(clock.at("publier", 0));
-  const p3 = clock.p(clock.at("vidéos", 0));
-
-  return (
-    <div style={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center", gap: spacing.md }}>
-      <div style={{ transform: `scale(${p1})`, opacity: p1 }}>
-        <ActionTile icon="web-message-circle" label="Messages" width={270} />
-      </div>
-      <div style={{ transform: `scale(${p2})`, opacity: p2 }}>
-        <ActionTile icon="web-newspaper" label="Publier" width={270} active />
-      </div>
-      <div style={{ transform: `scale(${p3})`, opacity: p3 }}>
-        <ActionTile icon="web-play" label="Vidéos" width={270} />
-      </div>
-    </div>
-  );
-};
-
-export const Beat14: React.FC<{ readonly scene: Scene }> = ({ scene }) => {
-  const clock = useWordClock(scene, siteWebTranscript);
-  const pWeb = clock.p(clock.at("web", 0), durations.fast, easings.spring);
-
-  return (
-    <div style={{ width: "100%", height: "100%", position: "relative" }}>
-      <div style={{ ...abs(70, band.top + 60), transform: `scale(${pWeb})` }}>
-        <BrowserFrame width={540} height={420} address="web.service.com" secure tone="dark">
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
-            <TagPill tone="accent" icon="bulb">Version Web !</TagPill>
-          </div>
-        </BrowserFrame>
-      </div>
-      <MascotShot
-        scene={scene}
-        pose="surprised"
-        attitude="surprised"
-        side="right"
-        size={460}
-        from={clock.at("mais", 0)}
-        halo="accent"
-      />
-    </div>
-  );
-};
-
-export const Beat15: React.FC<{ readonly scene: Scene }> = ({ scene }) => {
-  const clock = useWordClock(scene, siteWebTranscript);
-  const pNav = clock.p(clock.at("navigateur", 0));
-
-  return (
-    <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-      <BrowserFrame width={840} height={520} address="accessible-en-ligne.com" secure tone="dark">
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", gap: spacing.md }}>
-          <div style={{ transform: `scale(${pNav})`, opacity: pNav }}>
-            <TagPill tone="light" libIcon="web-globe">Dans votre navigateur</TagPill>
-          </div>
-          <BrandText role="h2" color={colors.inkInverse}>
-            Aucun téléchargement !
+        <div
+          style={{
+            ...abs(150, 120, 636, 120),
+            borderRadius: radius.md,
+            backgroundColor: colors.accent,
+            transformOrigin: "0% 100%",
+            transform: `translateY(${-open * 40}px) rotate(${-open * 38}deg)`,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            boxShadow: `0 14px 36px ${withAlpha(colors.ink, 0.4)}`,
+          }}
+        >
+          <BrandText role="display" color={colors.inkInverse} style={{ fontSize: 96, lineHeight: 1, opacity: 1 - open }}>
+            ?
           </BrandText>
         </div>
-      </BrowserFrame>
-    </div>
+      </Art>
+    </Shot>
   );
 };
 
-export const Beat16: React.FC<{ readonly scene: Scene }> = ({ scene }) => {
-  const clock = useWordClock(scene, siteWebTranscript);
-  const pChrome = clock.p(clock.at("chrome", 0));
+/* -------------------------------------------------------------------------- */
+/*  05 · « aujourd'hui, je vais essayer de vous expliquer ça simplement. »      */
+/* -------------------------------------------------------------------------- */
+export const Beat05: React.FC<BeatProps> = ({ scene }) => {
+  const clock = useClock(scene);
+  const tidy = clock.p(clock.at("simplement", 0), 0.5);
+  const amp = (1 - tidy) * 130;
+  const points: string[] = [];
+
+  for (let y = 0; y <= 760; y += 20) {
+    points.push(`${256 + Math.sin(y / 38) * amp + Math.sin(y / 17) * amp * 0.4},${y + 40}`);
+  }
 
   return (
-    <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-      <BrowserFrame width={820} height={480} tabs={["Google Chrome", "Safari", "Firefox"]} address="google.com/chrome" secure>
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", gap: spacing.md }}>
-          <div style={{ transform: `scale(${pChrome})` }}>
-            <TagPill tone="accent" libIcon="web-globe">Comme Chrome</TagPill>
-          </div>
-        </div>
-      </BrowserFrame>
-    </div>
-  );
-};
-
-export const Beat17: React.FC<{ readonly scene: Scene }> = ({ scene }) => {
-  const clock = useWordClock(scene, siteWebTranscript);
-  const pCross = clock.p(clock.at("d'installer", 0), durations.fast, easings.spring);
-
-  return (
-    <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: spacing.lg }}>
-      <div style={{ position: "relative", width: 240, height: 240, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <LibIcon id="web-download" size={200} color={colors.inkInverse} />
-        <svg viewBox="0 0 100 100" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}>
-          <line
-            x1="15"
-            y1="15"
-            x2="85"
-            y2="85"
-            stroke={colors.accent}
-            strokeWidth={strokeWidths.thick}
-            strokeLinecap="round"
-            strokeDasharray={100}
-            strokeDashoffset={100 * (1 - pCross)}
-          />
+    <Shot scene={scene} layout="side-right">
+      <Art w={512} h={860}>
+        <svg width={512} height={860} aria-hidden="true">
+          <polyline points={points.join(" ")} fill="none" stroke={colors.accent} strokeWidth={16} strokeLinecap="round" strokeLinejoin="round" />
         </svg>
-      </div>
-      <TagPill tone="accent" icon="check">Pas besoin d&apos;installer !</TagPill>
-    </div>
+        <div style={{ ...abs(0, 790, 512, 90), display: "flex", justifyContent: "center", opacity: tidy }}>
+          <Pill size={64}>Simple</Pill>
+        </div>
+      </Art>
+      <ZoneMascot scene={scene} pose="explaining" attitude="friendly" mirrored from={clock.at("je", 0)} />
+    </Shot>
   );
 };
 
-export const Beat18: React.FC<{ readonly scene: Scene }> = ({ scene }) => {
-  const clock = useWordClock(scene, siteWebTranscript);
-  const pApp = clock.p(clock.at("téléphone", 0));
+/* -------------------------------------------------------------------------- */
+/*  06 · « Déjà, il faut faire une différence »                                 */
+/* -------------------------------------------------------------------------- */
+const NotEqualBig: React.FC<{ readonly size: number }> = ({ size }) => (
+  <svg width={size} height={size} viewBox="0 0 100 100" aria-hidden="true">
+    <path d="M22 38 H78 M22 62 H78 M62 18 L38 82" fill="none" stroke={colors.accent} strokeWidth={10} strokeLinecap="round" />
+  </svg>
+);
+
+export const Beat06: React.FC<BeatProps> = ({ scene }) => {
+  const clock = useClock(scene);
+  const t = clock.at("différence", 0);
+  const hit = punch(clock, t, 0.3, 0.5);
+  const ring = clock.p(t, 0.6);
 
   return (
-    <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: spacing.xl }}>
-      <PhoneMock width={400} height={620}>
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", padding: spacing.md }}>
-          <div style={{ border: `${strokeWidths.thin}px dashed ${withAlpha(colors.inkInverse, 0.4)}`, padding: spacing.md, borderRadius: radius.md }}>
-            <BrandText role="label" color={colors.neutral}>Mémoire : 0 Mo</BrandText>
-          </div>
+    <Shot scene={scene} layout="art">
+      <Art w={936} h={640}>
+        <div style={{ ...abs(468 - 260, 40, 520, 520), transform: `scale(${hit})`, filter: `drop-shadow(0 0 ${40 * lit(clock, t, 0.3)}px ${colors.accent})` }}>
+          <NotEqualBig size={520} />
         </div>
-      </PhoneMock>
-      <div style={{ transform: `scale(${pApp})` }}>
-        <BrowserFrame width={460} height={400} address="app.web" secure tone="dark">
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
-            <TagPill tone="accent" libIcon="web-globe">Direct sur le Web</TagPill>
-          </div>
-        </BrowserFrame>
-      </div>
-    </div>
+        <Shockwave x={468} y={300} size={420} progress={ring} />
+      </Art>
+    </Shot>
+  );
+};
+
+/* -------------------------------------------------------------------------- */
+/*  07 · « ce qu'est un site et ce qu'est une application web » (captions center) */
+/* -------------------------------------------------------------------------- */
+export const Beat07: React.FC<BeatProps> = ({ scene }) => {
+  const clock = useClock(scene);
+  const site = lit(clock, clock.at("site", 0), 0.2);
+  const app = lit(clock, clock.at("application", 0), 0.2);
+
+  return (
+    <Shot scene={scene} layout="art">
+      <Art w={936} h={440}>
+        <ModeCard w={440} h={420} label="Site" icon="web-globe" active={site > 0.5} dim={0.35 + 0.65 * site} style={{ position: "absolute", left: 0, top: 10 }} />
+        <ModeCard w={440} h={420} label="Appli web" icon="web-pointer-click" active={app > 0.5} dim={0.35 + 0.65 * app} style={{ position: "absolute", left: 496, top: 10 }} />
+      </Art>
+    </Shot>
+  );
+};
+
+/* -------------------------------------------------------------------------- */
+/*  08 · « parce que les gens confondent les deux, »                            */
+/* -------------------------------------------------------------------------- */
+export const Beat08: React.FC<BeatProps> = ({ scene }) => {
+  const clock = useClock(scene);
+  const swap = clock.p(clock.at("confondent", 0), 0.6);
+  const shift = interpolate(swap, [0, 1], [0, 340]);
+
+  return (
+    <Shot scene={scene} layout="side-left">
+      <Art w={512} h={720}>
+        <ModeCard w={480} h={320} label="Site" icon="web-globe" active style={{ position: "absolute", left: 16, top: 20 + shift }} />
+        <ModeCard w={480} h={320} label="Appli web" icon="web-pointer-click" style={{ position: "absolute", left: 16, top: 380 - shift }} />
+      </Art>
+      <ZoneMascot scene={scene} pose="thinking" attitude="curious" mirrored from={clock.at("confondent", 0)} />
+    </Shot>
+  );
+};
+
+/* -------------------------------------------------------------------------- */
+/*  09 · « commençant par l'application web. »                                  */
+/* -------------------------------------------------------------------------- */
+export const Beat09: React.FC<BeatProps> = ({ scene }) => {
+  const clock = useClock(scene);
+  const out = clock.p(0, 0.5);
+  const ring = lit(clock, clock.at("l'application", 0), 0.4);
+
+  return (
+    <Shot scene={scene} layout="art">
+      <Art w={936} h={620}>
+        <ModeCard w={480} h={460} label="Site" icon="web-globe" dim={1 - out} style={{ position: "absolute", left: interpolate(out, [0, 1], [0, -520]), top: 60 }} />
+        <ModeCard
+          w={560}
+          h={500}
+          label="Appli web"
+          icon="web-pointer-click"
+          active
+          style={{
+            position: "absolute",
+            left: interpolate(out, [0, 1], [496, 188]),
+            top: interpolate(out, [0, 1], [80, 40]),
+            boxShadow: `0 0 0 ${14 * ring}px ${withAlpha(colors.accent, 0.5 * ring)}, 0 24px 60px ${withAlpha(colors.accent, 0.4)}`,
+          }}
+        />
+      </Art>
+    </Shot>
+  );
+};
+
+/* -------------------------------------------------------------------------- */
+/*  10 · « Imaginez des applications comme WhatsApp, »                          */
+/* -------------------------------------------------------------------------- */
+export const Beat10: React.FC<BeatProps> = ({ scene }) => {
+  const clock = useClock(scene);
+  const wa = lit(clock, clock.at("WhatsApp", 0), 0.2);
+
+  return (
+    <Shot scene={scene} layout="art">
+      <Art w={520} h={740} enter="slide-up">
+        <PhoneHome
+          width={520}
+          height={740}
+          tiles={[
+            { icon: "web-message-circle", label: "WhatsApp", on: wa },
+            { icon: "web-globe", label: "", on: 0 },
+            { icon: "web-play", label: "", on: 0 },
+          ]}
+        />
+      </Art>
+    </Shot>
+  );
+};
+
+/* -------------------------------------------------------------------------- */
+/*  11 · « Facebook ou YouTube qui sont sur votre téléphone, »                  */
+/* -------------------------------------------------------------------------- */
+export const Beat11: React.FC<BeatProps> = ({ scene }) => {
+  const clock = useClock(scene);
+
+  return (
+    <Shot scene={scene} layout="art">
+      <Art w={520} h={740}>
+        <PhoneHome
+          width={520}
+          height={740}
+          tiles={[
+            { icon: "web-message-circle", label: "WhatsApp", on: 1 },
+            { icon: "web-users", label: "Facebook", on: lit(clock, 0, 0.2) },
+            { icon: "web-play", label: "YouTube", on: lit(clock, clock.at("YouTube", 0), 0.2) },
+          ]}
+        />
+      </Art>
+    </Shot>
+  );
+};
+
+/* -------------------------------------------------------------------------- */
+/*  12 · « vous les utilisez chaque jour pour faire tout un tas de choses, »    */
+/* -------------------------------------------------------------------------- */
+export const Beat12: React.FC<BeatProps> = ({ scene }) => {
+  const clock = useClock(scene);
+  const tap = clock.p(clock.at("utilisez", 0), 0.6);
+  const cursorX = interpolate(tap, [0, 0.5, 1], [420, 150, 260]);
+  const cursorY = interpolate(tap, [0, 0.5, 1], [620, 230, 230]);
+  const badges = lit(clock, clock.at("jour", 0), 0.3);
+
+  return (
+    <Shot scene={scene} layout="art">
+      <Art w={520} h={760}>
+        <PhoneHome
+          width={520}
+          height={740}
+          tiles={[
+            { icon: "web-message-circle", label: "WhatsApp", on: 1 },
+            { icon: "web-users", label: "Facebook", on: 1 },
+            { icon: "web-play", label: "YouTube", on: 1 },
+          ]}
+        />
+        <div style={{ ...abs(150, 130, 36, 36), borderRadius: radius.pill, backgroundColor: colors.accent, transform: `scale(${badges})`, border: `4px solid ${colors.inkInverse}` }} />
+        <div style={{ ...abs(300, 130, 36, 36), borderRadius: radius.pill, backgroundColor: colors.accent, transform: `scale(${badges})`, border: `4px solid ${colors.inkInverse}` }} />
+        <div style={abs(cursorX, cursorY, 110, 110)}>
+          <LibIcon id="web-pointer-click" size={110} color={colors.inkInverse} />
+        </div>
+      </Art>
+    </Shot>
+  );
+};
+
+/* -------------------------------------------------------------------------- */
+/*  13 · « envoyer des messages, publier du contenu ou regarder des vidéos. »   */
+/* -------------------------------------------------------------------------- */
+const ActionRow: React.FC<{
+  readonly icon: string;
+  readonly label: string;
+  readonly on: number;
+}> = ({ icon, label, on }) => (
+  <Card w={860} h={190} active={on > 0.5} dim={0.35 + 0.65 * on} style={{ flexDirection: "row", justifyContent: "flex-start", gap: 40, paddingLeft: 60 }}>
+    <Bubble size={120} active={on > 0.5}>
+      <LibIcon id={icon} size={68} color={colors.inkInverse} />
+    </Bubble>
+    <BrandText role="display" color={colors.inkInverse} style={{ fontSize: 80, lineHeight: 1 }}>
+      {label}
+    </BrandText>
+  </Card>
+);
+
+export const Beat13: React.FC<BeatProps> = ({ scene }) => {
+  const clock = useClock(scene);
+
+  return (
+    <Shot scene={scene} layout="art">
+      <Art w={936} h={640}>
+        <div style={abs(38, 0, 860, 190)}>
+          <ActionRow icon="web-message-circle" label="Envoyer" on={lit(clock, 0, 0.2)} />
+        </div>
+        <div style={abs(38, 225, 860, 190)}>
+          <ActionRow icon="web-newspaper" label="Publier" on={lit(clock, clock.at("publier", 0), 0.2)} />
+        </div>
+        <div style={abs(38, 450, 860, 190)}>
+          <ActionRow icon="web-play" label="Regarder" on={lit(clock, clock.at("regarder", 0), 0.2)} />
+        </div>
+      </Art>
+    </Shot>
+  );
+};
+
+/* -------------------------------------------------------------------------- */
+/*  14 · « Mais ces services ont aussi une version web, »                       */
+/* -------------------------------------------------------------------------- */
+export const Beat14: React.FC<BeatProps> = ({ scene }) => {
+  const clock = useClock(scene);
+  const t = clock.at("web", 0);
+  const pill = punch(clock, t, 0.2, 0.45);
+  const slide = clock.p(0, 0.4);
+
+  return (
+    <Shot scene={scene} layout="stack-left">
+      <Art w={936} h={510}>
+        <div style={{ ...abs(0, 0, 260, 460), transform: `translateX(${interpolate(slide, [0, 1], [180, 0])}px)` }}>
+          <PhoneHome width={260} height={460} tiles={[]} />
+        </div>
+        <div style={{ ...abs(316, 30, 620, 420), opacity: slide, transform: `translateX(${interpolate(slide, [0, 1], [300, 0])}px)` }}>
+          <BrowserFrame width={620} height={420} address="nom-du-site" secure tone="dark">
+            <PageBody />
+          </BrowserFrame>
+        </div>
+        <div style={{ ...abs(520, -20, 330, 90), transform: `scale(${pill})` }}>
+          <Pill size={52}>Version web</Pill>
+        </div>
+      </Art>
+      <ZoneMascot scene={scene} pose="surprised" attitude="surprised" mirrored from={0} />
+    </Shot>
+  );
+};
+
+/* -------------------------------------------------------------------------- */
+/*  15 · « c'est-à-dire accessible depuis un navigateur »                       */
+/* -------------------------------------------------------------------------- */
+export const Beat15: React.FC<BeatProps> = ({ scene }) => {
+  const clock = useClock(scene);
+  const page = lit(clock, clock.at("accessible", 0), 0.3);
+  const label = lit(clock, clock.at("navigateur", 0), 0.2);
+
+  return (
+    <Shot scene={scene} layout="art">
+      <Art w={936} h={700}>
+        <div style={abs(38, 0, 860, 540)}>
+          <BrowserFrame width={860} height={540} address="nom-du-site" secure tone="dark">
+            <div style={{ opacity: 0.15 + 0.85 * page }}>
+              <PageBody />
+            </div>
+          </BrowserFrame>
+        </div>
+        <div style={{ ...abs(0, 580, 936, 110), display: "flex", justifyContent: "center", opacity: 0.4 + 0.6 * label }}>
+          <Pill size={72}>Navigateur</Pill>
+        </div>
+      </Art>
+    </Shot>
+  );
+};
+
+/* -------------------------------------------------------------------------- */
+/*  16 · « comme Chrome par exemple, »                                          */
+/* -------------------------------------------------------------------------- */
+export const Beat16: React.FC<BeatProps> = ({ scene }) => {
+  const clock = useClock(scene);
+  const chrome = lit(clock, clock.at("Chrome", 0), 0.2);
+  const pop = punch(clock, clock.at("Chrome", 0), 0.15, 0.4);
+
+  return (
+    <Shot scene={scene} layout="art">
+      <Art w={936} h={560}>
+        <div style={{ ...abs(38, 0, 860, 90), display: "flex", gap: 20 }}>
+          {[0, 1, 2].map((tab) => (
+            <div key={tab} style={{ flex: 1, height: 90, borderRadius: `${radius.md}px ${radius.md}px 0 0`, backgroundColor: tab === 0 ? withAlpha(colors.inkInverse, 0.22) : withAlpha(colors.ink, 0.85), border: `${strokeWidths.medium}px solid ${withAlpha(colors.inkInverse, 0.3)}`, display: "flex", alignItems: "center", padding: "0 28px" }}>
+              <Skeleton w="70%" h={20} />
+            </div>
+          ))}
+        </div>
+        <div style={{ ...abs(0, 160, 936, 300), display: "flex", justifyContent: "center", alignItems: "center", gap: 36, transform: `scale(${pop})`, opacity: 0.35 + 0.65 * chrome }}>
+          <LibIcon id="web-globe" size={200} color={colors.accent} />
+          <Pill size={96}>Chrome</Pill>
+        </div>
+        <Sparkle x={150} y={330} size={70} progress={chrome} />
+      </Art>
+    </Shot>
   );
 };

@@ -205,6 +205,16 @@ Les entrées doivent rester compactes, factuelles et exploitables sans relire to
 - roadmap: not-needed
 - next: écouter l'audio pour valider les corrections du transcript ; rendre le MP4 complet ; migrer `metiers-de-la-tech` vers `ZoneStage`
 
+### 2026-10-18 — Web Story « C'est quoi un site web » : même système de zones, 48 plans réécrits
+- status: done
+- scope: réécriture des 48 plans de l'épisode `c-est-quoi-site-web` avec `Shot` / `Art` / `ZoneMascot` ; le routeur n'utilise plus `CaptionStage`
+- files: `src/series/web-story/episodes/c-est-quoi-site-web/videos/*`, `src/series/web-story/kit.tsx` (déplacé depuis `videos/kit.tsx`, briques partagées ajoutées : Shot, useSince, Gear, Arrow, Bubble, AppTile, PhoneHome, ModeCard, Lines)
+- decision: un message par plan, 3 mots max ; les deux épisodes de la série partagent le même kit ; mascotte uniquement quand un mot déclenche une réaction (surprise, explication, joie)
+- impact: plus de chevauchement mascotte / captions / illustration ; illustrations visibles dès le début du plan
+- validation: `npm run lint` ; `npm test` (74 passés) ; 48 stills rendus et inspectés
+- roadmap: not-needed
+- next: valider le transcript à l'oreille ; rendre le MP4 complet ; migrer `metiers-de-la-tech` vers `ZoneStage`
+
 ### 2026-10-18 — Web Story : clarification des épisodes & renommage « Tu dors déjà »
 - status: done
 - scope: séparation nette entre les 2 vidéos de la série (`tu-dors-deja` et `c-est-quoi-site-web`) ; renommage de la composition en `web-story-tu-dors-deja`
