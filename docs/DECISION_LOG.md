@@ -223,3 +223,13 @@ Les entrées doivent rester compactes, factuelles et exploitables sans relire to
 - impact: composition `web-story-tu-dors-deja` disponible et propre pour le rendu
 - validation: `npm run lint` (0 erreur), `npm test` (68 passés), rendu vidéo lancé vers `out/web-story-tu-dors-deja.mp4`
 
+
+### 2026-10-20 — Les métiers du web · 1 : « C'est quoi un AI engineer »
+- status: done (rendu MP4 en cours de génération)
+- scope: nouvelle série `metiers-du-web` et son premier épisode, composition `metiers-du-web-ai-engineer` (27 plans, 46,37 s, 1391 images) monté sur le standard de qualité Web Story
+- files: `src/series/index.ts`, `src/series/metiers-du-web/{index.tsx,kit.tsx,episodes/c-est-quoi-un-ai-engineer/*}`, `public/audio/series/metiers-du-web/c-est-quoi-un-ai-engineer.mp3`, `docs/series/metiers-du-web-ai-engineer-storyboard.md`
+- decision: voix trop basse (−22,6 LUFS) → gain +8 dB appliqué au fichier audio (−14,6 LUFS, pic −1,7 dBFS, sans écrêtage) ; réutilisation de `Shot` / `Art` / `ZoneMascot` et du kit de `web-story` (règle 46) ; métaphore des chats et des chiens dessinée en SVG (pas d'asset externe) ; mascotte limitée à 4 plans (thinking, explication, surprise, « Et toi ») ; transcript Whisper avec timestamps répartis par phrase
+- impact: série déclarée dans `seriesRegistry` (seul fichier global touché, règle 14) ; aucune donnée chiffrée inventée
+- validation: `npm run lint` (0 erreur) ; `npm test` (81 passés) ; 54 stills (2 par plan) rendus et inspectés en planches, aucun chevauchement ni débordement ; rendu MP4 complet
+- roadmap: not-needed
+- next: valider à l'oreille les mots du transcript ; ajouter une musique sous `public/audio/music/` si souhaité
