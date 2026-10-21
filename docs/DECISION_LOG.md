@@ -233,3 +233,13 @@ Les entrées doivent rester compactes, factuelles et exploitables sans relire to
 - validation: `npm run lint` (0 erreur) ; `npm test` (81 passés) ; 54 stills (2 par plan) rendus et inspectés en planches, aucun chevauchement ni débordement ; rendu MP4 complet
 - roadmap: not-needed
 - next: valider à l'oreille les mots du transcript ; ajouter une musique sous `public/audio/music/` si souhaité
+
+### 2026-10-20 — Les métiers du web · 2 : « Software Developer »
+- status: done
+- scope: second épisode de la série `metiers-du-web`, composition `metiers-du-web-software-developer` (33 plans, 50,05 s, 1502 images) monté sur le standard de qualité Web Story
+- files: `src/series/metiers-du-web/{index.tsx,kit.tsx,episodes/software-developer/*}`, `public/audio/series/metiers-du-web/software-developer.mp3`, `docs/series/metiers-du-web-software-developer-storyboard.md`
+- decision: voix basse (−22,9 LUFS, pic −2,8 dBFS) → +9,5 dB avec limiteur (−15,0 LUFS, pic −1,6 dBFS) ; les plans sont déclarés par l'indice de leur premier mot (bornes et texte déduits du transcript) ; `RoleCard` paramétrable (`label`, `badge`) et taille de libellé ajustée aux intitulés longs, sans changer l'épisode 1 ; nouveaux dessins SVG dans le kit de la série (CodeTag, Bulb, House, Meal, Briefcase, Sun, Clock, CodeLines, Svg) ; les briques partagées restent dans `kit.tsx` (déjà commun aux deux épisodes), la promotion dans `src/components/motion` se fera à la première réutilisation hors de la série ; mascotte limitée à 4 plans (explaining, happy, point, thinking)
+- impact: seconde composition déclarée dans le `Folder` de la série (aucun fichier global touché) ; aucune donnée chiffrée inventée, aucune marque dessinée
+- validation: `npm run lint` ; `npm test` (88 passés) ; 66 stills (2 par plan) rendus et inspectés en planches ; 3 défauts corrigés (libellé débordant, cartes du résumé masquées, première ligne du menu rognée) ; rendu MP4 complet ; le mix final (voix + 5 SFX) touchait 0,0 dBFS, l'audio du MP4 a donc reçu −1,2 dB et un limiteur (−13,3 LUFS, pic −1,5 dBFS), l'image est inchangée
+- roadmap: not-needed
+- next: valider à l'oreille les mots du transcript ; baisser le volume des SFX de l'épisode dans `episode.ts` avant un nouveau rendu ; ajouter une musique sous `public/audio/music/` si souhaité

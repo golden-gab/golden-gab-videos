@@ -322,8 +322,12 @@ export const RoleCard: React.FC<{
   readonly w: number;
   readonly h: number;
   readonly active?: boolean;
+  /** Intitulé du métier (« AI ENGINEER » par défaut). */
+  readonly label?: string;
+  /** Emblème au-dessus de l'intitulé (le badge « AI » par défaut). */
+  readonly badge?: React.ReactNode;
   readonly style?: React.CSSProperties;
-}> = ({ w, h, active = true, style }) => (
+}> = ({ w, h, active = true, label = "AI ENGINEER", badge, style }) => (
   <div
     style={{
       width: w,
@@ -340,7 +344,7 @@ export const RoleCard: React.FC<{
       ...style,
     }}
   >
-    <AiBadge size={h * 0.42} />
+    {badge ?? <AiBadge size={h * 0.42} />}
     <div
       style={{
         padding: `${h * 0.03}px ${h * 0.1}px`,
@@ -348,11 +352,162 @@ export const RoleCard: React.FC<{
         backgroundColor: colors.inkInverse,
       }}
     >
-      <BrandText role="label" color={colors.secondary} style={{ fontSize: Math.min(h * 0.1, w * 0.075), lineHeight: 1.1, whiteSpace: "nowrap" }}>
-        AI ENGINEER
+      <BrandText role="label" color={colors.secondary} style={{ fontSize: Math.min(h * 0.1, w * 0.075, label.length > 12 ? (w - h * 0.2 - 120) / (label.length * 0.78) : Infinity), lineHeight: 1.1, whiteSpace: "nowrap" }}>
+        {label}
       </BrandText>
     </div>
     <Skeleton w={w * 0.56} h={h * 0.04} />
     <Skeleton w={w * 0.38} h={h * 0.035} />
   </div>
+);
+
+/* -------------------------------------------------------------------------- */
+/*  Épisode 2 : le développeur logiciel                                        */
+/* -------------------------------------------------------------------------- */
+
+/** Balise de code « </> » (SVG). */
+export const CodeTag: React.FC<{ readonly size: number; readonly color?: string }> = ({
+  size,
+  color = colors.inkInverse,
+}) => (
+  <svg width={size} height={size} viewBox="0 0 100 100" aria-hidden="true">
+    <path d="M36 28 L14 50 L36 72" fill="none" stroke={color} strokeWidth={9} strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M64 28 L86 50 L64 72" fill="none" stroke={color} strokeWidth={9} strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M57 22 L43 78" fill="none" stroke={colors.accent} strokeWidth={9} strokeLinecap="round" />
+  </svg>
+);
+
+/** Ampoule : une idée ; `glow` 0 → 1 l'allume. */
+export const Bulb: React.FC<{ readonly size: number; readonly glow: number }> = ({ size, glow }) => (
+  <svg width={size} height={size} viewBox="0 0 100 100" aria-hidden="true">
+    {[-50, -25, 0, 25, 50].map((deg) => (
+      <line
+        key={deg}
+        x1="50"
+        y1="6"
+        x2="50"
+        y2={6 + 10 * glow}
+        stroke={colors.accent}
+        strokeWidth={5}
+        strokeLinecap="round"
+        transform={`rotate(${deg} 50 40)`}
+        opacity={glow}
+      />
+    ))}
+    <circle cx="50" cy="42" r="26" fill={glow > 0.5 ? colors.accent : withAlpha(colors.inkInverse, 0.25)} stroke={colors.inkInverse} strokeWidth={5} />
+    <rect x="38" y="68" width="24" height="10" rx="4" fill={colors.inkInverse} />
+    <rect x="41" y="81" width="18" height="9" rx="4" fill={colors.inkInverse} />
+  </svg>
+);
+
+/** Maison ; `lit` allume la porte en corail. */
+export const House: React.FC<{ readonly size: number; readonly lit?: boolean }> = ({ size, lit = false }) => (
+  <svg width={size} height={size} viewBox="0 0 100 100" aria-hidden="true">
+    <path d="M18 48 V88 H82 V48" fill={withAlpha(colors.ink, 0.85)} stroke={colors.inkInverse} strokeWidth={5} strokeLinejoin="round" />
+    <path d="M8 52 L50 14 L92 52" fill="none" stroke={colors.inkInverse} strokeWidth={7} strokeLinecap="round" strokeLinejoin="round" />
+    <rect x="42" y="62" width="16" height="26" rx="3" fill={lit ? colors.accent : withAlpha(colors.inkInverse, 0.35)} />
+  </svg>
+);
+
+/** Plat couvert d'un bol fumant : un repas ; `steam` 0 → 1 fait monter la vapeur. */
+export const Meal: React.FC<{ readonly size: number; readonly steam: number }> = ({ size, steam }) => (
+  <svg width={size} height={size} viewBox="0 0 100 100" aria-hidden="true">
+    {[32, 50, 68].map((x, index) => (
+      <path
+        key={x}
+        d={`M${x} 40 q-6 -8 0 -14 q6 -6 0 -14`}
+        fill="none"
+        stroke={colors.accent}
+        strokeWidth={5}
+        strokeLinecap="round"
+        opacity={steam}
+        transform={`translate(0 ${-4 * steam * (1 + index * 0.3)})`}
+      />
+    ))}
+    <path d="M10 50 H90 A40 36 0 0 1 10 50 Z" fill={colors.inkInverse} />
+    <rect x="30" y="86" width="40" height="8" rx="4" fill={withAlpha(colors.inkInverse, 0.6)} />
+  </svg>
+);
+
+/** Mallette (le métier) ; `lit` l'allume en corail. */
+export const Briefcase: React.FC<{ readonly size: number; readonly lit: number }> = ({ size, lit }) => (
+  <svg width={size} height={size} viewBox="0 0 100 100" aria-hidden="true">
+    <path d="M36 34 V26 a6 6 0 0 1 6 -6 H58 a6 6 0 0 1 6 6 V34" fill="none" stroke={colors.inkInverse} strokeWidth={6} strokeLinecap="round" />
+    <rect x="8" y="34" width="84" height="54" rx="10" fill={lit > 0.5 ? colors.accent : withAlpha(colors.ink, 0.9)} stroke={colors.inkInverse} strokeWidth={5} />
+    <path d="M8 58 H92" stroke={colors.inkInverse} strokeWidth={4} opacity={0.6} />
+    <rect x="44" y="52" width="12" height="14" rx="3" fill={colors.inkInverse} />
+  </svg>
+);
+
+/** Soleil (rayons qui tournent avec `angle`). */
+export const Sun: React.FC<{ readonly size: number; readonly angle: number }> = ({ size, angle }) => (
+  <svg width={size} height={size} viewBox="0 0 100 100" aria-hidden="true">
+    <g transform={`rotate(${angle} 50 50)`}>
+      {[0, 45, 90, 135, 180, 225, 270, 315].map((deg) => (
+        <line key={deg} x1="50" y1="6" x2="50" y2="20" stroke={colors.accent} strokeWidth={7} strokeLinecap="round" transform={`rotate(${deg} 50 50)`} />
+      ))}
+    </g>
+    <circle cx="50" cy="50" r="22" fill={colors.accent} />
+  </svg>
+);
+
+/** Horloge : l'aiguille des minutes tourne avec `angle`, celle des heures suit. */
+export const Clock: React.FC<{ readonly size: number; readonly angle: number }> = ({ size, angle }) => (
+  <svg width={size} height={size} viewBox="0 0 100 100" aria-hidden="true">
+    <circle cx="50" cy="50" r="44" fill={withAlpha(colors.ink, 0.9)} stroke={colors.inkInverse} strokeWidth={6} />
+    {Array.from({ length: 12 }, (_, index) => (
+      <line key={index} x1="50" y1="12" x2="50" y2={index % 3 === 0 ? 22 : 18} stroke={colors.inkInverse} strokeWidth={index % 3 === 0 ? 4 : 2.5} strokeLinecap="round" transform={`rotate(${index * 30} 50 50)`} />
+    ))}
+    <line x1="50" y1="50" x2="50" y2="22" stroke={colors.accent} strokeWidth={5} strokeLinecap="round" transform={`rotate(${angle} 50 50)`} />
+    <line x1="50" y1="50" x2="50" y2="32" stroke={colors.inkInverse} strokeWidth={6} strokeLinecap="round" transform={`rotate(${angle / 12} 50 50)`} />
+    <circle cx="50" cy="50" r="5" fill={colors.inkInverse} />
+  </svg>
+);
+
+/** Lignes de code « fantômes » (retrait + longueur) ; `lit` allume les lignes d'accent. */
+export const CodeLines: React.FC<{
+  readonly w: number;
+  readonly lit: number;
+  readonly rows?: readonly (readonly [number, number, boolean])[];
+}> = ({
+  w,
+  lit,
+  rows = [
+    [0, 0.5, true],
+    [1, 0.7, false],
+    [1, 0.42, false],
+    [2, 0.6, true],
+    [2, 0.34, false],
+    [1, 0.56, false],
+    [0, 0.3, true],
+  ],
+}) => (
+  <div style={{ display: "flex", flexDirection: "column", gap: 22, width: w }}>
+    {rows.map(([indent, length, accent], index) => (
+      <Skeleton
+        key={index}
+        w={w * length}
+        h={24}
+        tone={accent && lit > 0.5 ? "accent" : "soft"}
+        style={{ marginLeft: indent * (w * 0.08) }}
+      />
+    ))}
+  </div>
+);
+
+/** Calque SVG plein cadre (pour tracer des flèches dans un `Art`). */
+export const Svg: React.FC<{
+  readonly w: number;
+  readonly h: number;
+  readonly children: React.ReactNode;
+}> = ({ w, h, children }) => (
+  <svg
+    width={w}
+    height={h}
+    viewBox={`0 0 ${w} ${h}`}
+    aria-hidden="true"
+    style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }}
+  >
+    {children}
+  </svg>
 );
