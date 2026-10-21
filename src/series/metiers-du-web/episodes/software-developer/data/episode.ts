@@ -59,7 +59,7 @@ const beats: readonly BeatInput[] = [
     type: "hero",
     lane: "top",
     objective: "Carte-métier « SOFTWARE DEVELOPER » avec la balise </> ; la carte claque sur « Developer »",
-    sfx: [{ at: { wordIndex: 31 }, name: "pop" }],
+    sfx: [{ at: { wordIndex: 31 }, name: "pop", volume: 0.5 }],
   },
   {
     first: 32,
@@ -151,7 +151,7 @@ const beats: readonly BeatInput[] = [
     type: "callout",
     lane: "low",
     objective: "Une cloche qui sonne sur « recevoir », une notification dont la coche se trace sur « confirmation »",
-    sfx: [{ at: { wordIndex: 98 }, name: "ding" }],
+    sfx: [{ at: { wordIndex: 98 }, name: "ding", volume: 0.5 }],
   },
   {
     first: 99,
@@ -188,7 +188,7 @@ const beats: readonly BeatInput[] = [
     type: "diagram",
     lane: "low",
     objective: "Ampoule (idée) qui s'allume sur « idée », flèche et engrenage qui tourne vers une tuile d'app encore éteinte",
-    sfx: [{ at: { wordIndex: 116 }, name: "pop" }],
+    sfx: [{ at: { wordIndex: 116 }, name: "pop", volume: 0.5 }],
   },
   {
     first: 118,
@@ -202,7 +202,7 @@ const beats: readonly BeatInput[] = [
     lane: "low",
     objective: "Une app utilisée : cœur qui claque et éclats sur « utiliser » ; mascotte joyeuse",
     mascot: { pose: "happy", attitude: "excited" },
-    sfx: [{ at: { wordIndex: 125 }, name: "ding" }],
+    sfx: [{ at: { wordIndex: 125 }, name: "ding", volume: 0.5 }],
   },
   {
     first: 126,
@@ -210,7 +210,7 @@ const beats: readonly BeatInput[] = [
     lane: "top",
     objective: "Mascotte qui pointe le spectateur ; pastille « ET TOI ? » qui claque sur « toi »",
     mascot: { pose: "point", attitude: "friendly" },
-    sfx: [{ at: { wordIndex: 127 }, name: "pop" }],
+    sfx: [{ at: { wordIndex: 127 }, name: "pop", volume: 0.5 }],
   },
   {
     first: 131,

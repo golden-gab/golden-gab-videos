@@ -86,7 +86,19 @@ export const CaptionPage: React.FC<CaptionPageProps> = ({
     textTransform: preset.uppercase ? "uppercase" : "none",
   });
 
-  const fontSize = Math.min(preset.maxFontSize, fitted.fontSize);
+  // Chaque mot porte un padding horizontal de 0.1em de chaque côté (surlignage
+  // du mot actif) que `fitText()` ne connaît pas : sans correction, une page
+  // proche de la pleine largeur déborde et passe sur deux lignes. On réduit la
+  // taille pour que « texte + paddings » tienne exactement dans `withinWidth`.
+  const paddingEm =
+    preset.wordHighlightBackground === null ? 0 : page.tokens.length * 0.2;
+  const fittedFontSize =
+    paddingEm > 0
+      ? (fitted.fontSize * withinWidth) /
+        (withinWidth + paddingEm * fitted.fontSize)
+      : fitted.fontSize;
+
+  const fontSize = Math.min(preset.maxFontSize, fittedFontSize);
 
   // Temps absolu, la page étant rendue dans une <Sequence> démarrant à startMs.
   const timeInMs = page.startMs + (frame / fps) * 1000;
@@ -155,27 +167,31 @@ export const CaptionPage: React.FC<CaptionPageProps> = ({
                 ? token.alwaysEmphasis
                 : token.alwaysEmphasis || isActive;
 
+          // L'espace de tête reste HORS du span : sinon il serait peint dans
+          // la pastille du mot actif, et un mot qui passe à la ligne laisserait
+          // un morceau de pastille orphelin en bout de ligne précédente.
           return (
-            <span
-              key={`${token.startMs}-${index}`}
-              style={{
-                color: emphasized ? preset.emphasisColor : undefined,
-                backgroundColor: emphasized
-                  ? (preset.wordHighlightBackground ?? undefined)
-                  : undefined,
-                padding:
-                  preset.wordHighlightBackground === null
-                    ? undefined
-                    : "0 0.1em",
-                borderRadius:
-                  preset.wordHighlightBackground === null
-                    ? undefined
-                    : preset.borderRadius,
-              }}
-            >
+            <React.Fragment key={`${token.startMs}-${index}`}>
               {token.leadingSpace ? " " : ""}
-              {token.text}
-            </span>
+              <span
+                style={{
+                  color: emphasized ? preset.emphasisColor : undefined,
+                  backgroundColor: emphasized
+                    ? (preset.wordHighlightBackground ?? undefined)
+                    : undefined,
+                  padding:
+                    preset.wordHighlightBackground === null
+                      ? undefined
+                      : "0 0.1em",
+                  borderRadius:
+                    preset.wordHighlightBackground === null
+                      ? undefined
+                      : preset.borderRadius,
+                }}
+              >
+                {token.text}
+              </span>
+            </React.Fragment>
           );
         })}
       </div>

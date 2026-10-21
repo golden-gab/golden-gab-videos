@@ -243,3 +243,13 @@ Les entrées doivent rester compactes, factuelles et exploitables sans relire to
 - validation: `npm run lint` ; `npm test` (88 passés) ; 66 stills (2 par plan) rendus et inspectés en planches ; 3 défauts corrigés (libellé débordant, cartes du résumé masquées, première ligne du menu rognée) ; rendu MP4 complet ; le mix final (voix + 5 SFX) touchait 0,0 dBFS, l'audio du MP4 a donc reçu −1,2 dB et un limiteur (−13,3 LUFS, pic −1,5 dBFS), l'image est inchangée
 - roadmap: not-needed
 - next: valider à l'oreille les mots du transcript ; baisser le volume des SFX de l'épisode dans `episode.ts` avant un nouveau rendu ; ajouter une musique sous `public/audio/music/` si souhaité
+
+### 2026-10-21 — Captions : phrase qui passe sur deux lignes et pastille orpheline
+- status: done
+- scope: correction du composant `CaptionPage` (`src/captions/CaptionPage.tsx`) ; constaté sur « Derrière WhatsApp, Facebook » (Les métiers du web · 2, vers 0:01) : le texte passait sur deux lignes et un morceau de pastille corail clignotait en bout de première ligne quand le mot actif changeait
+- files: `src/captions/CaptionPage.tsx`, `src/series/metiers-du-web/episodes/software-developer/data/episode.ts` (SFX à 50 %), `docs/DECISION_LOG.md`
+- decision: deux causes. (1) chaque mot porte un padding de 0,1 em de chaque côté (surlignage) que `fitText()` ne mesurait pas : une page proche de la pleine largeur débordait et passait à la ligne ; la taille est maintenant corrigée pour que « texte + paddings » tienne dans la largeur (sans effet sur les pages courtes, plafonnées par `maxFontSize`). (2) l'espace de tête du mot était dans le `<span>` surligné : peint en corail, il laissait un bloc orphelin en fin de ligne quand le mot passait à la ligne ; il est désormais hors du span
+- impact: toutes les séries qui utilisent `Captions` (le correctif ne rapetisse que les pages presque pleine largeur) ; les MP4 déjà rendus des autres épisodes gardent l'ancien défaut tant qu'ils ne sont pas re-rendus. Épisode 2 re-rendu ; son audio reçoit −1,2 dB et un limiteur après rendu (le pic du mix touchait 0,0 dBFS malgré des SFX à 50 %), résultat −13,3 LUFS, pic −1,6 dBFS
+- validation: `npm run lint` ; `npm test` (88 passés) ; 10 images échantillonnées sur 0:00–1:36 (avant/après) ; rendu MP4 complet
+- roadmap: not-needed
+- next: re-rendre les épisodes déjà publiés (`web-story`, `metiers-du-web` 1) pour profiter du correctif
