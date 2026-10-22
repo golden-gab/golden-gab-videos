@@ -253,3 +253,13 @@ Les entrées doivent rester compactes, factuelles et exploitables sans relire to
 - validation: `npm run lint` ; `npm test` (88 passés) ; 10 images échantillonnées sur 0:00–1:36 (avant/après) ; rendu MP4 complet
 - roadmap: not-needed
 - next: re-rendre les épisodes déjà publiés (`web-story`, `metiers-du-web` 1) pour profiter du correctif
+
+### 2026-10-22 — Les métiers du web · 3 : « Data Engineer »
+- status: done
+- scope: troisième épisode de la série `metiers-du-web`, composition `metiers-du-web-data-engineer` (39 plans, 48,27 s, 1448 images) monté sur le standard de qualité Web Story
+- files: `src/series/metiers-du-web/{index.tsx,kit.tsx,episodes/data-engineer/*}`, `public/audio/series/metiers-du-web/data-engineer.mp3`, `docs/series/metiers-du-web-data-engineer-storyboard.md`
+- decision: voix basse (−21,4 LUFS) → +6,8 dB avec limiteur (−15,3 LUFS, pic −1,2 dBFS) ; plans déclarés par l'indice de leur premier mot ; nouveaux dessins SVG dans le kit de la série (Database, Tv, Calendar, Building, Shield, Funnel, BarChart, Curtains, LoopArrow, DataDot), sans toucher aux épisodes 1 et 2 ; l'exemple fil rouge (vidéo regardée sur TikTok) est dessiné avec des icônes génériques, aucune marque ; mascotte limitée à 4 plans (explaining, happy, point, thinking) ; SFX (3) à 50 % dès le départ
+- impact: troisième composition déclarée dans le `Folder` de la série (aucun fichier global touché) ; aucune donnée chiffrée inventée
+- validation: `npm run lint` ; `npm test` (95 passés) ; 78 stills (2 par plan) rendus et inspectés en 5 planches, aucun chevauchement ni débordement ; rendu MP4 complet
+- roadmap: not-needed
+- next: valider à l'oreille les mots du transcript ; ajouter une musique sous `public/audio/music/` si souhaité

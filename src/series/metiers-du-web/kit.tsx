@@ -511,3 +511,189 @@ export const Svg: React.FC<{
     {children}
   </svg>
 );
+
+/* -------------------------------------------------------------------------- */
+/*  Épisode 3 : le data engineer                                               */
+/* -------------------------------------------------------------------------- */
+
+/** Base de données : cylindre à trois bandes ; `glow` 0 → 1 allume les bandes en corail. */
+export const Database: React.FC<{ readonly size: number; readonly glow?: number }> = ({ size, glow = 0 }) => {
+  const band = glow > 0.5 ? colors.accent : withAlpha(colors.inkInverse, 0.45);
+
+  return (
+    <svg width={size} height={size} viewBox="0 0 100 100" aria-hidden="true">
+      <path d="M16 22 V76 A34 13 0 0 0 84 76 V22" fill={withAlpha(colors.ink, 0.9)} stroke={colors.inkInverse} strokeWidth={5} strokeLinejoin="round" />
+      <path d="M16 44 A34 13 0 0 0 84 44" fill="none" stroke={band} strokeWidth={5} strokeLinecap="round" />
+      <path d="M16 60 A34 13 0 0 0 84 60" fill="none" stroke={band} strokeWidth={5} strokeLinecap="round" />
+      <ellipse cx="50" cy="22" rx="34" ry="13" fill={glow > 0.5 ? withAlpha(colors.accent, 0.85) : withAlpha(colors.inkInverse, 0.3)} stroke={colors.inkInverse} strokeWidth={5} />
+    </svg>
+  );
+};
+
+/** Écran de télévision avec un triangle « lecture » ; `on` 0 → 1 l'allume. */
+export const Tv: React.FC<{ readonly size: number; readonly on?: number }> = ({ size, on = 1 }) => (
+  <svg width={size} height={size} viewBox="0 0 100 100" aria-hidden="true">
+    <rect x="8" y="16" width="84" height="56" rx="9" fill={withAlpha(colors.ink, 0.9)} stroke={colors.inkInverse} strokeWidth={5} />
+    <path d="M42 30 V58 L66 44 Z" fill={on > 0.5 ? colors.accent : withAlpha(colors.inkInverse, 0.4)} />
+    <path d="M50 72 V84 M34 86 H66" stroke={colors.inkInverse} strokeWidth={6} strokeLinecap="round" />
+  </svg>
+);
+
+/** Calendrier : `hot` 0 → 1 allume la case du lendemain. */
+export const Calendar: React.FC<{ readonly size: number; readonly hot?: number }> = ({ size, hot = 0 }) => (
+  <svg width={size} height={size} viewBox="0 0 100 100" aria-hidden="true">
+    <rect x="10" y="16" width="80" height="74" rx="10" fill={withAlpha(colors.ink, 0.9)} stroke={colors.inkInverse} strokeWidth={5} />
+    <path d="M10 26 a10 10 0 0 1 10 -10 H80 a10 10 0 0 1 10 10 V34 H10 Z" fill={colors.accent} />
+    <rect x="29" y="8" width="8" height="16" rx="4" fill={colors.inkInverse} />
+    <rect x="63" y="8" width="8" height="16" rx="4" fill={colors.inkInverse} />
+    {Array.from({ length: 12 }, (_, index) => (
+      <rect
+        key={index}
+        x={20 + (index % 4) * 17}
+        y={42 + Math.floor(index / 4) * 15}
+        width="12"
+        height="10"
+        rx="3"
+        fill={index === 5 && hot > 0.5 ? colors.accent : withAlpha(colors.inkInverse, index === 5 ? 0.55 : 0.28)}
+      />
+    ))}
+  </svg>
+);
+
+/** Immeuble de bureaux : `lit` 0 → 1 allume les fenêtres une à une. */
+export const Building: React.FC<{ readonly size: number; readonly lit?: number }> = ({ size, lit = 0 }) => {
+  const count = Math.round(Math.min(1, Math.max(0, lit)) * 15);
+
+  return (
+    <svg width={size} height={size} viewBox="0 0 100 100" aria-hidden="true">
+      <rect x="22" y="8" width="56" height="84" rx="6" fill={withAlpha(colors.ink, 0.9)} stroke={colors.inkInverse} strokeWidth={5} />
+      {Array.from({ length: 15 }, (_, index) => (
+        <rect
+          key={index}
+          x={31 + (index % 3) * 17}
+          y={17 + Math.floor(index / 3) * 12}
+          width="10"
+          height="8"
+          rx="2"
+          fill={index < count ? colors.accent : withAlpha(colors.inkInverse, 0.3)}
+        />
+      ))}
+      <rect x="43" y="76" width="14" height="16" rx="3" fill={colors.inkInverse} />
+    </svg>
+  );
+};
+
+/** Bouclier : la coche se trace avec `check` 0 → 1. */
+export const Shield: React.FC<{ readonly size: number; readonly check?: number }> = ({ size, check = 1 }) => (
+  <svg width={size} height={size} viewBox="0 0 100 100" aria-hidden="true">
+    <path d="M50 6 L88 20 V50 C88 72 72 86 50 95 C28 86 12 72 12 50 V20 Z" fill={withAlpha(colors.ink, 0.9)} stroke={colors.inkInverse} strokeWidth={5} strokeLinejoin="round" />
+    <path
+      d="M32 50 L45 63 L69 36"
+      fill="none"
+      stroke={colors.accent}
+      strokeWidth={9}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      pathLength={1}
+      strokeDasharray={1}
+      strokeDashoffset={1 - Math.min(1, Math.max(0, check))}
+    />
+  </svg>
+);
+
+/** Entonnoir. */
+export const Funnel: React.FC<{ readonly size: number }> = ({ size }) => (
+  <svg width={size} height={size} viewBox="0 0 100 100" aria-hidden="true">
+    <path d="M10 16 H90 L58 54 V88 H42 V54 Z" fill={withAlpha(colors.ink, 0.9)} stroke={colors.inkInverse} strokeWidth={5} strokeLinejoin="round" />
+    <path d="M10 16 H90" stroke={colors.accent} strokeWidth={7} strokeLinecap="round" />
+  </svg>
+);
+
+/** Graphique à barres ; `grow` 0 → 1 fait monter les barres (la plus haute en corail). */
+export const BarChart: React.FC<{
+  readonly w: number;
+  readonly h: number;
+  readonly grow: number;
+}> = ({ w, h, grow }) => {
+  const heights = [0.42, 0.66, 0.5, 0.92, 0.72];
+  const barW = w / (heights.length * 1.6);
+
+  return (
+    <div style={{ position: "relative", width: w, height: h }}>
+      {heights.map((value, index) => {
+        const bar = Math.max(0.04, value * Math.min(1, Math.max(0, grow)));
+
+        return (
+          <div
+            key={index}
+            style={{
+              position: "absolute",
+              left: index * barW * 1.6 + barW * 0.3,
+              bottom: 0,
+              width: barW,
+              height: h * bar,
+              borderRadius: radius.md,
+              backgroundColor: index === 3 ? colors.accent : withAlpha(colors.inkInverse, 0.7),
+            }}
+          />
+        );
+      })}
+    </div>
+  );
+};
+
+/** Rideau de scène : `open` 0 → 1 écarte les deux pans (le fond reste visible derrière). */
+export const Curtains: React.FC<{
+  readonly w: number;
+  readonly h: number;
+  readonly open: number;
+}> = ({ w, h, open }) => {
+  const pan = (w / 2) * (1 - 0.82 * Math.min(1, Math.max(0, open)));
+  const fabric = (side: "left" | "right"): React.CSSProperties => ({
+    position: "absolute",
+    top: 0,
+    [side]: 0,
+    width: pan,
+    height: h,
+    backgroundColor: colors.accent,
+    boxShadow: `inset 0 0 0 4px ${withAlpha(colors.ink, 0.25)}`,
+    borderRadius: radius.md,
+    overflow: "hidden",
+  });
+  const folds = (width: number): React.ReactNode =>
+    [0.2, 0.4, 0.6, 0.8].map((at) => (
+      <div
+        key={at}
+        style={{ position: "absolute", left: width * at, top: 0, width: 6, height: h, backgroundColor: withAlpha(colors.ink, 0.3) }}
+      />
+    ));
+
+  return (
+    <div style={{ position: "absolute", left: 0, top: 0, width: w, height: h }}>
+      <div style={fabric("left")}>{folds(pan)}</div>
+      <div style={fabric("right")}>{folds(pan)}</div>
+      <div style={{ position: "absolute", left: 0, top: -14, width: w, height: 28, borderRadius: radius.pill, backgroundColor: colors.inkInverse }} />
+    </div>
+  );
+};
+
+/** Flèche circulaire (« chaque fois ») qui tourne avec `angle`. */
+export const LoopArrow: React.FC<{ readonly size: number; readonly angle: number }> = ({ size, angle }) => (
+  <svg width={size} height={size} viewBox="0 0 100 100" aria-hidden="true" style={{ transform: `rotate(${angle}deg)` }}>
+    <path d="M82 50 A32 32 0 1 1 66 22" fill="none" stroke={colors.accent} strokeWidth={10} strokeLinecap="round" />
+    <path d="M52 14 L70 20 L58 36" fill="none" stroke={colors.accent} strokeWidth={10} strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+/** Petit point de donnée (rond plein). */
+export const DataDot: React.FC<{ readonly size: number; readonly hot?: boolean }> = ({ size, hot = false }) => (
+  <div
+    style={{
+      width: size,
+      height: size,
+      borderRadius: radius.pill,
+      backgroundColor: hot ? colors.accent : colors.inkInverse,
+      boxShadow: `0 6px 16px ${withAlpha(colors.ink, 0.4)}`,
+    }}
+  />
+);
