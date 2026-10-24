@@ -426,3 +426,336 @@ export const SearchBar: React.FC<{ readonly w: number; readonly typed: number }>
     </div>
   </div>
 );
+
+/* -------------------------------------------------------------------------- */
+/*  Épisode 2 · piratage et ingénierie sociale                                 */
+/* -------------------------------------------------------------------------- */
+
+/** Chronomètre : `sweep` (0 → 1) fait tourner l'aiguille et remplit l'anneau en corail. */
+export const Stopwatch: React.FC<{ readonly size: number; readonly sweep?: number }> = ({ size, sweep = 0 }) => {
+  const p = Math.max(0, Math.min(1, sweep));
+
+  return (
+    <svg width={size} height={size} viewBox="0 0 100 100" aria-hidden="true">
+      <rect x="42" y="3" width="16" height="11" rx="4" fill={colors.inkInverse} />
+      <rect x="47" y="12" width="6" height="8" fill={colors.inkInverse} />
+      <circle cx="50" cy="58" r="37" fill={withAlpha(colors.ink, 0.85)} stroke={withAlpha(colors.inkInverse, 0.35)} strokeWidth={7} />
+      <circle
+        cx="50"
+        cy="58"
+        r="37"
+        fill="none"
+        stroke={colors.accent}
+        strokeWidth={7}
+        strokeLinecap="round"
+        pathLength={1}
+        strokeDasharray={1}
+        strokeDashoffset={1 - p}
+        transform="rotate(-90 50 58)"
+      />
+      {[0, 90, 180, 270].map((deg) => (
+        <path key={deg} d="M50 28 V35" stroke={colors.inkInverse} strokeWidth={5} strokeLinecap="round" transform={`rotate(${deg} 50 58)`} />
+      ))}
+      <path d="M50 58 V36" stroke={colors.accent} strokeWidth={6} strokeLinecap="round" transform={`rotate(${p * 360} 50 58)`} />
+      <circle cx="50" cy="58" r="5" fill={colors.inkInverse} />
+    </svg>
+  );
+};
+
+/** Ordinateur portable : `on` (0 → 3) allume les lignes de code en corail. */
+export const Laptop: React.FC<{ readonly size: number; readonly on?: number }> = ({ size, on = 0 }) => (
+  <svg width={size} height={size * 0.72} viewBox="0 0 100 72" aria-hidden="true">
+    <rect x="14" y="4" width="72" height="48" rx="6" fill={withAlpha(colors.ink, 0.9)} stroke={colors.inkInverse} strokeWidth={4} />
+    {[0, 1, 2].map((index) => (
+      <path
+        key={index}
+        d={`M24 ${16 + index * 11} H${index === 1 ? 58 : 72 - index * 6}`}
+        stroke={on > index ? colors.accent : withAlpha(colors.inkInverse, 0.4)}
+        strokeWidth={5}
+        strokeLinecap="round"
+      />
+    ))}
+    <path d="M4 58 H96 L90 68 H10 Z" fill={colors.inkInverse} />
+  </svg>
+);
+
+/** Baguette magique : l'étoile de son bout est en corail ; l'appelant l'incline. */
+export const Wand: React.FC<{ readonly size: number }> = ({ size }) => (
+  <svg width={size} height={size} viewBox="0 0 100 100" aria-hidden="true">
+    <path d="M16 90 L62 44" stroke={colors.inkInverse} strokeWidth={9} strokeLinecap="round" />
+    <path d="M16 90 L28 78" stroke={colors.ink} strokeWidth={9} strokeLinecap="round" />
+    <path d="M74 14 L79 30 L95 35 L79 40 L74 56 L69 40 L53 35 L69 30 Z" fill={colors.accent} />
+  </svg>
+);
+
+/** Carte de code de vérification : six cases ; `filled` (0 → 6) y pose un point en corail. */
+export const CodeCard: React.FC<{ readonly w: number; readonly filled?: number; readonly active?: boolean }> = ({ w, filled = 0, active = false }) => {
+  const box = (w - 72) / 6;
+
+  return (
+    <div
+      style={{
+        width: w,
+        height: box + 72,
+        borderRadius: radius.lg,
+        backgroundColor: withAlpha(colors.ink, 0.88),
+        border: `${strokeWidths.thick}px solid ${active || filled > 0 ? colors.accent : withAlpha(colors.inkInverse, 0.3)}`,
+        boxShadow: `0 16px 40px ${withAlpha(colors.ink, 0.4)}`,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 10,
+      }}
+    >
+      {[0, 1, 2, 3, 4, 5].map((index) => (
+        <div
+          key={index}
+          style={{
+            width: box,
+            height: box * 1.15,
+            borderRadius: radius.md,
+            border: `${strokeWidths.medium}px solid ${filled > index ? colors.accent : withAlpha(colors.inkInverse, 0.4)}`,
+            backgroundColor: withAlpha(colors.inkInverse, 0.08),
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <div style={{ width: box * 0.34, height: box * 0.34, borderRadius: radius.pill, backgroundColor: filled > index ? colors.accent : "transparent" }} />
+        </div>
+      ))}
+    </div>
+  );
+};
+
+/** Clé dessinée : « un moyen d'entrer ». */
+export const KeyIcon: React.FC<{ readonly size: number; readonly on?: boolean }> = ({ size, on = false }) => (
+  <svg width={size} height={size} viewBox="0 0 100 100" aria-hidden="true">
+    <circle cx="28" cy="50" r="19" fill="none" stroke={tone(on)} strokeWidth={11} />
+    <circle cx="28" cy="50" r="5" fill={tone(on)} />
+    <path d="M47 50 H92 M76 50 V68 M62 50 V62" fill="none" stroke={tone(on)} strokeWidth={11} strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+/** Viseur : `lock` (0 → 1) resserre les repères sur la cible puis allume le point central. */
+export const Crosshair: React.FC<{ readonly size: number; readonly lock?: number }> = ({ size, lock = 0 }) => {
+  const gap = 14 * (1 - Math.max(0, Math.min(1, lock)));
+
+  return (
+    <svg width={size} height={size} viewBox="0 0 100 100" aria-hidden="true">
+      <circle cx="50" cy="50" r="30" fill="none" stroke={colors.accent} strokeWidth={6} />
+      {[0, 90, 180, 270].map((deg) => (
+        <path key={deg} d={`M50 ${4 + gap} V${26 + gap}`} stroke={colors.accent} strokeWidth={7} strokeLinecap="round" transform={`rotate(${deg} 50 50)`} />
+      ))}
+      <circle cx="50" cy="50" r="6" fill={colors.accent} opacity={lock > 0.5 ? 1 : 0} />
+    </svg>
+  );
+};
+
+/** Cahier à spirale : couverture corail, étiquette fantôme, anneaux sur la gauche. */
+export const Notebook: React.FC<{ readonly w: number; readonly h: number }> = ({ w, h }) => (
+  <div
+    style={{
+      position: "relative",
+      width: w,
+      height: h,
+      borderRadius: radius.md,
+      backgroundColor: colors.accent,
+      boxShadow: `0 18px 44px ${withAlpha(colors.ink, 0.4)}`,
+    }}
+  >
+    <div style={{ position: "absolute", left: w * 0.22, top: h * 0.2, width: w * 0.56, height: h * 0.2, borderRadius: radius.md, backgroundColor: colors.inkInverse }} />
+    <div style={{ position: "absolute", left: w * 0.32, top: h * 0.27, width: w * 0.36, height: h * 0.06, borderRadius: radius.pill, backgroundColor: withAlpha(colors.ink, 0.25) }} />
+    {[0, 1, 2, 3, 4, 5].map((index) => (
+      <div
+        key={index}
+        style={{
+          position: "absolute",
+          left: -w * 0.04,
+          top: h * 0.08 + index * h * 0.15,
+          width: w * 0.14,
+          height: h * 0.065,
+          borderRadius: radius.pill,
+          backgroundColor: colors.inkInverse,
+          border: `${strokeWidths.medium}px solid ${colors.ink}`,
+        }}
+      />
+    ))}
+  </div>
+);
+
+/** Combiné de téléphone ; `ring` (0 → 1) fait apparaître les ondes d'appel. */
+export const Handset: React.FC<{ readonly size: number; readonly ring?: number }> = ({ size, ring = 0 }) => (
+  <svg width={size} height={size} viewBox="0 0 100 100" aria-hidden="true">
+    <path
+      d="M20 24 C14 32 18 54 34 70 C50 86 72 90 80 82 L86 74 C88 71 87 68 84 66 L72 58 C69 56 66 56 64 59 L59 65 C50 61 39 50 35 41 L41 36 C44 34 44 31 42 28 L34 16 C32 13 29 12 26 14 Z"
+      fill={ring > 0.5 ? colors.accent : colors.inkInverse}
+    />
+    {[0, 1].map((index) => (
+      <path
+        key={index}
+        d={`M${62 + index * 14} ${16 + index * -4} A${22 + index * 14} ${22 + index * 14} 0 0 1 ${84 + index * 8} ${38 + index * 4}`}
+        fill="none"
+        stroke={colors.accent}
+        strokeWidth={7}
+        strokeLinecap="round"
+        opacity={Math.max(0, Math.min(1, ring * 2 - index * 0.7))}
+      />
+    ))}
+  </svg>
+);
+
+/** Carte bancaire dessinée (bande, puce) : aucun numéro, aucune marque. */
+export const BankCard: React.FC<{ readonly w: number; readonly on?: number }> = ({ w, on = 0 }) => (
+  <div
+    style={{
+      position: "relative",
+      width: w,
+      height: w * 0.63,
+      borderRadius: radius.lg,
+      backgroundColor: withAlpha(colors.ink, 0.88),
+      border: `${strokeWidths.thick}px solid ${on > 0.5 ? colors.accent : withAlpha(colors.inkInverse, 0.35)}`,
+      boxShadow: `0 16px 40px ${withAlpha(colors.ink, 0.4)}`,
+      overflow: "hidden",
+    }}
+  >
+    <div style={{ position: "absolute", left: 0, right: 0, top: w * 0.09, height: w * 0.1, backgroundColor: withAlpha(colors.inkInverse, 0.3) }} />
+    <div style={{ position: "absolute", left: w * 0.08, top: w * 0.26, width: w * 0.16, height: w * 0.12, borderRadius: radius.md, backgroundColor: on > 0.5 ? colors.accent : colors.inkInverse }} />
+    <div style={{ position: "absolute", left: w * 0.08, bottom: w * 0.08 }}>
+      <Skeleton w={w * 0.5} h={w * 0.045} />
+    </div>
+  </div>
+);
+
+/** Maillon de chaîne : un lien Internet ; `on` l'allume en corail. */
+export const LinkChain: React.FC<{ readonly size: number; readonly on?: boolean }> = ({ size, on = false }) => (
+  <svg width={size} height={size} viewBox="0 0 100 100" aria-hidden="true">
+    <g transform="rotate(-45 50 50)" fill="none" stroke={tone(on)} strokeWidth={10} strokeLinecap="round">
+      <rect x="6" y="34" width="52" height="32" rx="16" />
+      <rect x="42" y="34" width="52" height="32" rx="16" />
+    </g>
+  </svg>
+);
+
+/** Soleil : « aujourd'hui » ; `on` allume le disque et les rayons en corail. */
+export const Sun: React.FC<{ readonly size: number; readonly on?: boolean }> = ({ size, on = false }) => (
+  <svg width={size} height={size} viewBox="0 0 100 100" aria-hidden="true">
+    <circle cx="50" cy="50" r="19" fill={tone(on)} />
+    {[0, 45, 90, 135, 180, 225, 270, 315].map((deg) => (
+      <path key={deg} d="M50 12 V25" stroke={tone(on)} strokeWidth={8} strokeLinecap="round" transform={`rotate(${deg} 50 50)`} />
+    ))}
+  </svg>
+);
+
+/** Marteau ; l'appelant le fait pivoter autour de son manche. */
+export const Hammer: React.FC<{ readonly size: number }> = ({ size }) => (
+  <svg width={size} height={size} viewBox="0 0 100 100" aria-hidden="true">
+    <path d="M50 94 V44" stroke={colors.inkInverse} strokeWidth={11} strokeLinecap="round" />
+    <rect x="18" y="12" width="64" height="30" rx="8" fill={colors.accent} />
+    <rect x="18" y="12" width="14" height="30" rx="6" fill={colors.ink} opacity={0.3} />
+  </svg>
+);
+
+/** Clavier de téléphone : 12 touches, les `lit` premières s'allument en corail. */
+export const Keypad: React.FC<{ readonly size: number; readonly lit?: number }> = ({ size, lit = 0 }) => (
+  <svg width={size} height={size * 1.25} viewBox="0 0 100 125" aria-hidden="true">
+    {Array.from({ length: 12 }, (_, index) => (
+      <circle
+        key={index}
+        cx={20 + (index % 3) * 30}
+        cy={16 + Math.floor(index / 3) * 31}
+        r={12}
+        fill={lit > index ? colors.accent : withAlpha(colors.inkInverse, 0.22)}
+        stroke={withAlpha(colors.inkInverse, 0.55)}
+        strokeWidth={3}
+      />
+    ))}
+  </svg>
+);
+
+/** Bulle de discussion : `tail` choisit le côté de la queue ; le contenu vient en enfant. */
+export const Chat: React.FC<{
+  readonly w: number;
+  readonly h: number;
+  readonly tail?: "left" | "right";
+  readonly hot?: boolean;
+  readonly children?: React.ReactNode;
+}> = ({ w, h, tail = "left", hot = false, children }) => (
+  <div style={{ position: "relative", width: w, height: h }}>
+    <div
+      style={{
+        position: "absolute",
+        inset: 0,
+        borderRadius: radius.lg,
+        backgroundColor: hot ? colors.accent : withAlpha(colors.ink, 0.88),
+        border: `${strokeWidths.thick}px solid ${hot ? withAlpha(colors.inkInverse, 0.5) : withAlpha(colors.inkInverse, 0.35)}`,
+        boxShadow: `0 16px 40px ${withAlpha(colors.ink, 0.4)}`,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 14,
+      }}
+    >
+      {children}
+    </div>
+    <div
+      style={{
+        position: "absolute",
+        bottom: -14,
+        [tail]: h * 0.28,
+        width: 34,
+        height: 34,
+        transform: "rotate(45deg)",
+        backgroundColor: hot ? colors.accent : withAlpha(colors.ink, 0.88),
+        borderRight: tail === "left" ? undefined : `${strokeWidths.thick}px solid ${withAlpha(colors.inkInverse, 0.35)}`,
+        borderBottom: `${strokeWidths.thick}px solid ${hot ? withAlpha(colors.inkInverse, 0.5) : withAlpha(colors.inkInverse, 0.35)}`,
+        borderLeft: tail === "left" ? `${strokeWidths.thick}px solid ${withAlpha(colors.inkInverse, 0.35)}` : undefined,
+      }}
+    />
+  </div>
+);
+
+/** Trois points de frappe : `t` (secondes) fait onduler leur opacité. */
+export const TypingDots: React.FC<{ readonly size: number; readonly t: number }> = ({ size, t }) => (
+  <div style={{ display: "flex", gap: size * 0.45 }}>
+    {[0, 1, 2].map((index) => (
+      <div
+        key={index}
+        style={{
+          width: size,
+          height: size,
+          borderRadius: radius.pill,
+          backgroundColor: colors.inkInverse,
+          opacity: 0.35 + 0.65 * Math.max(0, Math.sin(t * 8 - index * 0.9)),
+        }}
+      />
+    ))}
+  </div>
+);
+
+/** Avatar rond : la personne ; `mask` (0 → 1) la remplace par le masque du pirate. */
+export const Avatar: React.FC<{ readonly size: number; readonly mask?: number }> = ({ size, mask = 0 }) => {
+  const m = Math.max(0, Math.min(1, mask));
+
+  return (
+    <div
+      style={{
+        position: "relative",
+        width: size,
+        height: size,
+        borderRadius: radius.pill,
+        backgroundColor: m > 0.5 ? withAlpha(colors.ink, 0.9) : withAlpha(colors.inkInverse, 0.16),
+        border: `${Math.max(3, Math.min(strokeWidths.thick, size * 0.035))}px solid ${m > 0.5 ? colors.accent : withAlpha(colors.inkInverse, 0.5)}`,
+        boxSizing: "border-box",
+        overflow: "hidden",
+      }}
+    >
+      <div style={{ position: "absolute", left: size * 0.1, top: size * 0.1, opacity: 1 - m, transform: `scale(${1 - m * 0.25})` }}>
+        <PersonIcon size={size * 0.8} />
+      </div>
+      <div style={{ position: "absolute", left: size * 0.12, top: size * 0.12, opacity: m, transform: `scale(${0.75 + m * 0.25})` }}>
+        <Incognito size={size * 0.76} lit={m} />
+      </div>
+    </div>
+  );
+};

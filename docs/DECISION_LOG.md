@@ -273,3 +273,13 @@ Les entrées doivent rester compactes, factuelles et exploitables sans relire to
 - validation: `npm run lint` ; `npm test` (103 passés, dont 8 pour l'épisode) ; 82 stills (2 par plan) rendus et inspectés en 6 planches, 6 défauts corrigés (point parasite des cercles barrés, flèche en trop, étincelle parasite, feuille déchirée au polygone croisé, yeux trop petits) ; rendu MP4 complet ; le mix final (voix + 3 SFX) atteignait −12,9 LUFS / −0,4 dBFS, l'audio du MP4 a donc reçu −1,5 dB et un limiteur (−14,4 LUFS, pic −2,0 dBFS), l'image est inchangée
 - roadmap: not-needed
 - next: valider à l'oreille les mots du transcript (`node scripts/transcribe-audio.mjs` en local pour un alignement exact) ; promouvoir dans `src/components/motion` les dessins réutilisés par un 2ᵉ épisode (œil, personne, Wi-Fi…) ; ajouter une musique sous `public/audio/music/` si souhaité
+
+### 2026-10-24 — La tech sans jargon · 2 : « Pirater un compte WhatsApp »
+- status: done
+- scope: deuxième épisode de la série `tech-sans-jargon`, composition `tech-sans-jargon-pirater-whatsapp` (65 plans, 78,47 s) monté sur le standard de qualité Web Story
+- files: `src/series/tech-sans-jargon/{index.tsx,kit.tsx,episodes/pirater-whatsapp/*}`, `public/audio/series/tech-sans-jargon/pirater-whatsapp.mp3`, `docs/series/tech-sans-jargon-pirater-whatsapp-storyboard.md`
+- decision: le script final fourni avec l'audio fait foi ; Whisper inaccessible → mots placés par heuristique (silencedetect, syllabes, creux d'énergie) ; voix basse → +6,5 dB avec limiteur (−15,9 LUFS, pic −1,5 dBFS) ; kit SVG enrichi (Stopwatch, Laptop, Wand, CodeCard, KeyIcon, Crosshair, Notebook, Handset, BankCard, LinkChain, Keypad, Chat, TypingDots, Avatar…) ; réutilisation de `Shot` / `Art` / `ZoneMascot` ; aucune marque dessinée (téléphone de discussion générique, codes en points) ; mascotte limitée à 6 plans (thinking, point, surprised, explaining, point, happy) ; SFX : click ×3, error, pop ×2, ding ×2
+- impact: composition déclarée dans le `Folder` de la série (aucun fichier global touché) ; aucune donnée chiffrée inventée ; durée 78,5 s, au-dessus de la limite voulue d'une minute (script final de Gabriel)
+- validation: `npm run lint` ; `npm test` (111 passés, dont 8 pour l'épisode) ; 130 stills (2 par plan) rendus et inspectés en planches ; rendu MP4 complet
+- roadmap: not-needed
+- next: valider à l'oreille les mots du transcript (`node scripts/transcribe-audio.mjs` en local pour un alignement exact) ; envisager un script plus court pour rester sous la minute
