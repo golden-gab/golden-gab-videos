@@ -13,6 +13,8 @@ import { Composition, Folder } from "remotion";
 import { videoFormat } from "../../config/video";
 import { getEpisodeDurationFrames } from "../../scenes";
 import type { SeriesDefinition } from "../types";
+import { cacheEpisode } from "./episodes/cache/data/episode";
+import { TechSansJargonCacheVideo } from "./episodes/cache/videos/tech-sans-jargon-cache";
 import { navigationPriveeEpisode } from "./episodes/navigation-privee/data/episode";
 import { TechSansJargonNavigationPriveeVideo } from "./episodes/navigation-privee/videos/tech-sans-jargon-navigation-privee";
 import { piraterWhatsappEpisode } from "./episodes/pirater-whatsapp/data/episode";
@@ -30,6 +32,8 @@ const piraterWhatsappDurationInFrames = getEpisodeDurationFrames(
   videoFormat.fps,
 );
 
+const cacheDurationInFrames = getEpisodeDurationFrames(cacheEpisode, videoFormat.fps);
+
 const TechSansJargonFolder: React.FC = () => {
   return (
     <Folder name={TECH_SANS_JARGON_ID}>
@@ -45,6 +49,14 @@ const TechSansJargonFolder: React.FC = () => {
         id="tech-sans-jargon-pirater-whatsapp"
         component={TechSansJargonPiraterWhatsappVideo}
         durationInFrames={piraterWhatsappDurationInFrames}
+        fps={videoFormat.fps}
+        width={videoFormat.width}
+        height={videoFormat.height}
+      />
+      <Composition
+        id="tech-sans-jargon-cache"
+        component={TechSansJargonCacheVideo}
+        durationInFrames={cacheDurationInFrames}
         fps={videoFormat.fps}
         width={videoFormat.width}
         height={videoFormat.height}

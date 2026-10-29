@@ -25,6 +25,6 @@ Référence : « Tu dors déjà » et « C'est quoi un site web » (`src/series/
 ## Environnement de rendu (sandbox cloud)
 
 - Réseau restreint : Google Fonts et HuggingFace bloqués → Whisper impossible ici (l'utilisateur lance `node scripts/transcribe-audio.mjs` chez lui) ; polices servies par un petit serveur local sur 127.0.0.1:8765 qui doit tourner pendant les rendus.
-- Chromium : `--browser-executable=/opt/pw-browsers/chromium_headless_shell-*/chrome-linux/headless_shell`, `--concurrency=2`.
+- Chromium : `--browser-executable=/opt/pw-browsers/chromium_headless_shell-*/chrome-headless-shell-linux64/chrome-headless-shell`, `--concurrency=2`.
 - Les rendus complets durent 30 à 60 min : les lancer détachés (`setsid nohup … & disown`) et surveiller le log.
 - Git : trailers de commit `Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>` et `Claude-Session: <url de session>`. Ne pas réécrire les commits de l'utilisateur sans son accord.

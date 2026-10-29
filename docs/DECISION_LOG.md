@@ -283,3 +283,15 @@ Les entrées doivent rester compactes, factuelles et exploitables sans relire to
 - validation: `npm run lint` ; `npm test` (111 passés, dont 8 pour l'épisode) ; 130 stills (2 par plan) rendus et inspectés en planches ; rendu MP4 complet
 - roadmap: not-needed
 - next: valider à l'oreille les mots du transcript (`node scripts/transcribe-audio.mjs` en local pour un alignement exact) ; envisager un script plus court pour rester sous la minute
+
+### 2026-10-29 — La tech sans jargon · 3 : « C'est quoi le cache ? »
+- status: done
+- scope: troisième épisode de la série `tech-sans-jargon`, composition `tech-sans-jargon-cache` (54 plans, 63,82 s, 1915 images) monté sur le standard de qualité Web Story
+- files: `src/series/tech-sans-jargon/{index.tsx,episodes/cache/*}`, `public/audio/series/tech-sans-jargon/cache.mp3`, `docs/series/tech-sans-jargon-cache-storyboard.md`, `CLAUDE.md` (chemin du navigateur de rendu)
+- decision: le script final fourni avec l'audio fait foi ; Whisper inaccessible → mots placés par heuristique (silencedetect, 18 groupes de souffle, syllabes, creux d'énergie) ; voix basse → +5,3 dB avec limiteur (−21,5 → −16,2 LUFS, pic −1,7 dBFS) ; image fil rouge du sel (cuisine / marché) dessinée en SVG local (`helpers.tsx` : pot, casserole, étagère, étal, boîte-réserve, poubelle, balai, jauge, calendrier…) ; kit de la série réutilisé (`PersonIcon`, `Disc`, `Chat`, `Stopwatch`, `ShieldCheck`) ; aucune marque, aucun chiffre (jauges sans valeur, part libérée minuscule) ; mascotte limitée à 5 plans (thinking, explaining, surprised, happy, point) ; 7 SFX (ding ×2, pop ×3, whoosh, error)
+- impact: composition déclarée dans le `Folder` de la série (aucun fichier global touché) ; durée 63,8 s, juste au-dessus de la minute visée
+- validation: `npm run lint` ; `npm test` (119 passés, dont 8 pour l'épisode) ; 108 stills (2 par plan) rendus et inspectés en 9 planches, 8 défauts corrigés (pot de sel qui montait dans les captions au plan 14, rayons touchant la mascotte ou le bord aux plans 26/30/40/51/54, dernière colonne du calendrier rognée, cercle barré illisible sur la flèche au plan 25) ; rendu MP4 complet, mix final −13,3 LUFS / pic −1,3 dBFS (pas de correction nécessaire)
+- note: deux rendus de stills faits pendant le chargement des polices ont montré des captions sur deux lignes (plans 9 et 45) ; non reproductible, absent du MP4 final. En sandbox il faut aussi patcher `node_modules/@remotion/google-fonts/dist/esm/*.mjs` (pas seulement `cjs`) vers le serveur local de polices, et vider `node_modules/.cache` avant de re-empaqueter
+- roadmap: not-needed
+- next: valider à l'oreille les mots du transcript (`node scripts/transcribe-audio.mjs` en local pour un alignement exact) ; ajouter une musique sous `public/audio/music/` si souhaité ; épisode suivant : séries « Les G expliqués » (1G à 5G)
+
