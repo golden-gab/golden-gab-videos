@@ -14,6 +14,8 @@ import { videoFormat } from "../../config/video";
 import { getEpisodeDurationFrames } from "../../scenes";
 import type { SeriesDefinition } from "../types";
 import { cacheEpisode } from "./episodes/cache/data/episode";
+import { designSystemEpisode } from "./episodes/design-system-vs-system-design/data/episode";
+import { TechSansJargonDesignSystemVideo } from "./episodes/design-system-vs-system-design/videos/tech-sans-jargon-design-system-vs-system-design";
 import { TechSansJargonCacheVideo } from "./episodes/cache/videos/tech-sans-jargon-cache";
 import { navigationPriveeEpisode } from "./episodes/navigation-privee/data/episode";
 import { TechSansJargonNavigationPriveeVideo } from "./episodes/navigation-privee/videos/tech-sans-jargon-navigation-privee";
@@ -33,6 +35,8 @@ const piraterWhatsappDurationInFrames = getEpisodeDurationFrames(
 );
 
 const cacheDurationInFrames = getEpisodeDurationFrames(cacheEpisode, videoFormat.fps);
+
+const designSystemDurationInFrames = getEpisodeDurationFrames(designSystemEpisode, videoFormat.fps);
 
 const TechSansJargonFolder: React.FC = () => {
   return (
@@ -57,6 +61,14 @@ const TechSansJargonFolder: React.FC = () => {
         id="tech-sans-jargon-cache"
         component={TechSansJargonCacheVideo}
         durationInFrames={cacheDurationInFrames}
+        fps={videoFormat.fps}
+        width={videoFormat.width}
+        height={videoFormat.height}
+      />
+      <Composition
+        id="tech-sans-jargon-design-system-vs-system-design"
+        component={TechSansJargonDesignSystemVideo}
+        durationInFrames={designSystemDurationInFrames}
         fps={videoFormat.fps}
         width={videoFormat.width}
         height={videoFormat.height}

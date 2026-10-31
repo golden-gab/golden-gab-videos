@@ -295,3 +295,13 @@ Les entrées doivent rester compactes, factuelles et exploitables sans relire to
 - roadmap: not-needed
 - next: valider à l'oreille les mots du transcript (`node scripts/transcribe-audio.mjs` en local pour un alignement exact) ; ajouter une musique sous `public/audio/music/` si souhaité ; épisode suivant : séries « Les G expliqués » (1G à 5G)
 
+
+### 2026-10-30 — La tech sans jargon · 4 : « Design System ou System Design ? »
+- status: done
+- scope: quatrième épisode de la série `tech-sans-jargon`, composition `tech-sans-jargon-design-system-vs-system-design` (59 plans, 71,0 s, 2130 images) monté sur le standard de qualité Web Story
+- files: `src/series/tech-sans-jargon/{index.tsx,episodes/design-system-vs-system-design/*}`, `public/audio/series/tech-sans-jargon/design-system-vs-system-design.mp3`, `docs/series/tech-sans-jargon-design-system-vs-system-design-storyboard.md`
+- decision: le script fourni avec l'audio fait foi ; Whisper inaccessible → mots placés par programmation dynamique (195 mots sur 23 groupes de souffle détectés par pauses, débit constant, pénalité hors ponctuation), répartition par syllabes dans chaque groupe, frontières recalées sur les creux d'énergie (±150 ms par mot, exact aux frontières de groupe) ; voix basse → +6 dB avec limiteur (−21,5 → −16,0 LUFS, pic −1,2 dBFS) ; fil rouge visuel : une maison — plan de maison (pièces, cuisine, eau, électricité) puis schéma téléphone → serveur → base de données pour le System Design ; palette, portes, poignées, interrupteurs, matériaux puis boutons, police « Aa », espacements, écrans identiques pour le Design System ; fin engrenage (« comment ça fonctionne ») contre pinceau (« comment ça se présente ») ; dessins SVG locaux (`helpers.tsx`), kit de la série réutilisé, aucune marque, aucun chiffre ; mascotte limitée à 4 plans (surprised, thinking, explaining, point) ; 5 SFX (pop ×3, ding ×2)
+- impact: composition déclarée dans le `Folder` de la série (aucun fichier global touché) ; durée 71 s, au-dessus de la minute visée (script de Gabriel)
+- validation: `npm run lint` ; `npm test` (127 passés, dont 8 pour l'épisode) ; 118 stills (2 par plan) rendus et inspectés en 6 planches, aucun chevauchement ni débordement ; rendu MP4 complet, mix final −13,1 LUFS / pic −1,3 dBFS (pas de correction nécessaire)
+- roadmap: not-needed
+- next: valider à l'oreille les mots du transcript (`node scripts/transcribe-audio.mjs` en local pour un alignement exact) ; promouvoir dans `src/components/motion` les dessins réutilisés par un 2ᵉ épisode (plan de maison, téléphone/serveur/base de données, engrenage/pinceau) ; ajouter une musique sous `public/audio/music/` si souhaité
