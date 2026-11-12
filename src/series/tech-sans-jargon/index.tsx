@@ -19,6 +19,8 @@ import { TechSansJargonDesignSystemVideo } from "./episodes/design-system-vs-sys
 import { TechSansJargonCacheVideo } from "./episodes/cache/videos/tech-sans-jargon-cache";
 import { nomDeDomaineEpisode } from "./episodes/nom-de-domaine/data/episode";
 import { TechSansJargonNomDeDomaineVideo } from "./episodes/nom-de-domaine/videos/tech-sans-jargon-nom-de-domaine";
+import { phishingEpisode } from "./episodes/phishing/data/episode";
+import { TechSansJargonPhishingVideo } from "./episodes/phishing/videos/tech-sans-jargon-phishing";
 import { navigationPriveeEpisode } from "./episodes/navigation-privee/data/episode";
 import { TechSansJargonNavigationPriveeVideo } from "./episodes/navigation-privee/videos/tech-sans-jargon-navigation-privee";
 import { piraterWhatsappEpisode } from "./episodes/pirater-whatsapp/data/episode";
@@ -41,6 +43,8 @@ const cacheDurationInFrames = getEpisodeDurationFrames(cacheEpisode, videoFormat
 const designSystemDurationInFrames = getEpisodeDurationFrames(designSystemEpisode, videoFormat.fps);
 
 const nomDeDomaineDurationInFrames = getEpisodeDurationFrames(nomDeDomaineEpisode, videoFormat.fps);
+
+const phishingDurationInFrames = getEpisodeDurationFrames(phishingEpisode, videoFormat.fps);
 
 const TechSansJargonFolder: React.FC = () => {
   return (
@@ -81,6 +85,14 @@ const TechSansJargonFolder: React.FC = () => {
         id="tech-sans-jargon-nom-de-domaine"
         component={TechSansJargonNomDeDomaineVideo}
         durationInFrames={nomDeDomaineDurationInFrames}
+        fps={videoFormat.fps}
+        width={videoFormat.width}
+        height={videoFormat.height}
+      />
+      <Composition
+        id="tech-sans-jargon-phishing"
+        component={TechSansJargonPhishingVideo}
+        durationInFrames={phishingDurationInFrames}
         fps={videoFormat.fps}
         width={videoFormat.width}
         height={videoFormat.height}
